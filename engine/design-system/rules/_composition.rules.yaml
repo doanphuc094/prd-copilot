@@ -1,0 +1,180 @@
+# =============================================================================
+# _composition.rules.yaml — LUẬT LIÊN COMPONENT
+#
+# Luật ở đây cần biết về TỪ 2 COMPONENT TRỞ LÊN. Chúng không thuộc về file
+# component nào cả: đặt ở button thì người làm table không thấy, đặt ở table
+# thì người làm button không thấy.
+#
+# Mỗi luật khai `involves` — compiler chỉ nạp luật có dính tới component đang
+# compile, nên file này dài ra cũng không làm bản resolved của từng component
+# phình theo.
+#
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  layer: composition
+  portable: true
+  version: 2.0-draft
+  requires: [_core.rules.yaml]
+
+undisableable: [CMP-DLG-01]
+
+# =============================================================================
+# HÀNH ĐỘNG PHÁ HUỶ × BƯỚC XÁC NHẬN
+# =============================================================================
+destructive_confirmation:
+  - id: CMP-DLG-01
+    involves: [action_trigger, overlay]
+    undisableable: true
+    rule: "Hành động ở vai phá huỷ BẮT BUỘC có bước xác nhận trong cùng luồng."
+    check: "role == intent.destructive implies exists(ConfirmStep in flow)"
+    broader_than_role: >
+      Áp cho mọi hành động XOÁ DỮ LIỆU nói chung, KHÔNG chỉ phụ thuộc vai. Một
+      hành động xoá ra vai no-path theo ATRG-T-04.case_c vẫn cần bước xác nhận
+      — vai quyết định hình thức thị giác, không quyết định nhu cầu an toàn.
+    why_undisableable: "Đây là luật an toàn dữ liệu, không phải quy ước thiết kế."
+
+# =============================================================================
+# THANH HÀNH ĐỘNG CHÂN FORM
+# =============================================================================
+footer_action_bar:
+  - id: CMP-FTR-01
+    involves: [interactive_control, screen]
+    rule: "Mỗi thanh hành động chân form có ĐÚNG 1 điều khiển ở mức nhấn cao nhất."
+    check: "count(footerActionBar.controls[emphasis == rank1]) == 1"
+    why: >
+      Đây là khu vực người dùng tìm hành động chính. 0 nút rank1 thì không biết
+      bấm gì; 2 nút rank1 thì chúng triệt tiêu nhau.
+    relation_to_kind_rule: "Cụ thể hoá ICTL-E-01 ở cấp một khu vực có tên."
+
+  - id: CMP-FTR-02
+    involves: [screen]
+    rule: "Thanh hành động chân form chỉ tồn tại ở loại màn policy cho phép."
+    check: >
+      screen.type not in profile.policy.footer_action_bar_screen_types
+        implies footerActionBar == null
+    why: >
+      Màn danh sách/chi tiết không có "hành động kết thúc" nên một thanh chân
+      form ở đó là một cam kết trống — người dùng chờ nó làm gì đó mà nó không
+      làm gì.
+
+  - id: CMP-FTR-03
+    involves: [interactive_control, screen]
+    rule: "Thanh hành động chân form không được chứa điều khiển ở mức nhấn thấp nhất."
+    check: "footerActionBar.controls all emphasis != rank_lowest"
+    relation_to_kind_rule: "Cụ thể hoá ICTL-E-03.never_use_when case đầu tiên."
+
+# =============================================================================
+# HEADER CHI TIẾT
+# =============================================================================
+detail_header:
+  - id: CMP-HDR-01
+    involves: [interactive_control, header]
+    rule: "Header chi tiết không chứa hành động nào ngoài điều khiển điều hướng về."
+    check: "detailHeader.controls.length <= 1"
+    why: >
+      Header là chỗ định vị "tôi đang ở đâu", không phải chỗ hành động. Nhét
+      hành động vào đây tạo ra 2 khu vực hành động trên cùng một màn và người
+      dùng phải quét cả hai.
+
+# =============================================================================
+# Ô THAO TÁC CỦA DÒNG DANH SÁCH — điều khiển × bảng/card list
+#
+# Đây là cụm luật đã trả giá nhiều lần nhất (3 vòng sửa trong 1 ngày,
+# xem decisions.md 07/09). Đọc kỹ trước khi đổi.
+# =============================================================================
+row_action_cell:
+  - id: CMP-ROW-01
+    involves: [interactive_control, action_trigger, table]
+    name: "Bộ hành động CHUẨN của dòng — mặc định mức nhấn giữa, KHÔNG phải thấp nhất"
+    test: >
+      Hành động này có thuộc bộ CỐ ĐỊNH, lặp lại ở MỌI dòng của danh sách
+      (theo profile.policy.standard_row_actions) không?
+    emphasis: "emphasis.scale[1]"
+    intent_default: "intent.no_path"
+    why: >
+      Đây là chỗ người dùng thao tác thường xuyên nhất trên một bảng — cần đủ
+      rõ ràng, KHÔNG mờ đi xuống mức thấp nhất chỉ vì nó lặp lại theo dòng.
+    delete_stays_no_path: "Xem ATRG-T-04.critical_disambiguation.routine_vs_permanent_delete"
+
+  - id: CMP-ROW-02
+    involves: [interactive_control, action_trigger, table]
+    name: "Hành động NGOÀI bộ chuẩn — KHÔNG có mức nhấn mặc định"
+    replaces: "Luật cũ ép mọi hành động ngoài bộ chuẩn xuống mức thấp nhất — đã BỎ"
+    rule: >
+      Chỉ hành động thuộc profile.policy.standard_row_actions là cố định theo
+      CMP-ROW-01. Mọi điều khiển KHÁC trong cùng ô thao tác — kể cả khi chỉ
+      hiện ở một số dòng tuỳ điều kiện — KHÔNG được gán mức nhấn cố định chỉ vì
+      nó nằm trong dòng danh sách. Phải đánh giá MỨC ĐỘ ƯU TIÊN thật của hành
+      động đó trong ngữ cảnh dòng này trước; mức ưu tiên đó mới QUYẾT ĐỊNH dạng
+      của nó, không phải suy ngược lại.
+    operationalised_as: >
+      Chạy đầy đủ ATRG-T-* (vai intent) rồi ICTL-E-* (mức nhấn), coi "khu vực"
+      ở bước mức nhấn là chính ô thao tác của dòng đó
+      (xem kinds/interactive_control § region.critical).
+    why: >
+      Mức quan trọng thật của các hành động này khác nhau tuỳ ngữ cảnh nghiệp
+      vụ: có hành động là hành động CHÍNH của dòng (ưu tiên cao → có thể xứng
+      đáng rank1), có hành động chỉ là tiện ích phụ nhẹ (ưu tiên thấp → ra mức
+      giữa hoặc thấp nhất). Dạng LUÔN là kết quả suy ra TỪ mức ưu tiên đã đánh
+      giá — không phải hai lựa chọn tách rời chọn độc lập với nhau.
+
+  - id: CMP-ROW-03
+    involves: [interactive_control, table]
+    name: "Ngưỡng gom hành động vào menu"
+    rule: >
+      Đếm số hành động khả dụng của dòng.
+        <= profile.policy.row_action_inline_max → hiện TỪNG điều khiển riêng,
+           KHÔNG gom. Bộ chuẩn theo CMP-ROW-01.
+        >  ngưỡng → gom TẤT CẢ vào 1 điều khiển icon-only ở mức nhấn thấp nhất,
+           kích hoạt mới xổ menu.
+    two_decisions_stacked: >
+      Đây là 2 quyết định chồng lên nhau, đừng lẫn:
+        (1) Bộ hành động CHUẨN luôn ở mức nhấn giữa, bất kể có bao nhiêu.
+        (2) Khi vượt ngưỡng, GOM chúng thành 1 điều khiển mức thấp nhất — lúc
+            này mức thấp nhất là do "đại diện cho cả cụm", KHÔNG phải do
+            "hành động phụ".
+      Một điều khiển ngoài bộ chuẩn và không phải điều khiển gom thì theo
+      CMP-ROW-02, KHÔNG mặc định mức thấp nhất.
+    counter_examples:
+      - "❌ Gom khi số hành động vẫn <= ngưỡng — thừa"
+      - "❌ Cho bộ hành động chuẩn dùng mức thấp nhất — SAI, phải mức giữa (CMP-ROW-01)"
+
+  - id: CMP-ROW-INV-01
+    involves: [interactive_control, table]
+    rule: >
+      Điều khiển trong container lặp thuộc bộ chuẩn → mức nhấn giữa. KHÔNG
+      thuộc bộ chuẩn → không có mức nhấn cố định, nhưng BẮT BUỘC đã chạy qua
+      đánh giá mức ưu tiên.
+    check: >
+      isStandardRowAction == true  implies emphasis == emphasis.scale[1];
+      isStandardRowAction == false implies (rule_ids.intent != null and rule_ids.emphasis != null)
+    why_second_branch: >
+      Không kiểm được "mức ưu tiên đánh giá đúng chưa", nhưng kiểm được "đã
+      thật sự chạy pipeline chưa" — rule_ids trống nghĩa là bước đánh giá bị
+      bỏ qua.
+    requires_spec_field: "isStandardRowAction (true/false) cho mọi điều khiển trong container lặp"
+
+  - id: CMP-ROW-INV-02
+    involves: [interactive_control, table]
+    rule: "Ô thao tác vượt ngưỡng policy BẮT BUỘC gom vào 1 điều khiển menu"
+    check: >
+      count(actionCell.actions) > profile.policy.row_action_inline_max
+        implies (count(actionCell.visibleControls) == 1
+                 and actionCell.visibleControls[0].icon == 'icon-only')
+
+# =============================================================================
+# ĐIỀU KHIỂN TRONG CONTAINER NỘI DUNG
+# =============================================================================
+content_container:
+  - id: CMP-CNT-01
+    involves: [interactive_control, card, overlay]
+    rule: >
+      Điều khiển nằm bên trong container nội dung (card / thân dialog / list
+      item) → mức nhấn thấp nhất.
+    test: "Điều khiển nằm trong chỗ mà NỘI DUNG mới là thứ người dùng đọc?"
+    why: "Điều khiển là công cụ, không phải nội dung. [Nielsen #8 Aesthetic and Minimalist Design]"
+    exception: >
+      Trừ khi nó là hành động duy nhất khả dụng lúc đó (màn trống) — lúc đó
+      ICTL-E-03.never_use_when thắng.

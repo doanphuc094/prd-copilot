@@ -1,0 +1,1308 @@
+{
+  "flowName": "Quản lý chi phí phát sinh",
+  "screens": [
+    {
+      "type": "FRAME",
+      "name": "Chi phí phát sinh",
+      "layout": "HORIZONTAL",
+      "gap": 0,
+      "children": [
+        {
+          "type": "PARTIAL",
+          "use": "sidebar",
+          "active": "Quản lí chi phí FTL",
+          "items": [
+            {
+              "label": "Quản lí chi phí FTL",
+              "icon": "file-invoice-dollar"
+            }
+          ],
+          "logout": "Đăng xuất",
+          "_compiler_note": "PLACEHOLDER — B2B portal module list CHƯA khảo sát (MENU-THEO-HE-THONG.md tự ghi 'chưa khảo sát'), không tự bịa. Cần Williams/Figma MCP khảo sát trước khi push Figma thật."
+        },
+        {
+          "type": "FRAME",
+          "name": "Content",
+          "layout": "VERTICAL",
+          "gap": 0,
+          "children": [
+            {
+              "type": "PARTIAL",
+              "use": "globalActionHome",
+              "breadcrumb": [
+                "Quản lí chi phí FTL",
+                "Chi phí phát sinh"
+              ],
+              "user": {
+                "name": "GSVT Demo",
+                "sub": "Vận hành nội bộ B2B — GSVT xem/lọc/xuất "
+              }
+            },
+            {
+              "type": "FRAME",
+              "name": "Body",
+              "layout": "VERTICAL",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "FRAME",
+                  "name": "Page header",
+                  "layout": "HORIZONTAL",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "FRAME",
+                      "name": "Title group",
+                      "layout": "VERTICAL",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "TEXT",
+                          "content": "Chi phí phát sinh",
+                          "fontSize": 20,
+                          "fontWeight": "Bold"
+                        }
+                      ]
+                    }
+                  ],
+                  "justify": "SPACE_BETWEEN",
+                  "align": "CENTER",
+                  "fillContainer": true
+                },
+                {
+                  "type": "FRAME",
+                  "name": "Table card",
+                  "layout": "VERTICAL",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "FRAME",
+                      "name": "Toolbar",
+                      "layout": "HORIZONTAL",
+                      "gap": 16,
+                      "children": [
+                        {
+                          "type": "FRAME",
+                          "name": "Toolbar left",
+                          "layout": "HORIZONTAL",
+                          "gap": 12,
+                          "children": [
+                            {
+                              "type": "INSTANCE",
+                              "component": "⚫ Button :: Button / Button organism",
+                              "_compiler_note": "role=cancel effective_style=Outline — bypass PARTIAL \"button\", xem header file compiler",
+                              "specId": "sec_tb1__btn__bo_loc",
+                              "props": {
+                                "Style": "Outline Round",
+                                "Size": "md",
+                                "Type": "Grey",
+                                "State": "Default",
+                                "iconLeft#17:0": true,
+                                "iconRight#17:5": false
+                              },
+                              "overrides": {
+                                "Button": "Bộ lọc"
+                              },
+                              "nestedProps": {
+                                "font awesome / Base": {
+                                  "Type": "regular",
+                                  "Size": "16",
+                                  "↳ Content#5679:21": "filter"
+                                }
+                              }
+                            },
+                            {
+                              "type": "INSTANCE",
+                              "component": "⚫ Input :: Input / Input organism",
+                              "_compiler_note": "INSTANCE Input organism thật (xác nhận live Figma 2026-09-07, xem phase1-compiler-notes.md Mục 10) — thay placeholder FRAME cũ",
+                              "specId": "sec_tb1__search",
+                              "props": {
+                                "Size": "md",
+                                "Type": "Default",
+                                "Destructive": "False",
+                                "State": "Default"
+                              },
+                              "hideLayers": [
+                                "Mandatory",
+                                "Conditions",
+                                "Label"
+                              ],
+                              "overrides": {
+                                "Text input > Input / Input filed type (Base) > Input / Input text type (Base) > Text": "Tìm kiếm theo mã đơn, mã chuyến hoặc tên tài xế"
+                              },
+                              "width": 340
+                            }
+                          ],
+                          "align": "CENTER"
+                        },
+                        {
+                          "type": "FRAME",
+                          "name": "Toolbar right",
+                          "layout": "HORIZONTAL",
+                          "gap": 12,
+                          "children": [
+                            {
+                              "type": "INSTANCE",
+                              "component": "⚫ Button :: Button / Button organism",
+                              "_compiler_note": "role=cancel effective_style=Outline — bypass PARTIAL \"button\", xem header file compiler",
+                              "specId": "sec_tb1__btn__tuy_chinh_cot",
+                              "props": {
+                                "Style": "Outline Round",
+                                "Size": "md",
+                                "Type": "Grey",
+                                "State": "Default",
+                                "iconLeft#17:0": false,
+                                "iconRight#17:5": false
+                              },
+                              "overrides": {
+                                "Button": "Tuỳ chỉnh cột"
+                              }
+                            },
+                            {
+                              "type": "INSTANCE",
+                              "component": "⚫ Button :: Button / Button organism",
+                              "_compiler_note": "role=cancel effective_style=Outline — bypass PARTIAL \"button\", xem header file compiler",
+                              "specId": "sec_tb1__btn__xuat_du_lieu",
+                              "props": {
+                                "Style": "Outline Round",
+                                "Size": "md",
+                                "Type": "Grey",
+                                "State": "Default",
+                                "iconLeft#17:0": false,
+                                "iconRight#17:5": false
+                              },
+                              "overrides": {
+                                "Button": "Xuất dữ liệu"
+                              }
+                            },
+                            {
+                              "type": "INSTANCE",
+                              "component": "⚫ Button :: Button / Button organism",
+                              "_compiler_note": "role=secondary effective_style=Fill — bypass PARTIAL \"button\", xem header file compiler",
+                              "specId": "sec_tb1__btn__duyet_hang_loat",
+                              "props": {
+                                "Style": "Fill Round",
+                                "Size": "md",
+                                "Type": "Secondary",
+                                "State": "Disable",
+                                "iconLeft#17:0": false,
+                                "iconRight#17:5": false
+                              },
+                              "overrides": {
+                                "Button": "Duyệt hàng loạt"
+                              }
+                            }
+                          ],
+                          "align": "CENTER"
+                        }
+                      ],
+                      "justify": "SPACE_BETWEEN",
+                      "align": "CENTER",
+                      "fillContainer": true,
+                      "specId": "sec_tb1"
+                    },
+                    {
+                      "type": "FRAME",
+                      "name": "Status tabs (placeholder — chưa dùng INSTANCE Tabs thật, xem header file compiler)",
+                      "layout": "HORIZONTAL",
+                      "gap": 24,
+                      "children": [
+                        {
+                          "type": "TEXT",
+                          "content": "Tất cả",
+                          "fontSize": 14,
+                          "fontWeight": "Regular"
+                        },
+                        {
+                          "type": "TEXT",
+                          "content": "Chờ duyệt",
+                          "fontSize": 14,
+                          "fontWeight": "SemiBold"
+                        },
+                        {
+                          "type": "TEXT",
+                          "content": "Đã duyệt",
+                          "fontSize": 14,
+                          "fontWeight": "Regular"
+                        },
+                        {
+                          "type": "TEXT",
+                          "content": "Từ chối",
+                          "fontSize": 14,
+                          "fontWeight": "Regular"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "PARTIAL",
+                      "use": "table",
+                      "name": "Bảng chi phí phát sinh",
+                      "columns": [
+                        {
+                          "label": "Khách hàng",
+                          "width": 190,
+                          "type": "text",
+                          "align": "Left"
+                        },
+                        {
+                          "label": "Loại điểm",
+                          "width": 160,
+                          "type": "text",
+                          "align": "Left"
+                        },
+                        {
+                          "label": "Trạng thái",
+                          "width": 130,
+                          "type": "badge",
+                          "align": "Center"
+                        },
+                        {
+                          "label": "Loại chi phí",
+                          "width": 140,
+                          "type": "text",
+                          "align": "Left"
+                        },
+                        {
+                          "label": "Người chi trả",
+                          "width": 130,
+                          "type": "text",
+                          "align": "Left"
+                        },
+                        {
+                          "label": "Tài xế",
+                          "width": 160,
+                          "type": "text",
+                          "align": "Left"
+                        },
+                        {
+                          "label": "Số tiền ghi nhận",
+                          "width": 150,
+                          "type": "text",
+                          "align": "Left"
+                        },
+                        {
+                          "label": "Số tiền đã duyệt",
+                          "width": 150,
+                          "type": "text",
+                          "align": "Left"
+                        },
+                        {
+                          "label": "Người chi trả đã duyệt",
+                          "width": 170,
+                          "type": "text",
+                          "align": "Left"
+                        },
+                        {
+                          "label": "Kho vận tải",
+                          "width": 190,
+                          "type": "text",
+                          "align": "Left"
+                        },
+                        {
+                          "label": "Thao tác",
+                          "width": 130,
+                          "type": "actions",
+                          "align": "Left"
+                        }
+                      ],
+                      "rows": [
+                        [
+                          [
+                            "Công ty CP Wilmar CLV",
+                            "Mã chuyến: FTL02931"
+                          ],
+                          [
+                            "Kho Bình Dương",
+                            "Điểm lấy"
+                          ],
+                          {
+                            "badge": "Chờ duyệt",
+                            "color": "Grey"
+                          },
+                          "Phí bốc xếp",
+                          "Khách hàng",
+                          [
+                            "Nguyễn Văn Bình",
+                            "NV00231"
+                          ],
+                          "350.000 ₫",
+                          "-",
+                          "-",
+                          "KVT01 - Kho Bình Dương",
+                          {
+                            "buttons": [
+                              {
+                                "label": "Phê duyệt",
+                                "variant": "outline",
+                                "size": "xs"
+                              }
+                            ]
+                          }
+                        ],
+                        [
+                          [
+                            "Công ty TNHH Thức Ăn CJ",
+                            "Mã chuyến: FTL02988"
+                          ],
+                          [
+                            "Kho Long An",
+                            "Điểm giao"
+                          ],
+                          {
+                            "badge": "Đã duyệt",
+                            "color": "Success"
+                          },
+                          "Phí cầu đường",
+                          "GHN",
+                          [
+                            "Trần Thị Mai",
+                            "NV00456"
+                          ],
+                          "120.000 ₫",
+                          "120.000 ₫",
+                          "GHN",
+                          "KVT02 - Kho Long An",
+                          {
+                            "buttons": [
+                              {
+                                "label": "Phê duyệt",
+                                "variant": "outline",
+                                "size": "xs"
+                              }
+                            ],
+                            "_note": "conditional_disable: status != Chờ duyệt (chưa mô hình hoá state disabled trong cell actions ở MVP này)"
+                          }
+                        ],
+                        [
+                          [
+                            "Công ty CP Sữa TH",
+                            "Mã chuyến: FTL03012"
+                          ],
+                          [
+                            "Kho Củ Chi",
+                            "Điểm lấy"
+                          ],
+                          {
+                            "badge": "Từ chối",
+                            "color": "Destructive"
+                          },
+                          "Phí lưu kho",
+                          "Khách hàng",
+                          [
+                            "Lê Văn Hùng",
+                            "NV00789"
+                          ],
+                          "500.000 ₫",
+                          "-",
+                          "-",
+                          "KVT03 - Kho Củ Chi",
+                          {
+                            "buttons": [
+                              {
+                                "label": "Phê duyệt",
+                                "variant": "outline",
+                                "size": "xs"
+                              }
+                            ],
+                            "_note": "conditional_disable: status != Chờ duyệt (chưa mô hình hoá state disabled trong cell actions ở MVP này)"
+                          }
+                        ]
+                      ],
+                      "overrideNode": {
+                        "specId": "sec_tc1"
+                      }
+                    }
+                  ],
+                  "cornerRadius": 12,
+                  "fills": [
+                    {
+                      "type": "SOLID",
+                      "color": {
+                        "r": 1,
+                        "g": 1,
+                        "b": 1
+                      }
+                    }
+                  ],
+                  "strokes": [
+                    {
+                      "type": "SOLID",
+                      "color": {
+                        "r": 0.8314,
+                        "g": 0.8314,
+                        "b": 0.8471
+                      }
+                    }
+                  ],
+                  "strokeWeight": 1,
+                  "padding": [
+                    16,
+                    16,
+                    16,
+                    16
+                  ],
+                  "fillContainer": true
+                }
+              ],
+              "padding": [
+                16,
+                24,
+                16,
+                24
+              ],
+              "fillContainer": true
+            }
+          ],
+          "width": 1428,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.9569,
+                "g": 0.9569,
+                "b": 0.9608
+              }
+            }
+          ]
+        }
+      ],
+      "width": 1728,
+      "specId": "scr_a1"
+    },
+    {
+      "type": "FRAME",
+      "name": "Phê duyệt chi phí — Duyệt đơn lẻ",
+      "layout": "VERTICAL",
+      "gap": 20,
+      "children": [
+        {
+          "type": "TEXT",
+          "content": "Phê duyệt chi phí — Duyệt đơn lẻ",
+          "fontSize": 18,
+          "fontWeight": "Bold"
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Khách hàng",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Khách hàng",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Mã chuyến",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Mã chuyến",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Loại điểm",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Loại điểm",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: [Tên loại chi phí]: số tiền ghi nhận",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "[Tên loại chi phí]: số tiền ghi nhận",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Người chi trả",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Người chi trả",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Hình ảnh",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Hình ảnh",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "INSTANCE",
+          "component": "⚫ Input :: Input / Input organism",
+          "_compiler_note": "INSTANCE Input organism thật (xác nhận live Figma 2026-09-07, xem phase1-compiler-notes.md Mục 10) — thay placeholder FRAME cũ",
+          "props": {
+            "Size": "md",
+            "Type": "Default",
+            "Destructive": "False",
+            "State": "Default"
+          },
+          "hideLayers": [
+            "Mandatory",
+            "Conditions"
+          ],
+          "overrides": {
+            "Text input > Label > Text input container > Text input > Label": "Nhập số tiền được duyệt (VNĐ) *",
+            "Text input > Input / Input filed type (Base) > Input / Input text type (Base) > Text": ""
+          },
+          "fillContainer": true
+        },
+        {
+          "type": "INSTANCE",
+          "component": "↳ Select :: Select",
+          "_compiler_note": "INSTANCE Select thật, component_set '↳ Select :: Select' (xác nhận live Figma 2026-09-07, xem phase1-compiler-notes.md Mục 10) — thay placeholder FRAME cũ. Trạng thái ĐÓNG, chưa vẽ menu mở.",
+          "props": {
+            "Size": "sm",
+            "Type": "Default",
+            "Destructive": "False",
+            "State": "Default"
+          },
+          "hideLayers": [
+            "Mandatory"
+          ],
+          "overrides": {
+            "Input / Input label (Base) > topWrapper > Container > Label": "Người chi trả *",
+            "Combobox > Content > Text": "Chọn..."
+          },
+          "fillContainer": true
+        },
+        {
+          "type": "INSTANCE",
+          "component": "⚫ Textarea :: Textarea / Textarea organism",
+          "_compiler_note": "INSTANCE Textarea organism thật (xác nhận live Figma 2026-09-07, xem phase1-compiler-notes.md Mục 10) — thay placeholder FRAME cũ",
+          "props": {
+            "State": "Default"
+          },
+          "hideLayers": [
+            "Mandatory",
+            "Textarea / Textarea helper text (Base)"
+          ],
+          "overrides": {
+            "Frame 48096428 > Textarea / Textarea label (Base) > topWrapper > Container > Label": "Lý do",
+            "Frame 48096428 > Textarea / Textarea body (Base) > Text": "Nhập lý do duyệt"
+          },
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Footer",
+          "layout": "HORIZONTAL",
+          "gap": 12,
+          "children": [
+            {
+              "type": "INSTANCE",
+              "component": "⚫ Button :: Button / Button organism",
+              "_compiler_note": "role=cancel effective_style=Outline — bypass PARTIAL \"button\", xem header file compiler",
+              "specId": "scr_ap1__btn__ong",
+              "props": {
+                "Style": "Outline Round",
+                "Size": "md",
+                "Type": "Grey",
+                "State": "Default",
+                "iconLeft#17:0": false,
+                "iconRight#17:5": false
+              },
+              "overrides": {
+                "Button": "Đóng"
+              }
+            },
+            {
+              "type": "INSTANCE",
+              "component": "⚫ Button :: Button / Button organism",
+              "_compiler_note": "role=primary effective_style=Fill — bypass PARTIAL \"button\", xem header file compiler",
+              "specId": "scr_ap1__btn__duyet",
+              "props": {
+                "Style": "Fill Round",
+                "Size": "md",
+                "Type": "Primary",
+                "State": "Default",
+                "iconLeft#17:0": false,
+                "iconRight#17:5": false
+              },
+              "overrides": {
+                "Button": "Duyệt"
+              }
+            }
+          ],
+          "justify": "MAX",
+          "padding": [
+            16,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "cornerRadius": 12,
+      "fills": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1
+          }
+        }
+      ],
+      "strokes": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 0.8314,
+            "g": 0.8314,
+            "b": 0.8471
+          }
+        }
+      ],
+      "strokeWeight": 1,
+      "padding": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "fillContainer": true,
+      "width": 560,
+      "specId": "scr_ap1"
+    },
+    {
+      "type": "FRAME",
+      "name": "Phê duyệt chi phí — Từ chối đơn lẻ",
+      "layout": "VERTICAL",
+      "gap": 20,
+      "children": [
+        {
+          "type": "TEXT",
+          "content": "Phê duyệt chi phí — Từ chối đơn lẻ",
+          "fontSize": 18,
+          "fontWeight": "Bold"
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Khách hàng",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Khách hàng",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Mã chuyến",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Mã chuyến",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Loại điểm",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Loại điểm",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: [Tên loại chi phí]: số tiền ghi nhận",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "[Tên loại chi phí]: số tiền ghi nhận",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Người chi trả",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Người chi trả",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Hình ảnh",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Hình ảnh",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "INSTANCE",
+          "component": "⚫ Textarea :: Textarea / Textarea organism",
+          "_compiler_note": "INSTANCE Textarea organism thật (xác nhận live Figma 2026-09-07, xem phase1-compiler-notes.md Mục 10) — thay placeholder FRAME cũ",
+          "props": {
+            "State": "Default"
+          },
+          "hideLayers": [
+            "Mandatory",
+            "Textarea / Textarea helper text (Base)"
+          ],
+          "overrides": {
+            "Frame 48096428 > Textarea / Textarea label (Base) > topWrapper > Container > Label": "Lý do *",
+            "Frame 48096428 > Textarea / Textarea body (Base) > Text": "Nhập lý do từ chối"
+          },
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Footer",
+          "layout": "HORIZONTAL",
+          "gap": 12,
+          "children": [
+            {
+              "type": "INSTANCE",
+              "component": "⚫ Button :: Button / Button organism",
+              "_compiler_note": "role=cancel effective_style=Outline — bypass PARTIAL \"button\", xem header file compiler",
+              "specId": "scr_rj1__btn__ong",
+              "props": {
+                "Style": "Outline Round",
+                "Size": "md",
+                "Type": "Grey",
+                "State": "Default",
+                "iconLeft#17:0": false,
+                "iconRight#17:5": false
+              },
+              "overrides": {
+                "Button": "Đóng"
+              }
+            },
+            {
+              "type": "INSTANCE",
+              "component": "⚫ Button :: Button / Button organism",
+              "_compiler_note": "role=destructive effective_style=Fill — bypass PARTIAL \"button\", xem header file compiler",
+              "specId": "scr_rj1__btn__tu_choi",
+              "props": {
+                "Style": "Fill Round",
+                "Size": "md",
+                "Type": "Destructive",
+                "State": "Default",
+                "iconLeft#17:0": false,
+                "iconRight#17:5": false
+              },
+              "overrides": {
+                "Button": "Từ chối"
+              }
+            }
+          ],
+          "justify": "MAX",
+          "padding": [
+            16,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "cornerRadius": 12,
+      "fills": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1
+          }
+        }
+      ],
+      "strokes": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 0.8314,
+            "g": 0.8314,
+            "b": 0.8471
+          }
+        }
+      ],
+      "strokeWeight": 1,
+      "padding": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "fillContainer": true,
+      "width": 560,
+      "specId": "scr_rj1"
+    },
+    {
+      "type": "FRAME",
+      "name": "Duyệt hàng loạt",
+      "layout": "VERTICAL",
+      "gap": 20,
+      "children": [
+        {
+          "type": "TEXT",
+          "content": "Duyệt 3 chi phí",
+          "fontSize": 18,
+          "fontWeight": "Bold"
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Tổng tiền",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Tổng tiền",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Danh sách (placeholder 2 dòng mock)",
+          "layout": "VERTICAL",
+          "gap": 6,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "1. Khách hàng · Mã chuyến · Loại điểm · số tiền ghi nhận · Người chi trả — (dữ liệu mock)",
+              "fontSize": 13
+            },
+            {
+              "type": "TEXT",
+              "content": "2. Khách hàng · Mã chuyến · Loại điểm · số tiền ghi nhận · Người chi trả — (dữ liệu mock)",
+              "fontSize": 13
+            }
+          ]
+        },
+        {
+          "type": "INSTANCE",
+          "component": "⚫ Textarea :: Textarea / Textarea organism",
+          "_compiler_note": "INSTANCE Textarea organism thật (xác nhận live Figma 2026-09-07, xem phase1-compiler-notes.md Mục 10) — thay placeholder FRAME cũ",
+          "props": {
+            "State": "Default"
+          },
+          "hideLayers": [
+            "Mandatory",
+            "Textarea / Textarea helper text (Base)"
+          ],
+          "overrides": {
+            "Frame 48096428 > Textarea / Textarea label (Base) > topWrapper > Container > Label": "Lý do",
+            "Frame 48096428 > Textarea / Textarea body (Base) > Text": "Nhập lý do duyệt"
+          },
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Footer",
+          "layout": "HORIZONTAL",
+          "gap": 12,
+          "children": [
+            {
+              "type": "INSTANCE",
+              "component": "⚫ Button :: Button / Button organism",
+              "_compiler_note": "role=cancel effective_style=Outline — bypass PARTIAL \"button\", xem header file compiler",
+              "specId": "scr_apb__btn__ong",
+              "props": {
+                "Style": "Outline Round",
+                "Size": "md",
+                "Type": "Grey",
+                "State": "Default",
+                "iconLeft#17:0": false,
+                "iconRight#17:5": false
+              },
+              "overrides": {
+                "Button": "Đóng"
+              }
+            },
+            {
+              "type": "INSTANCE",
+              "component": "⚫ Button :: Button / Button organism",
+              "_compiler_note": "role=primary effective_style=Fill — bypass PARTIAL \"button\", xem header file compiler",
+              "specId": "scr_apb__btn__duyet",
+              "props": {
+                "Style": "Fill Round",
+                "Size": "md",
+                "Type": "Primary",
+                "State": "Default",
+                "iconLeft#17:0": false,
+                "iconRight#17:5": false
+              },
+              "overrides": {
+                "Button": "Duyệt"
+              }
+            }
+          ],
+          "justify": "MAX",
+          "padding": [
+            16,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "cornerRadius": 12,
+      "fills": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1
+          }
+        }
+      ],
+      "strokes": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 0.8314,
+            "g": 0.8314,
+            "b": 0.8471
+          }
+        }
+      ],
+      "strokeWeight": 1,
+      "padding": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "fillContainer": true,
+      "width": 560,
+      "specId": "scr_apb"
+    },
+    {
+      "type": "FRAME",
+      "name": "Từ chối hàng loạt",
+      "layout": "VERTICAL",
+      "gap": 20,
+      "children": [
+        {
+          "type": "TEXT",
+          "content": "Từ chối duyệt 3 chi phí",
+          "fontSize": 18,
+          "fontWeight": "Bold"
+        },
+        {
+          "type": "FRAME",
+          "name": "Field: Tổng tiền",
+          "layout": "HORIZONTAL",
+          "gap": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "Tổng tiền",
+              "fontSize": 13,
+              "fontWeight": "SemiBold"
+            },
+            {
+              "type": "TEXT",
+              "content": "(dữ liệu dòng đã chọn — placeholder)",
+              "fontSize": 13
+            }
+          ],
+          "justify": "SPACE_BETWEEN",
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Danh sách (placeholder 2 dòng mock)",
+          "layout": "VERTICAL",
+          "gap": 6,
+          "children": [
+            {
+              "type": "TEXT",
+              "content": "1. Khách hàng · Mã chuyến · Loại điểm · số tiền ghi nhận · Người chi trả — (dữ liệu mock)",
+              "fontSize": 13
+            },
+            {
+              "type": "TEXT",
+              "content": "2. Khách hàng · Mã chuyến · Loại điểm · số tiền ghi nhận · Người chi trả — (dữ liệu mock)",
+              "fontSize": 13
+            }
+          ]
+        },
+        {
+          "type": "INSTANCE",
+          "component": "⚫ Textarea :: Textarea / Textarea organism",
+          "_compiler_note": "INSTANCE Textarea organism thật (xác nhận live Figma 2026-09-07, xem phase1-compiler-notes.md Mục 10) — thay placeholder FRAME cũ",
+          "props": {
+            "State": "Default"
+          },
+          "hideLayers": [
+            "Mandatory",
+            "Textarea / Textarea helper text (Base)"
+          ],
+          "overrides": {
+            "Frame 48096428 > Textarea / Textarea label (Base) > topWrapper > Container > Label": "Lý do *",
+            "Frame 48096428 > Textarea / Textarea body (Base) > Text": "Nhập lý do từ chối"
+          },
+          "fillContainer": true
+        },
+        {
+          "type": "FRAME",
+          "name": "Footer",
+          "layout": "HORIZONTAL",
+          "gap": 12,
+          "children": [
+            {
+              "type": "INSTANCE",
+              "component": "⚫ Button :: Button / Button organism",
+              "_compiler_note": "role=cancel effective_style=Outline — bypass PARTIAL \"button\", xem header file compiler",
+              "specId": "scr_rjb__btn__ong",
+              "props": {
+                "Style": "Outline Round",
+                "Size": "md",
+                "Type": "Grey",
+                "State": "Default",
+                "iconLeft#17:0": false,
+                "iconRight#17:5": false
+              },
+              "overrides": {
+                "Button": "Đóng"
+              }
+            },
+            {
+              "type": "INSTANCE",
+              "component": "⚫ Button :: Button / Button organism",
+              "_compiler_note": "role=destructive effective_style=Fill — bypass PARTIAL \"button\", xem header file compiler",
+              "specId": "scr_rjb__btn__tu_choi",
+              "props": {
+                "Style": "Fill Round",
+                "Size": "md",
+                "Type": "Destructive",
+                "State": "Default",
+                "iconLeft#17:0": false,
+                "iconRight#17:5": false
+              },
+              "overrides": {
+                "Button": "Từ chối"
+              }
+            }
+          ],
+          "justify": "MAX",
+          "padding": [
+            16,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "cornerRadius": 12,
+      "fills": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1
+          }
+        }
+      ],
+      "strokes": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 0.8314,
+            "g": 0.8314,
+            "b": 0.8471
+          }
+        }
+      ],
+      "strokeWeight": 1,
+      "padding": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "fillContainer": true,
+      "width": 560,
+      "specId": "scr_rjb"
+    }
+  ],
+  "transitions": [
+    {
+      "from": 0,
+      "to": 1,
+      "trigger": "Bấm \"Phê duyệt\" > \"Duyệt\""
+    },
+    {
+      "from": 0,
+      "to": 2,
+      "trigger": "Bấm \"Phê duyệt\" > \"Từ chối\""
+    },
+    {
+      "from": 0,
+      "to": 3,
+      "trigger": "Bấm \"Duyệt\""
+    },
+    {
+      "from": 0,
+      "to": 4,
+      "trigger": "Bấm \"Từ chối\""
+    }
+  ]
+}

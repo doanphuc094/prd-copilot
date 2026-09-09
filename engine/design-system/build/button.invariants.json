@@ -1,0 +1,133 @@
+{
+  "component": "Button",
+  "invariants": [
+    {
+      "id": "AX-INV-03",
+      "layer": "core",
+      "rule": "Giá trị phải nằm trong tập vai đã khai. Cấm tự thêm vai thứ N+1.",
+      "check": "value in axis.roles",
+      "severity": "error",
+      "undisableable": false
+    },
+    {
+      "id": "AX-SHP-INV-01",
+      "layer": "core",
+      "rule": "Giá trị ngoại lệ chỉ xuất hiện ở node khớp ngữ cảnh đã khai.",
+      "check": "value == axis.exception implies matches(node, policy.<axis>_exception)",
+      "severity": "error",
+      "undisableable": false
+    },
+    {
+      "id": "AX-ICN-INV-01",
+      "layer": "core",
+      "rule": "Không bật cả 2 slot cùng lúc trên một instance.",
+      "check": "not (icon.leading != null and icon.trailing != null)",
+      "severity": "error",
+      "undisableable": false
+    },
+    {
+      "id": "AX-INV-01",
+      "layer": "core",
+      "rule": "Mỗi quyết định phải trích được đúng 1 rule id hợp lệ cho từng trục.",
+      "check": "every(node, n => n.rule_ids covers n.component.axes)",
+      "severity": "error",
+      "undisableable": true
+    },
+    {
+      "id": "AX-INV-02",
+      "layer": "core",
+      "rule": "Tầng spec không được khai state do runtime sinh.",
+      "check": "state not in axis.state.runtime_only",
+      "severity": "error",
+      "undisableable": false
+    },
+    {
+      "id": "A11Y-INV-01",
+      "layer": "core",
+      "rule": "Điều khiển không có chữ hiển thị BẮT BUỘC có tên thay thế (tooltip / accessible name).",
+      "check": "label == null implies (tooltip != null or accessibleName != null)",
+      "severity": "error",
+      "undisableable": true
+    },
+    {
+      "id": "ICTL-INV-02",
+      "layer": "kind:interactive_control",
+      "rule": "Không 2 điều khiển ở mức nhấn rank1 nằm liền kề nhau trong cùng container",
+      "check": "no_adjacent(controls, emphasis == rank1)",
+      "severity": "error",
+      "undisableable": false
+    },
+    {
+      "id": "ICTL-INV-14",
+      "layer": "kind:interactive_control",
+      "rule": "Trên con trỏ thô, mọi điều khiển phải đạt sàn cảm ứng",
+      "check": "pointer == 'coarse' implies\n  resolve_physical(size) >= (has_visible_label\n                             ? profile.policy.touch.floor_px\n                             : profile.policy.touch.floor_px_icon_only)\n",
+      "severity": "error",
+      "undisableable": true
+    },
+    {
+      "id": "ICTL-INV-15",
+      "layer": "kind:interactive_control",
+      "rule": "Trên con trỏ thô, một khu vực không nên chứa nhiều bước size khác nhau",
+      "check": "pointer == 'coarse' implies distinct(region.controls.size).length <= 1",
+      "severity": "warning",
+      "undisableable": false
+    },
+    {
+      "id": "ATRG-INV-01",
+      "layer": "kind:action_trigger",
+      "rule": "Hành động ở vai phá huỷ phải nhận diện được từ tài liệu nghiệp vụ, không phải từ nhãn chữ.\n",
+      "check": "role == intent.destructive implies rule_evidence.type != null",
+      "severity": "error",
+      "undisableable": false
+    },
+    {
+      "id": "CMP-DLG-01",
+      "layer": "composition",
+      "rule": "Hành động ở vai phá huỷ BẮT BUỘC có bước xác nhận trong cùng luồng.",
+      "check": "role == intent.destructive implies exists(ConfirmStep in flow)",
+      "severity": "error",
+      "undisableable": true
+    },
+    {
+      "id": "CMP-FTR-01",
+      "layer": "composition",
+      "rule": "Mỗi thanh hành động chân form có ĐÚNG 1 điều khiển ở mức nhấn cao nhất.",
+      "check": "count(footerActionBar.controls[emphasis == rank1]) == 1",
+      "severity": "error",
+      "undisableable": false
+    },
+    {
+      "id": "CMP-FTR-03",
+      "layer": "composition",
+      "rule": "Thanh hành động chân form không được chứa điều khiển ở mức nhấn thấp nhất.",
+      "check": "footerActionBar.controls all emphasis != rank_lowest",
+      "severity": "error",
+      "undisableable": false
+    },
+    {
+      "id": "CMP-HDR-01",
+      "layer": "composition",
+      "rule": "Header chi tiết không chứa hành động nào ngoài điều khiển điều hướng về.",
+      "check": "detailHeader.controls.length <= 1",
+      "severity": "error",
+      "undisableable": false
+    },
+    {
+      "id": "CMP-ROW-INV-01",
+      "layer": "composition",
+      "rule": "Điều khiển trong container lặp thuộc bộ chuẩn → mức nhấn giữa. KHÔNG thuộc bộ chuẩn → không có mức nhấn cố định, nhưng BẮT BUỘC đã chạy qua đánh giá mức ưu tiên.\n",
+      "check": "isStandardRowAction == true  implies emphasis == emphasis.scale[1]; isStandardRowAction == false implies (rule_ids.intent != null and rule_ids.emphasis != null)\n",
+      "severity": "error",
+      "undisableable": false
+    },
+    {
+      "id": "CMP-ROW-INV-02",
+      "layer": "composition",
+      "rule": "Ô thao tác vượt ngưỡng policy BẮT BUỘC gom vào 1 điều khiển menu",
+      "check": "count(actionCell.actions) > profile.policy.row_action_inline_max\n  implies (count(actionCell.visibleControls) == 1\n           and actionCell.visibleControls[0].icon == 'icon-only')\n",
+      "severity": "error",
+      "undisableable": false
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+# =============================================================================
+# _shared.binding.yaml — GIÁ TRỊ DS DÙNG CHUNG MỌI COMPONENT (lớp C)
+#
+# Mọi component đều nạp file này. Thứ gì Toast/Dialog/Input cũng dùng lại y
+# nguyên thì nằm ở đây; thứ riêng của một component nằm ở <component>.binding.yaml
+#
+# Bằng chứng cần file này: bản v1 nhét breakpoints + icon_names + bẫy của Badge
+# vào ds-binding của Button, tức là Toast sẽ phải đọc binding của Button để lấy
+# tên icon. Đo được: 43% nội dung ds-binding v1 thuộc loại dùng chung.
+#
+# design_system: GHN DS
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  design_system: GHN DS
+  ds_file_key: zECOR8UK45lmZcpMG9aOR7
+  layer: ds-binding-shared
+  version: 2.0-draft
+  created: "2026-09-08"
+  library_filter_warning: >
+    Mọi tra cứu sống qua công cụ DS PHẢI lọc libraryName === "GHN DS". File
+    keymap có nhiều library trùng tên component (bản test, Freight, QLNS/QLNL)
+    — tra sai library sẽ ra component ảo.
+
+# -----------------------------------------------------------------------------
+# BREAKPOINTS — cấp file, không thuộc component nào
+# -----------------------------------------------------------------------------
+breakpoints:
+  values:
+    sm:  640
+    md:  768
+    lg:  1024
+    xl:  1280
+    2xl: 1536
+  unit: px
+  source: "[FIGMA] collection 'Breakpoints', 5 biến, đọc 08/09"
+  scale_note: "Trùng đúng scale mặc định của Tailwind CSS."
+  name_collision_warning:
+    severity: cao
+    problem: >
+      Nhiều component có thang size cũng dùng tên sm/md/lg/xl. Nên "md" có thể
+      là bước size HOẶC breakpoint tuỳ ngữ cảnh.
+    mitigation: >
+      Luôn viết đủ tiền tố khi trích: `binding.size.md` và
+      `binding.breakpoints.md`. KHÔNG bao giờ viết "md" trơ trong file rule.
+
+# -----------------------------------------------------------------------------
+# BỘ ICON — cấp file
+# -----------------------------------------------------------------------------
+icon_set:
+  name: "Font Awesome 6 Pro"
+  full_catalog_size: "~3000+ icon (bộ Pro đầy đủ)"
+  confirmed_page: "Icons (Use fontawesome 6 Pro) — nodeId 12:2"
+  confirmed_page_note: >
+    Trang này là icon ĐÃ dùng trong sản phẩm (~36 icon, mỗi cái có bản regular
+    + solid), KHÔNG phải toàn bộ kho. Icon ngoài danh sách vẫn dùng được nhưng
+    CHƯA xác nhận đã import.
+  confirmed_icons:
+    [eye, eye-slash, home, bell, user-hair, lock, medal, gear, camera,
+     arrow-left-long, arrow-right-long, arrow-up-long, arrow-down-long,
+     chevron-left, chevron-right, chevron-up, chevron-down,
+     arrow-right-from-bracket, arrow-progress, arrows-rotate, arrow-up-arrow-down,
+     clock, clock-rotate-left, filter-list, trash, pen, route, truck-fast,
+     bullhorn, circle-info, grip-dots, grip-dots-vertical, file-arrow-up,
+     money-check-dollar, magnifying-glass-dollar, hexagon-exclamation,
+     screwdriver-wrench]
+  source: "[FIGMA] đọc metadata trang 12:2 ngày 07/09"
+
+# Khoá = `action` trong kinds/action_trigger.rules.yaml § icon_meaning_vocabulary
+icon_names:
+  "Quay lại / điều hướng về trước":  {name: arrow-left-long,      status: "[FIGMA]"}
+  "Thêm mới / tạo mới":              {name: plus,                 status: "[XÁC NHẬN — Williams 07/09, chờ import]"}
+  "Xoá":                             {name: trash,                status: "[FIGMA]"}
+  "Sửa / chỉnh sửa":                 {name: pen,                  status: "[FIGMA]"}
+  "Xuất dữ liệu ra file":            {name: arrow-down-to-line,   status: "[XÁC NHẬN — Williams 07/09]"}
+  "Tải mẫu về":                      {name: download,             status: "[XÁC NHẬN — Williams 07/09, chờ import]"}
+  "Tải lên / nhập file":             {name: file-arrow-up,        status: "[FIGMA]"}
+  "In":                              {name: print,                status: "[XÁC NHẬN — Williams 07/09, chờ import]"}
+  "Sao chép":                        {name: copy,                 status: "[XÁC NHẬN — Williams 07/09, chờ import]"}
+  "Bộ lọc":                          {name: filter-list,          status: "[FIGMA]"}
+  "Làm mới danh sách":               {name: arrows-rotate,        status: "[FIGMA]"}
+  "Gửi đi để XIN DUYỆT":             {name: stamp,                status: "[XÁC NHẬN — Williams 07/09]"}
+  "Duyệt / chấp nhận":               {name: check,                status: "[XÁC NHẬN — Williams 07/09, chờ import]"}
+  "Từ chối / đóng":                  {name: xmark,                status: "[XÁC NHẬN — Williams 07/09, chờ import]"}
+  "Gom nhiều hành động vào menu":    {name: ellipsis,             status: "[XÁC NHẬN — Williams 07/09]"}
+  "Mở rộng / xem thêm":              {name: chevron-down,         status: "[FIGMA]"}
+  "Thu gọn":                         {name: chevron-up,           status: "[FIGMA]"}
+  "Cài đặt":                         {name: gear,                 status: "[FIGMA]"}
+  "Gửi thông thường (chưa dùng)":    {name: paper-plane,          status: "[ĐỀ XUẤT — chưa có ví dụ thật, KHÔNG dùng]"}
+
+new_icon_process:
+  marker: "[GIỚI HẠN THẬT]"
+  rule: >
+    Hành động chưa có trong icon_names → agent đề xuất 1-3 tên, nhưng PHẢI có
+    người mở plugin bộ icon trong công cụ thiết kế xác nhận tên tồn tại +
+    import trước khi renderer dùng thật.
+  why: >
+    Đã thử tự động hoá và thất bại thật: fetch trang search của bộ icon không
+    được (web app JS); công cụ tra design system chỉ tìm được component/style
+    đã publish, không tìm được icon instance lẻ.
+  source: "[XÁC NHẬN — Williams 07/09]"
+
+# -----------------------------------------------------------------------------
+# QUIRK CẤP FILE — ảnh hưởng MỌI component
+# -----------------------------------------------------------------------------
+file_level_quirks:
+  no_responsive_dimension_mode:
+    marker: "[GIỚI HẠN THẬT]"
+    finding: >
+      Collection 'Dimensions' chỉ có 1 mode ("Mode 1") và KHÔNG có biến nào
+      tên button/height/target/tap/touch.
+    source: "[FIGMA] đọc 08/09"
+    consequence: >
+      DS KHÔNG có cơ chế đổi kích thước theo thiết bị qua variable mode. Mọi
+      sàn/ngưỡng theo thiết bị PHẢI do compiler áp khi chọn variant — không
+      đẩy xuống cho công cụ thiết kế tự giải được.
+    affects_every_component_with: ordered_scale_physical
+    implication_for_handoff: >
+      Bản thiết kế phải có frame riêng cho breakpoint hẹp; không có cách nào
+      để 1 frame tự đổi kích thước theo khung nhìn.
+
+  color_modes_exist:
+    finding: "Collection 'Color Mode' có 2 mode: Light / Dark"
+    source: "[FIGMA] đọc 08/09"
+    status: >
+      CHƯA khảo sát ảnh hưởng tới luật. Ghi lại vì component nào bind màu sẽ
+      cần biết — hiện chưa có luật nào phụ thuộc.
+
+# -----------------------------------------------------------------------------
+# BẪY LIÊN COMPONENT — đã trả giá thật, giữ để không tái phạm
+# Đây là chỗ mà bản v1 phải nhét vào binding của Button vì không có nhà.
+# -----------------------------------------------------------------------------
+cross_component_traps:
+  badge_color_alias:
+    component: Badge
+    trap: >
+      Property 'Color' của Badge nhận Grey / Success / Error — KHÔNG có variant
+      tên 'Destructive'. Dùng 'Destructive' làm setProperties() thất bại TOÀN
+      BỘ (all-or-nothing), badge rơi về label mặc định.
+    source: "[FIGMA] phát hiện khi render thật, xem phase1-compiler-notes.md"
+    class_of_error: "Tên semantic không trùng chuỗi DS — đúng loại lỗi lớp binding tồn tại để hấp thụ"
+
+  setproperties_is_all_or_nothing:
+    trap: >
+      Một property sai tên làm TOÀN BỘ lệnh setProperties thất bại, không phải
+      chỉ property đó. Node rơi về giá trị mặc định của component.
+    consequence: >
+      Không được coi "render không báo lỗi" là bằng chứng đúng — phải đọc lại
+      property THẬT sau khi render [_core.discipline.validator_is_not_proof].
+
+# -----------------------------------------------------------------------------
+# CHỖ DÀNH CHO NỘI DUNG semantic.json — BƯỚC 3, CHƯA LÀM
+# -----------------------------------------------------------------------------
+_pending_migration:
+  from: "claude/agentic-ds-drafts/semantic.json"
+  status: "CHƯA DI CHUYỂN — chờ Williams chốt ở bước 3"
+  why_it_belongs_here: >
+    Nội dung trong semantic.json (badge color, surface.table_header,
+    text_style.diff_view, spacing.density) phần lớn là DỮ KIỆN DS DÙNG CHUNG —
+    đúng đích của file này.
+  risk_if_not_done: >
+    Để nguyên thì tồn tại 2 chỗ chứa cùng loại dữ liệu, với 2 cấu trúc khác
+    nhau. Đây đúng vấn đề đã xảy ra một lần: câu trả lời phân biệt vai
+    alternate/no_path đã chốt trong bộ luật nhưng semantic.json vẫn ghi là TODO.
+  items_to_move: [badge, surface, text_style, spacing.density]
+  items_to_drop:
+    - "button.* — đã được thay bằng ds/button.binding.yaml + policy + rules"
+    - "role name 'cancel' — Williams chốt 08/09 dùng từ vựng Type, xem decisions.md 08/09-B"

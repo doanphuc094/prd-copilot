@@ -1,0 +1,246 @@
+# =============================================================================
+# manifest.yaml — SỔ ĐĂNG KÝ
+#
+# File này là chỗ DUY NHẤT khai: component nào thuộc loại nào, luật nằm ở file
+# nào, giá trị nằm ở file nào. Compiler VÀ agent đều tra ở đây — không dựa vào
+# thứ tự đọc viết bằng văn xuôi (thứ đó drift, đã xảy ra với semantic.json).
+#
+# Thêm component mới = thêm 1 mục vào `components` + 1 file binding. KHÔNG viết
+# luật, trừ khi component đó có suy luận thật sự độc quyền.
+#
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  version: 2.0-draft
+  created: "2026-09-08"
+  company: GHN
+  active_profile: profile.ghn
+  status: "[ĐỀ XUẤT — chờ Williams review]"
+
+# -----------------------------------------------------------------------------
+# LỚP LUẬT — thứ tự gộp. Sau đè lên trước khi CÙNG rule id (compiler báo lỗi
+# nếu 2 kind đè nhau — xem guardrails.conflict_is_error).
+# -----------------------------------------------------------------------------
+rule_layers:
+  - id: core
+    file: rules/_core.rules.yaml
+    always: true
+    provides: [axis_kinds, discipline, universal_a11y, touch_input, contracts]
+  - id: kinds
+    dir: rules/kinds
+    selected_by: "components.<name>.kinds"
+  - id: component
+    dir: rules/components
+    selected_by: "components.<name> (tuỳ chọn — thường rỗng)"
+  - id: composition
+    file: rules/_composition.rules.yaml
+    always: true
+    provides: "luật liên component — chỉ nạp phần dính tới component đang compile"
+
+# -----------------------------------------------------------------------------
+# KIỂU TRỤC — định nghĩa ở rules/_core.rules.yaml § axis_kinds
+# Component khai trục của mình thuộc kiểu nào; luật cấu trúc theo kiểu tự áp.
+# -----------------------------------------------------------------------------
+axis_kinds_available:
+  - ordered_scale
+  - ordered_scale_physical
+  - closed_role_set
+  - default_plus_exception
+  - icon_slots
+  - enum
+  - scalar_physical
+
+# -----------------------------------------------------------------------------
+# LOẠI COMPONENT
+# Lằn ranh #1: một kind phải có >= 3 thành viên thật mới được tồn tại.
+# `members_planned` là để compiler cảnh báo khi kind chưa đủ thành viên.
+# -----------------------------------------------------------------------------
+component_kinds:
+  interactive_control:
+    file: rules/kinds/interactive_control.rules.yaml
+    about: "Mọi thứ người dùng bấm/kéo/bật được"
+    members_active: [Button]
+    members_planned: [Chip, Switch, Slider, Checkbox, Radio]
+    requires_axes: [emphasis, size, state]
+
+  action_trigger:
+    file: rules/kinds/action_trigger.rules.yaml
+    about: "Thứ khi kích hoạt thì THỰC THI một hành động nghiệp vụ"
+    members_active: [Button]
+    members_planned: [MenuItem, RowAction, LinkButton]
+    requires_axes: [intent]
+
+  overlay:
+    file: rules/kinds/overlay.rules.yaml
+    about: "Nổi lên trên nội dung, chiếm focus"
+    members_active: []
+    members_planned: [Dialog, AlertDialog, BottomSheet, Popover, ContextMenu]
+    status: "CHƯA VIẾT — viết khi thêm Dialog"
+
+  feedback_transient:
+    file: rules/kinds/feedback_transient.rules.yaml
+    about: "Xuất hiện rồi tự biến mất"
+    members_active: []
+    members_planned: [Toast, Alert]
+    status: "CHƯA VIẾT — viết khi thêm Toast"
+
+  form_input:
+    file: rules/kinds/form_input.rules.yaml
+    about: "Nhận dữ liệu người dùng nhập"
+    members_active: []
+    members_planned: [Input, Textarea, Select, Combobox, Datepicker]
+    status: "CHƯA VIẾT"
+
+# -----------------------------------------------------------------------------
+# COMPONENT
+# -----------------------------------------------------------------------------
+components:
+  Button:
+    kinds: [interactive_control, action_trigger]
+    rules: rules/components/button.rules.yaml     # gần rỗng — xem file
+    binding: profile.ghn/ds/button.binding.yaml
+    policy_scope: button
+    examples: examples/button.examples.yaml
+    axes:
+      intent:    {kind: closed_role_set}
+      emphasis:  {kind: ordered_scale}
+      shape:     {kind: default_plus_exception}
+      size:      {kind: ordered_scale_physical, unit: px}
+      state:     {kind: closed_role_set}
+      icon:      {kind: icon_slots}
+
+# -----------------------------------------------------------------------------
+# GIÁ TRỊ DÙNG CHUNG — mọi component đều nạp
+# -----------------------------------------------------------------------------
+shared_binding: profile.ghn/ds/_shared.binding.yaml
+policy: profile.ghn/policy.yaml
+decisions: profile.ghn/decisions.md
+
+# -----------------------------------------------------------------------------
+# ĐẦU RA COMPILER
+# -----------------------------------------------------------------------------
+build:
+  dir: build
+  resolved: "build/<component>.resolved.yaml"       # agent đọc ĐÚNG file này
+  invariants: "build/<component>.invariants.json"   # hàm chấm máy chạy được
+  strip_fields:
+    reason: "Field chỉ phục vụ người bảo trì — agent không cần để quyết định"
+    keys: [source, quote, rationale, correction_of, why_deprecated, superseded_by,
+           replaces, absorbs, resolves_open_question, correction_note, retired_ids,
+           marker, status, migration_note, leak_direction_note, real_consequence,
+           threshold_compliance, measured_nodes, measured_variant_filter,
+           measured_on, superseded_naming, layer_contract, profile_contract,
+           provenance, component_kind_contract, members_planned, members_active]
+  keep_fields:
+    reason: "Giữ lại vì LLM cần lý lẽ để áp luật đúng, không chỉ cần lệnh"
+    keys: [why, note, test, definition, counter_examples, examples, guard, warning]
+
+  # Lớp GIÁ TRỊ bị strip mạnh tay hơn lớp luật: agent cần biết giá trị LÀ GÌ,
+  # không cần biết ai quyết nó, khi nào, và trước đó sai thế nào. Phần đó ở
+  # decisions.md. Vẫn giữ lại field mang tính VẬN HÀNH (bẫy đặt tên, điều kiện
+  # escalate, status của mục chưa quyết) vì thiếu chúng agent sẽ làm sai thật.
+  strip_fields_values:
+    keys: [used_by, notable, icon_only_width_note, threshold_compliance,
+           finding, problem, real_consequence, handled_by, leak_direction_note,
+           risk_noted, vocabulary_decision, superseded, superseded_naming,
+           options, tradeoff, recommendation, _pending_migration,
+           risk_if_not_done, items_to_move, items_to_drop, why_it_belongs_here,
+           accepted_because, known_mismatch, from_threshold, modelling_note,
+           reopen_condition, cross_component_note, important_cross_component_note,
+           renderer_note, scale_note, class_of_error, verified_by,
+           correction_note, full_variant_at, why_no_path, measured_nodes,
+           measured_variant_filter, measured_on, legacy_id, confirmed_page_note,
+           full_catalog_size, decision, why]
+  keep_fields_values:
+    reason: "Field vận hành — thiếu là agent làm sai thật, không phải chỉ mất ngữ cảnh"
+    keys: [status, semantics, naming_trap, trap, consequence, marker,
+           real_condition, escalate_when, matching_note, blocking,
+           still_requires_confirm_step, escalate_to_destructive_when,
+           name_collision_warning, mitigation, library_filter_warning,
+           confirmed_icons, meaning, exception_full_spec, rule]
+
+# -----------------------------------------------------------------------------
+# BẢN ĐỒ ID CŨ → MỚI
+#
+# Vì sao cần: rule id cũ đang được trích ở nhiều nơi NGOÀI bộ luật —
+# comment trong compile-v1-to-render-dsl.js, phase1-compiler-notes.md Mục 12,
+# decisions.md, và field rule_ids trong spec.json đã sinh. Đổi tên mà không có
+# bản đồ này là làm chết im lặng mọi tham chiếu đó.
+#
+# Compiler nhận CẢ HAI tên. Alias không bao giờ bị xoá.
+# -----------------------------------------------------------------------------
+rule_id_aliases:
+  BTN-T-01:      ATRG-T-01
+  BTN-T-02:      ATRG-T-02
+  BTN-T-03:      ATRG-T-03
+  BTN-T-04:      ATRG-T-04
+  BTN-E-01:      ICTL-E-01
+  BTN-E-02:      ICTL-E-02
+  BTN-E-02-a:    CMP-ROW-01
+  BTN-E-02-b:    CMP-ROW-02
+  BTN-E-03:      ICTL-E-03
+  BTN-E-03-a:    CMP-ROW-02        # luật cũ đã BỎ — trỏ tới luật thay thế
+  BTN-E-03-b:    CMP-CNT-01
+  BTN-E-03-c:    ICTL-E-03-c
+  BTN-S-01:      AX-SHP-01
+  BTN-S-02:      AX-SHP-02
+  BTN-Z-01:      ICTL-Z-01
+  BTN-Z-02:      ICTL-Z-01         # mapping cũ → đã dời vào policy.size_by_position
+  BTN-Z-03:      ICTL-Z-01         # mapping cũ → đã dời vào policy.size_by_position
+  BTN-Z-04:      ICTL-Z-02
+  BTN-Z-05:      ICTL-Z-05
+  BTN-Z-06:      ICTL-Z-06
+  BTN-Z-07:      ICTL-Z-07
+  BTN-Z-08:      ICTL-Z-08
+  BTN-ST-01:     ICTL-ST-01
+  BTN-ST-02:     ICTL-ST-02
+  BTN-IC-01:     ICTL-IC-01
+  BTN-IC-02:     ICTL-IC-02
+  BTN-IC-03:     ICTL-IC-03
+  BTN-IC-04:     ICTL-IC-04
+  BTN-INV-1:     CMP-FTR-01
+  BTN-INV-2:     ICTL-INV-02
+  BTN-INV-3:     CMP-FTR-02
+  BTN-INV-4:     CMP-HDR-01
+  BTN-INV-5:     AX-SHP-INV-01
+  BTN-INV-5b:    A11Y-INV-01
+  BTN-INV-6:     CMP-DLG-01
+  BTN-INV-7:     AX-INV-01
+  BTN-INV-8:     AX-INV-02
+  BTN-INV-9:     AX-INV-03
+  BTN-INV-10:    CMP-ROW-INV-01
+  BTN-INV-11:    CMP-FTR-03
+  BTN-INV-12:    AX-ICN-INV-01
+  BTN-INV-13:    CMP-ROW-INV-02
+  BTN-INV-14:    ICTL-INV-14
+  BTN-INV-15:    ICTL-INV-15
+  BTN-ANOMALY-2: "binding:button.quirks.merged_style"
+  BTN-ANOMALY-3: "binding:button.quirks.status_color_types"
+
+# -----------------------------------------------------------------------------
+# 5 LẰN RANH CHỐNG LẠM DỤNG — compiler kiểm, không phải lời khuyên
+# -----------------------------------------------------------------------------
+guardrails:
+  kind_needs_3_members:
+    rule: "Một kind phải có >= 3 thành viên (active + planned) mới hợp lệ"
+    severity: warning
+    why: "Kind cho 1 component là luật component đội lốt"
+  flat_kinds_only:
+    rule: "Kind KHÔNG được khai kind cha. Component khai một TẬP kind."
+    severity: error
+    why: "Cây thừa kế là lúc bắt đầu debug thừa kế thay vì debug thiết kế"
+  conflict_is_error:
+    rule: "Hai kind cùng khai một rule id với nội dung khác nhau → LỖI CỨNG"
+    severity: error
+    why: "Xung đột nghĩa là mô hình sai, phải hiện ra chứ không im lặng chọn bên"
+  component_file_stays_small:
+    rule: "File luật riêng của component > 5 rule → cảnh báo: kind sai"
+    severity: warning
+    why: "File component phình lên là dấu hiệu kind chưa đúng. Sửa kind, đừng nuôi file component."
+  kinds_are_behavioural:
+    rule: >
+      KHÔNG tạo component_kind vì lý do cấu trúc (vd 'component có 2 slot icon').
+      Cấu trúc thuộc axis_kind; component_kind chỉ nói về HÀNH VI.
+    severity: manual
+    why: "Trộn 2 thứ là cách kiến trúc này mục"

@@ -1,0 +1,386 @@
+{
+  "spec_version": "1.0",
+  "feature": "Quản lý chi phí phát sinh",
+  "_source": "Screen description scratchpad 06-quan-ly-chi-phi-phat-sinh.md — PRD FT-3336 + FT-3439, đối chiếu Figma B2B-PORTAL (s2NE6ikwLnsZSUp97RBfof, node 17583:166696)",
+  "global": {
+    "platform": "web",
+    "system": "portal_b2b",
+    "permission_model": {
+      "type": "entity_scoped",
+      "scoped_by": "Kho vận tải (qua ID nhân viên GSVT phụ trách kho đó)"
+    },
+    "button_color_semantics": {
+      "primary": { "color": "Cam", "default_style": "Fill" },
+      "secondary": { "color": "Xanh dương", "default_style": "Outline", "style_override_allowed": ["Fill"] },
+      "destructive": { "color": "Đỏ", "default_style": "Fill" },
+      "cancel": { "color": "Grey", "default_style": "Outline" },
+      "confirmed": true,
+      "_note": "CHỐT 2026-09-05 (Williams): KHÔNG cần role thứ 5 — 'Duyệt hàng loạt' (Fill xanh dương) vẫn là role secondary (màu xanh dương), chỉ đổi style từ Outline (mặc định, vd 'Tuỳ chỉnh cột'/'Xuất dữ liệu') sang Fill (override, dùng khi cần trọng lượng thị giác ngang primary nhưng khác phạm vi tác động). Mỗi role giờ tách 2 phần: color (cố định theo role) + default_style (đổi được qua style_override_allowed)."
+    },
+    "badge_color_semantics": {
+      "grey": "chưa xử lý / trung tính / không đủ quan trọng để nổi bật",
+      "green": "đã xử lý tích cực / đang hoạt động",
+      "red": "CHỈ khi thực sự quan trọng, cần người dùng chú ý — không gán máy móc theo từ ngữ tích cực/tiêu cực",
+      "confirmed": true,
+      "render_style": "TẤT CẢ 3 màu (grey/green/red) đều hiện dạng PILL có nền (bo tròn, có background), chỉ khác tông màu nền/chữ — KHÔNG có ngoại lệ 'grey = text thường không nền'.",
+      "_note": "CHỐT 2026-09-05 (Williams), thêm từ ví dụ ngoài #06: 'giờ cấm tải' có 2 state (có/không giờ cấm tải) nhưng state 'không có' vẫn là grey (không đỏ) vì không đủ quan trọng để cảnh báo — đỏ chỉ dùng khi cái cần theo dõi genuinely important (vd bao nhiêu siêu thị inactive). Áp dụng cho màn #06: Trạng thái Chờ duyệt=grey, Đã duyệt=green, Từ chối=red (đúng vì từ chối là outcome cần GSVT/tài xế chú ý) — đã compliant, không cần sửa.",
+      "_note_render_style_fixed_2026-09-06": "[ĐẢO NGƯỢC, Williams xác nhận qua ảnh #06] Bản ghi trước đây (áp dụng vào prototype #06) hiểu SAI thành 'grey = text thường, không cần pill có nền' — Williams xác nhận lại: badge 'Chờ duyệt' (grey) trong ảnh thật VẪN LÀ PILL có nền xám nhạt, y hệt cấu trúc pill của Đã duyệt/Từ chối, chỉ khác tông màu. Đã sửa lại prototype #06 (bỏ override status-table-plain)."
+    },
+    "validate_timing": "on_submit",
+    "usage_scenario": "Vận hành nội bộ B2B — GSVT xem/lọc/xuất và duyệt hoặc từ chối chi phí phát sinh do tài xế nhập từ App Truck, thao tác theo đợt, mục tiêu giảm ≥70% thời gian xử lý so với quy trình Excel thủ công cũ."
+  },
+  "screens": {
+    "scr_a1": {
+      "order": 1,
+      "name": "Chi phí phát sinh",
+      "screen_type": "mixed",
+      "module": "Quản lí chi phí FTL",
+      "page_header": {
+        "is_top_level": true,
+        "title_format": "plain",
+        "breadcrumb": ["Quản lí chi phí FTL", "Chi phí phát sinh"],
+        "primary_action": null
+      },
+      "context_6dim": {
+        "what": "Trang 'Chi phí phát sinh' (/b2b/ftl-cost/incidental-costs) cho GSVT xem danh sách chi phí phát sinh do tài xế nhập từ App Truck, lọc/tìm/xuất Excel, xem ảnh chứng từ, và duyệt/từ chối từng chi phí hoặc hàng loạt (FT-3439 Phase 2).",
+        "why": "Thay quy trình thủ công (tải Excel xử lý 2 lần/tháng) bằng duyệt trực tiếp trên Portal, giảm ≥70% thời gian xử lý; cho C&B/FIN/PnL cơ sở chính xác để chi trả và ghi nhận ngân sách.",
+        "who": "Giám sát vận tải (GSVT) — phân quyền entity_scoped theo Kho vận tải + ID nhân viên (chỉ thấy/thao tác dòng thuộc kho mình phụ trách).",
+        "how": "Vào Portal > Quản lí chi phí FTL > Chi phí phát sinh, mặc định tab 'Chờ duyệt'. Duyệt/Từ chối từng dòng qua nút Phê duyệt + chevron, hoặc chọn nhiều dòng Chờ duyệt để xử lý hàng loạt qua bulk_action_bar.",
+        "edges": "Bulk action khoá sửa số tiền/người chi trả; race-condition khi xử lý hàng loạt → bỏ qua dòng đã bị xử lý trước, báo toast x/n; trạng thái chỉ chuyển 1 chiều Chờ duyệt → Đã duyệt|Từ chối, không revert.",
+        "history": "FT-3336 (Phase 1, xem/lọc/xuất, 25/06/2026) → FT-3439 (Phase 2, duyệt/từ chối, 22/07/2026), nối tiếp FT-3267 (App Truck nhập chi phí)."
+      },
+      "sections": {
+        "sec_tb1": {
+          "order": 1,
+          "type": "toolbar_standard",
+          "left": [
+            { "control": "filter_button", "label": "Bộ lọc", "opens_section": "sec_fp1" },
+            { "control": "search", "placeholder": "Tìm kiếm theo mã đơn, mã chuyến hoặc tên tài xế" }
+          ],
+          "right_actions": [
+            { "label": "Tuỳ chỉnh cột", "button_role": "cancel", "opens_section": "sec_cv1" },
+            { "label": "Xuất dữ liệu", "button_role": "cancel" },
+            {
+              "label": "Duyệt hàng loạt",
+              "button_role": "secondary",
+              "style_override": "Fill",
+              "default_state": "disabled",
+              "disabled_tooltip": "Tích chọn ít nhất 1 chi phí ở cột đầu bảng để xử lý hàng loạt",
+              "enabled_when": "row_selection.count >= 1, chỉ trong tab đã lọc đúng 1 status actionable (Chờ duyệt)"
+            }
+          ],
+          "_note_gap": "toolbar_standard gốc mô tả '1 nút chính phải' (schema v1 Mục 3) — màn này có 3 phần tử phải, dùng right_actions[] thay vì 1 field đơn để khớp thực tế. Xem finding cuối file."
+        },
+        "sec_fp1": {
+          "order": 2,
+          "type": "filter_panel",
+          "fields": [
+            { "label": "Ngày tạo", "required": false, "input_type": "date_range", "display_format": "DD/MM/YYYY - DD/MM/YYYY" },
+            { "label": "Khách hàng", "required": false, "input_type": "select" },
+            { "label": "Loại chi phí", "required": false, "input_type": "select" },
+            { "label": "Kho vận tải", "required": false, "input_type": "select", "default": "Tất cả" }
+          ],
+          "footer": {
+            "has_reset": true,
+            "buttons": [
+              { "label": "Đặt lại", "button_role": "secondary" },
+              { "label": "Huỷ", "button_role": "cancel" },
+              { "label": "Áp dụng", "button_role": "primary" }
+            ]
+          },
+          "_note": "Field list lấy từ ảnh Figma thật (verify 2026-09-05), KHÔNG dùng list PRD gốc (PRD từng ghi thêm Trạng thái + Mã chuyến, cả 2 đều không có trong Figma). Không lặp field Trạng thái ở đây vì đã có status_filter_tabs ở sec_tc1."
+        },
+        "sec_cv1": {
+          "order": 3,
+          "type": "column_visibility_panel",
+          "controls": "sec_tc1.optional_columns",
+          "select_all_toggle": true,
+          "columns": [
+            { "label": "Mã đơn hàng", "default_visible": false },
+            { "label": "Nhà cung cấp", "default_visible": false },
+            { "label": "Ghi chú", "default_visible": false },
+            { "label": "Cập nhật lúc", "default_visible": false }
+          ],
+          "footer": {
+            "has_reset": true,
+            "buttons": [
+              { "label": "Đặt lại", "button_role": "secondary" },
+              { "label": "Huỷ", "button_role": "cancel" },
+              { "label": "Áp dụng", "button_role": "primary" }
+            ]
+          },
+          "_note_fixed_2026-09-05": "ĐÃ SỬA (Williams, đóng finding cũ): panel này TRƯỚC ghi nhầm 'Người chi trả'/'Tài xế' làm 2 cột tuỳ chọn — 2 cột đó thực ra là cột chính CỐ ĐỊNH trong sec_tc1.columns, panel này KHÔNG điều khiển được, lỗi do AI đoán bịa lúc viết 06-quan-ly-chi-phi-phat-sinh.md ở phiên trước. Panel giờ chỉ chứa đúng 4 cột optional thật, tất cả default_visible=false (bảng mặc định ẩn 4 cột này để đỡ dài, đúng theo mô tả gốc)."
+        },
+        "sec_tc1": {
+          "order": 4,
+          "type": "table_card",
+          "selection_column": true,
+          "pin_columns": ["Khách hàng", "Loại điểm"],
+          "columns": [
+            { "label": "Khách hàng", "display_type": "text_bold_badge_below", "chip_color": "grey_neutral", "_note": "tên KH bold + 1 chip 'Mã chuyến: [mã]' — gần với text_bold_badge_below nhưng là chip đơn, không phải badge trạng thái. [ĐÃ SỬA 2026-09-06, Williams xác nhận qua ảnh thiết kế thật]: chip này PHẢI màu XÁM trung tính (nền xám nhạt, chữ xám đậm — cùng token với badge grey của badge_color_semantics), KHÔNG dùng màu xanh dương của 'Điểm giao' như bản trước lỡ gán nhầm (2 chip khác ý nghĩa, không nên trùng màu). Xem finding cuối file." },
+            { "label": "Loại điểm", "display_type": "text_bold_badge_below", "_note": "địa điểm bold + badge nhỏ bên dưới (Điểm lấy cam / Điểm giao xanh dương) — khớp đúng display_type này." },
+            { "label": "Trạng thái", "display_type": "badge" },
+            { "label": "Loại chi phí", "display_type": "text" },
+            { "label": "Người chi trả", "display_type": "text" },
+            { "label": "Tài xế", "display_type": "multi_line", "_note": "Họ tên (bold) + ID nhân viên bên dưới" },
+            { "label": "Số tiền ghi nhận", "display_type": "multi_line", "_note": "số tiền + nút [Xem ảnh] ngay dưới — thực ra là text+button, không phải 2 dòng text thuần. Xem finding cuối file.", "opens_component": "image_lightbox", "_note_lightbox": "nút [Xem ảnh] mở component dùng lại image_lightbox (xem catalog Mục 4a schema-v1-draft.md + role-to-component-mapping.md) — 7 field: file_name (bắt buộc), status_badge (optional), count_label (optional, chỉ hiện khi nhiều ảnh), download_button (optional/tuỳ feature), close_button (bắt buộc), image (bắt buộc), pagination (optional, chỉ hiện khi nhiều ảnh). CÒN MỞ: số lượng ảnh/dòng thật (1 hay nhiều) và có cho tải hay không CHƯA xác nhận riêng cho màn #06 — cần hỏi lại Williams khi build thật." },
+            { "label": "Số tiền đã duyệt", "display_type": "text", "_note": "'-' nếu Chờ duyệt hoặc Từ chối; giá trị GSVT xác nhận nếu Đã duyệt" },
+            { "label": "Người chi trả đã duyệt", "display_type": "text", "_note": "'-' nếu chưa xử lý" },
+            { "label": "Kho vận tải", "display_type": "id_name", "_note": "format '[Code] - [Tên]'" },
+            { "label": "Thao tác", "display_type": "button" }
+          ],
+          "status_filter_tabs": {
+            "status_field": "Trạng thái",
+            "tabs": [
+              { "label": "Tất cả", "filter_value": "all" },
+              { "label": "Chờ duyệt", "filter_value": "cho_duyet" },
+              { "label": "Đã duyệt", "filter_value": "da_duyet" },
+              { "label": "Từ chối", "filter_value": "tu_choi" }
+            ],
+            "default_active": "cho_duyet"
+          },
+          "row_actions": [
+            {
+              "label": "Phê duyệt",
+              "variant": "chevron_menu",
+              "menu_items": [
+                { "label": "Duyệt", "opens_screen": "scr_ap1" },
+                { "label": "Từ chối", "opens_screen": "scr_rj1" }
+              ],
+              "conditional_disable": "status != Chờ duyệt",
+              "state_dependent_visibility": "chỉ áp dụng ở tab 'Tất cả' — disable (không ẩn) khi status != Chờ duyệt; ở các tab lọc đúng 1 status thì action luôn active vì dòng chỉ hiện khi còn actionable"
+            }
+          ],
+          "row_selection": {
+            "enabled": true,
+            "scope": "chỉ tab đã lọc đúng status actionable (Chờ duyệt) — không bật ở tab 'Tất cả'",
+            "select_all_scope": "checkbox 'Chọn tất cả' chỉ chọn các dòng Chờ duyệt đang hiện trên trang hiện tại"
+          },
+          "empty_state": {
+            "no_data_ever": "Chưa có chi phí phát sinh nào.",
+            "no_filter_match": "Không tìm thấy chi phí phù hợp với bộ lọc hiện tại."
+          },
+          "pagination": {
+            "enabled_when": "tổng số dòng đang hiển thị (sau lọc/tab/search) >= 10 dòng",
+            "_note": "CHỐT 2026-09-06 (Williams): pagination KHÔNG phải boolean bật/tắt cố định — dưới 10 dòng thì ẩn hẳn, không vẽ tĩnh cho có. Rule chung mọi table_card, không riêng #06. Dữ liệu mẫu #06 (6 dòng) sẽ luôn ẩn pagination ở mọi tab."
+          },
+          "optional_columns": [
+            { "label": "Mã đơn hàng", "display_type": "text", "default_visible": false },
+            { "label": "Nhà cung cấp", "display_type": "text", "default_visible": false },
+            { "label": "Ghi chú", "display_type": "text", "default_visible": false },
+            { "label": "Cập nhật lúc", "display_type": "text", "default_visible": false }
+          ],
+          "_note_optional_columns": "TRƯỜNG MỚI 2026-09-05 (Williams) — tách riêng khỏi columns[] ở trên. columns[] là 11 cột chính LUÔN hiện, KHÔNG bao giờ bị column_visibility_panel tắt được. optional_columns[] là các cột ẩn mặc định, chỉ hiện khi user tick trong sec_cv1 (column_visibility_panel) — panel đó điều khiển ĐÚNG và DUY NHẤT mảng này."
+        },
+        "sec_bulk1": {
+          "order": 5,
+          "type": "bulk_action_bar",
+          "visible_when": "row_selection.count >= 1",
+          "_note": "CHỐT 2026-09-05 (Williams): ngưỡng đúng là >= 1 dòng (khớp mục 2.2) — business rule AC1 ghi '≥2 dòng' là lỗi đánh máy trong tài liệu nguồn, không phải rule thật. Đã sửa.",
+          "banner": {
+            "style": "info (nền xanh dương nhạt, icon info)",
+            "text": "Duyệt hàng loạt sẽ không cho phép chỉnh sửa số tiền và người chi trả. Muốn chỉnh sửa, vui lòng duyệt từng chi phí."
+          },
+          "buttons": [
+            { "label": "Duyệt", "button_role": "primary", "opens_screen": "scr_apb" },
+            { "label": "Từ chối", "button_role": "destructive", "opens_screen": "scr_rjb" }
+          ]
+        }
+      }
+    },
+
+    "scr_ap1": {
+      "order": 2,
+      "name": "Phê duyệt chi phí — Duyệt đơn lẻ",
+      "screen_type": "modal",
+      "module": "Quản lí chi phí FTL",
+      "sections": {
+        "sec_ap1_ro": {
+          "order": 1,
+          "type": "form_section",
+          "style": "read_only_block",
+          "fields": [
+            { "label": "Khách hàng", "required": false, "input_type": "text", "readonly": true },
+            { "label": "Mã chuyến", "required": false, "input_type": "text", "readonly": true },
+            { "label": "Loại điểm", "required": false, "input_type": "text", "readonly": true },
+            { "label": "[Tên loại chi phí]: số tiền ghi nhận", "required": false, "input_type": "text", "readonly": true },
+            { "label": "Người chi trả", "required": false, "input_type": "text", "readonly": true },
+            { "label": "Hình ảnh", "required": false, "input_type": "attachment", "readonly": true, "display": "link [Xem hình ảnh]" }
+          ]
+        },
+        "sec_ap1_form": {
+          "order": 2,
+          "type": "form_section",
+          "fields": [
+            {
+              "label": "Nhập số tiền được duyệt (VNĐ)",
+              "required": true,
+              "input_type": "number",
+              "default_rule": "prefill = số tiền ghi nhận, cho sửa khác",
+              "error_message_empty": "Vui lòng nhập số tiền được duyệt",
+              "error_message_business_rule": "Vượt ngưỡng số tiền tối đa theo loại chi phí (ngưỡng cấu hình ở backend, không thể hiện ở spec)"
+            },
+            {
+              "label": "Người chi trả",
+              "required": true,
+              "input_type": "select",
+              "default_rule": "prefill = người chi trả gốc, cho đổi khác",
+              "error_message_empty": "Vui lòng chọn người chi trả"
+            },
+            {
+              "label": "Lý do",
+              "required": false,
+              "input_type": "textarea",
+              "placeholder": "Nhập lý do duyệt"
+            }
+          ]
+        }
+      },
+      "footer": {
+        "buttons": [
+          { "label": "Đóng", "button_role": "cancel" },
+          { "label": "Duyệt", "button_role": "primary" }
+        ]
+      }
+    },
+
+    "scr_rj1": {
+      "order": 3,
+      "name": "Phê duyệt chi phí — Từ chối đơn lẻ",
+      "screen_type": "modal",
+      "module": "Quản lí chi phí FTL",
+      "_note": "title modal DÙNG CHUNG 'Phê duyệt chi phí' — KHÔNG đổi thành 'Từ chối chi phí', dù đây là luồng từ chối.",
+      "sections": {
+        "sec_rj1_ro": {
+          "order": 1,
+          "type": "form_section",
+          "style": "read_only_block",
+          "fields": [
+            { "label": "Khách hàng", "required": false, "input_type": "text", "readonly": true },
+            { "label": "Mã chuyến", "required": false, "input_type": "text", "readonly": true },
+            { "label": "Loại điểm", "required": false, "input_type": "text", "readonly": true },
+            { "label": "[Tên loại chi phí]: số tiền ghi nhận", "required": false, "input_type": "text", "readonly": true },
+            { "label": "Người chi trả", "required": false, "input_type": "text", "readonly": true },
+            { "label": "Hình ảnh", "required": false, "input_type": "attachment", "readonly": true, "display": "link [Xem hình ảnh]" }
+          ]
+        },
+        "sec_rj1_form": {
+          "order": 2,
+          "type": "form_section",
+          "fields": [
+            {
+              "label": "Lý do",
+              "required": true,
+              "input_type": "textarea",
+              "placeholder": "Nhập lý do từ chối",
+              "error_message_empty": "Vui lòng nhập lý do từ chối",
+              "_note": "textarea tự do theo Figma thật — KHÔNG dùng dropdown/select như PRD FT-3439 AC4/AC5 từng gợi ý (danh sách lý do PO chưa hoàn thiện)."
+            }
+          ]
+        }
+      },
+      "footer": {
+        "buttons": [
+          { "label": "Đóng", "button_role": "cancel" },
+          { "label": "Từ chối", "button_role": "destructive" }
+        ]
+      }
+    },
+
+    "scr_apb": {
+      "order": 4,
+      "name": "Duyệt hàng loạt",
+      "screen_type": "modal",
+      "module": "Quản lí chi phí FTL",
+      "header_dynamic": "Duyệt {n} chi phí",
+      "sections": {
+        "sec_apb_sum": {
+          "order": 1,
+          "type": "form_section",
+          "style": "summary",
+          "fields": [
+            { "label": "Tổng tiền", "input_type": "text", "readonly": true }
+          ]
+        },
+        "sec_apb_list": {
+          "order": 2,
+          "type": "form_section",
+          "style": "numbered_list_readonly",
+          "numbered_list_readonly": true,
+          "row_fields": ["Khách hàng", "Mã chuyến", "Loại điểm", "số tiền ghi nhận", "Người chi trả"],
+          "excluded_vs_single_modal": ["Xem ảnh", "sửa số tiền", "sửa người chi trả"]
+        },
+        "sec_apb_form": {
+          "order": 3,
+          "type": "form_section",
+          "fields": [
+            { "label": "Lý do", "required": false, "input_type": "textarea", "placeholder": "Nhập lý do duyệt" }
+          ]
+        }
+      },
+      "confirm_copy": "Bạn đang duyệt N chi phí phát sinh. Số tiền được duyệt sẽ bằng số tiền tài xế đã nhập. Xác nhận?",
+      "footer": {
+        "buttons": [
+          { "label": "Đóng", "button_role": "cancel" },
+          { "label": "Duyệt", "button_role": "primary" }
+        ]
+      },
+      "partial_failure_toast": "Duyệt thành công <x/n> chi phí. <n-x> chi phí không thể duyệt do đã được xử lý trước đó."
+    },
+
+    "scr_rjb": {
+      "order": 5,
+      "name": "Từ chối hàng loạt",
+      "screen_type": "modal",
+      "module": "Quản lí chi phí FTL",
+      "header_dynamic": "Từ chối duyệt {n} chi phí",
+      "sections": {
+        "sec_rjb_sum": {
+          "order": 1,
+          "type": "form_section",
+          "style": "summary",
+          "fields": [
+            { "label": "Tổng tiền", "input_type": "text", "readonly": true }
+          ]
+        },
+        "sec_rjb_list": {
+          "order": 2,
+          "type": "form_section",
+          "style": "numbered_list_readonly",
+          "numbered_list_readonly": true,
+          "row_fields": ["Khách hàng", "Mã chuyến", "Loại điểm", "số tiền ghi nhận", "Người chi trả"]
+        },
+        "sec_rjb_form": {
+          "order": 3,
+          "type": "form_section",
+          "fields": [
+            { "label": "Lý do", "required": true, "input_type": "textarea", "placeholder": "Nhập lý do từ chối" }
+          ]
+        }
+      },
+      "footer": {
+        "buttons": [
+          { "label": "Đóng", "button_role": "cancel" },
+          { "label": "Từ chối", "button_role": "destructive" }
+        ]
+      },
+      "partial_failure_toast": "Từ chối thành công <x/n> chi phí. <n-x> chi phí không thể xử lý do đã được xử lý trước đó."
+    }
+  },
+
+  "_findings_khi_viet_spec_nay": [
+    "1. [ĐÃ CHỐT 2026-09-05, Williams] button_color_semantics KHÔNG cần role thứ 5 — nút Fill xanh dương vẫn là role 'secondary' (màu xanh dương), chỉ đổi style Outline→Fill. Đã sửa cấu trúc global.button_color_semantics thành {color, default_style, style_override_allowed} thay vì 1 string cố định style.",
+    "2. toolbar_standard (Mục 3) mô tả '[Bộ lọc][Search] trái, 1 nút chính phải' — màn #06 có 3 nút bên phải (Tuỳ chỉnh cột, Xuất dữ liệu, Duyệt hàng loạt). Đã dùng right_actions[] (mảng) thay vì 1 field đơn để mô tả đúng thực tế — nên sửa lại định nghĩa toolbar_standard trong schema-v1-draft.md cho khớp. [CÒN MỞ]",
+    "3. columns[].display_type: cột 'Khách hàng' (tên bold + đúng 1 chip thông tin cố định, KHÔNG phải badge trạng thái) và cột 'Số tiền ghi nhận' (số tiền + 1 NÚT [Xem ảnh] bấm được bên dưới, KHÔNG phải 2 dòng text) đều không có enum khớp gọn — 'chip_multi' ngụ ý nhiều chip có thể tràn (cần chip_overflow), ở đây LUÔN đúng 1 chip nên không có overflow; 'multi_line' ngụ ý 2 dòng đều là TEXT, ở đây dòng dưới là 1 nút bấm mở ảnh, khác hành vi hẳn. Đang tạm dùng enum gần đúng (text_bold_badge_below / multi_line) — nếu gặp lại pattern này ở feature khác thì tách enum mới (vd text_with_chip, text_with_button_below); nếu chỉ là ca lẻ thì giữ nguyên cách xấp xỉ. [CÒN MỞ — chờ gặp thêm ví dụ]",
+    "4. [ĐÃ CHỐT 2026-09-05, Williams] Ngưỡng hiện bulk_action_bar là >= 1 dòng (khớp mục 2.2) — business rule AC1 ghi '≥2 dòng' là lỗi đánh máy trong tài liệu nguồn, không phải rule thật. Đã sửa sec_bulk1.visible_when.",
+    "5. Một số field mức chi tiết modal (header_dynamic, confirm_copy, partial_failure_toast) chưa có chỗ chính thức trong catalog Mục 4 (modal/dialog) của schema v1 — tự thêm ad hoc khi viết spec này. Nên cân nhắc chính thức hoá thành field chuẩn nếu các modal khác cũng cần mô tả copy động/toast tương tự. [CÒN MỞ]",
+    "6. [ĐÃ CHỐT 2026-09-05, Williams] sec_cv1 (column_visibility_panel) TRƯỚC liệt kê nhầm 'Người chi trả'/'Tài xế' làm cột tuỳ chọn — lỗi bịa từ 06-quan-ly-chi-phi-phat-sinh.md phiên trước, phát hiện qua build prototype HTML chứ không phải đọc JSON. Đã sửa: thêm field mới table_card.optional_columns[] tách bạch khỏi columns[] chính, sec_cv1 chỉ còn đúng 4 cột optional thật, tất cả default_visible=false.",
+    "7. [ĐÃ CHỐT 2026-09-05, Williams] Thêm global.badge_color_semantics (grey/green/red rule + case ngoại lệ 'giờ cấm tải') — màn #06 đã compliant sẵn, không cần sửa badge nào.",
+    "8. [CÒN MỞ] Thêm image_lightbox vào catalog Mục 4a (schema-v1-draft.md) cho nút [Xem ảnh] ở cột 'Số tiền ghi nhận' — cấu trúc 7 field đã chốt, nhưng riêng cho màn #06 CHƯA xác nhận: (a) mỗi dòng có 1 hay nhiều ảnh, (b) có cho tải ảnh hay không. Cần hỏi Williams khi build thật, hiện spec chỉ tham chiếu component dùng lại chứ chưa điền cứng số liệu.",
+    "9. [ĐÃ CHỐT 2026-09-06, Williams] sec_tc1.pagination KHÔNG phải boolean cố định — chỉ hiện khi số dòng đang hiển thị (sau lọc/tab/search) >= 10 dòng. Rule CHUNG mọi table_card trong hệ thống, không riêng #06. Đã sửa field pagination từ 'true' thành object {enabled_when}.",
+    "10. [ĐÃ CHỐT 2026-09-06, Williams] Header bảng: SỬA LẦN 2 — bản sửa lần 1 (2026-09-05) đổi nền TRẮNG là chưa đủ, Williams gửi ảnh xác nhận lại: nền phải là XÁM NHẠT #fafafa + CÓ viền dọc (stroke) phân chia rõ các cột (cả header lẫn dòng dữ liệu). Rule chung mọi table_card, đã sửa prototype #06 và #01 khớp nhau.",
+    "11. [ĐÃ CHỐT 2026-09-06, Williams] Chip 'Mã chuyến: [mã]' ở cột Khách hàng: bản trước lỡ dùng màu XANH DƯƠNG (trùng token với badge 'Điểm giao') — SAI, phải là màu XÁM TRUNG TÍNH (cùng token với badge_color_semantics.grey). 2 chip khác ý nghĩa (1 cái là loại điểm, 1 cái là mã tham chiếu) không nên trùng màu.",
+    "12. [ĐÃ CHỐT 2026-09-06, Williams — ĐẢO NGƯỢC rule cũ] badge_color_semantics.grey: bản trước hiểu 'grey = text thường, không cần pill có nền' — SAI. Williams xác nhận lại qua ảnh #06: badge 'Chờ duyệt' (grey) VẪN LÀ PILL có nền xám nhạt, cấu trúc giống hệt Đã duyệt/Từ chối, chỉ khác tông màu. Đã thêm field global.badge_color_semantics.render_style làm rõ, đã sửa prototype (bỏ override status-table-plain khiến Chờ duyệt hiện thành text trần).",
+    "13. [ĐÃ CHỐT 2026-09-07, Williams — ĐẢO NGƯỢC role đã gán] 'Tuỳ chỉnh cột' và 'Xuất dữ liệu' (sec_tb1.right_actions) TRƯỚC gán button_role='secondary' (Outline+xanh dương, xem finding CHỐT 2026-09-05 ở global.button_color_semantics._note) — Williams xem ảnh render thật (Figma MCP test) và xác nhận SAI, cả 2 nút này phải là màu GREY. Đã sửa: đổi button_role sang 'cancel' cho cả 2 nút (khớp nhóm với 'Bộ lọc', cũng cancel/grey — cả 3 đều là nút tiện ích phụ trong toolbar, không phải hành động có tác động dữ liệu). 'Duyệt hàng loạt' KHÔNG đổi, vẫn giữ role secondary + style_override Fill (đây là hành động bulk thật có tác động dữ liệu, khác nhóm với 2 nút kia) — Williams không nhắc tới nút này khi sửa. Hệ quả: sau lần sửa này, role 'secondary' TẠM THỜI không còn ví dụ render thật nào ở default_style Outline (chỉ còn ví dụ Fill qua 'Duyệt hàng loạt') — xem cập nhật semantic.json/phase1-compiler-notes.md cùng ngày."
+  ]
+}

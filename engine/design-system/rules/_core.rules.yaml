@@ -1,0 +1,406 @@
+# =============================================================================
+# _core.rules.yaml — THƯ VIỆN KIỂU TRỤC + KỶ LUẬT (portable)
+#
+# File này KHÔNG thuộc về công ty nào và KHÔNG thuộc về component nào.
+# Đổi công ty, đổi design system — file này giữ nguyên.
+#
+# ĐIỀU KIỆN ĐỂ MỘT PHÁT BIỂU ĐƯỢC NẰM Ở ĐÂY:
+#   Nói được mà không gọi tên giá trị cụ thể nào, VÀ đúng cho nhiều loại
+#   component. "Thang có thứ tự thì tham chiếu bằng vị trí, không bằng tên"
+#   là luật ở đây. "Tối đa 1 nút Fill mỗi khu vực" thì không — nó vừa gọi
+#   tên giá trị, vừa chỉ đúng cho control bấm được (→ kinds/).
+#
+# KHÔNG ĐƯỢC XUẤT HIỆN: componentKey · chuỗi variant · số px của một thang
+# cụ thể · tên icon · ngưỡng do công ty chọn · tên công ty · trục của một
+# component cụ thể.
+#   NGOẠI LỆ DUY NHẤT: ngưỡng có nguồn gốc VẬT LÝ hoặc CHUẨN QUỐC TẾ
+#   (§ touch_input) — không phải quyết định của công ty nào.
+#
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  layer: core
+  portable: true
+  version: 2.0-draft
+  created: "2026-09-08"
+  supersedes: "_core.rules.yaml v1.0 — v1 chứa 6 trục của Button, sai lớp"
+
+# -----------------------------------------------------------------------------
+# 1. HỢP ĐỒNG PHÂN LỚP
+# -----------------------------------------------------------------------------
+layer_contract:
+  content_kinds:
+    A_universal:
+      lives_in: "rules/_core.rules.yaml · rules/kinds/* · rules/_composition.rules.yaml · rules/components/*"
+      changes_when: "Gần như không bao giờ — chỉ khi hiểu biết UX/a11y thay đổi"
+      test: "Ở công ty khác, phát biểu này vẫn đúng không? Có → thuộc lớp A."
+    B_policy:
+      lives_in: "profile.<công ty>/policy.yaml"
+      changes_when: "Đổi công ty, hoặc công ty đổi ý"
+      test: "Ở công ty khác, quyết ngược lại có hợp lý không? Có → lớp B."
+    C_ds_values:
+      lives_in: "profile.<công ty>/ds/_shared.binding.yaml · ds/<component>.binding.yaml"
+      changes_when: "DS ra bản mới — kể cả khi KHÔNG đổi công ty"
+    D_provenance:
+      lives_in: "profile.<công ty>/decisions.md"
+      changes_when: "Mỗi quyết định mới — chỉ THÊM, không sửa mục cũ"
+      warning: >
+        Lớp này chứa đáp án SAI theo thiết kế (luật đã bỏ, lần sửa mình). Nó
+        KHÔNG được đưa vào tập huấn luyện, và không nằm trong bản compile.
+
+  rule_ownership:
+    principle: "Luật gắn vào LOẠI. Giá trị gắn vào COMPONENT."
+    two_axes_of_reuse:
+      axis_kind: "Sinh luật CẤU TRÚC — giá trị nào hợp lệ, resolve thế nào, ràng buộc đơn vị"
+      component_kind: "Sinh luật HÀNH VI/UX — cạnh tranh sự chú ý, focus, thời lượng"
+    place_at_highest_true_level: >
+      Đặt luật ở tầng CAO NHẤT mà nó còn đúng. Nếu một luật đúng cho mọi
+      control bấm được, nó thuộc kinds/interactive_control, KHÔNG thuộc
+      components/button — kể cả khi hiện chỉ có Button dùng.
+
+  resolution_order:
+    - "1. rules/ → biết PHẢI QUYẾT GÌ và theo tiêu chí nào"
+    - "2. policy.yaml → quyết định của công ty này"
+    - "3. ds/*.binding.yaml → đổi vai thành chuỗi/số mà DS hiểu"
+    - "4. Chỉ ở bước 3 mới được sinh giá trị đưa vào spec"
+  conflict_rule: >
+    policy nói ngược rules/ → rules/ thắng về tiêu chí, nhưng phải ghi
+    decisions.md và báo người. Xung đột giữa 2 lớp gần như luôn là dấu hiệu
+    một phát biểu bị đặt sai lớp.
+
+# -----------------------------------------------------------------------------
+# 2. THƯ VIỆN KIỂU TRỤC
+#
+# Component khai trục của mình thuộc kiểu nào (ở manifest.yaml § components).
+# Luật trong mục này TỰ ÁP theo kiểu — không component nào phải viết lại.
+# -----------------------------------------------------------------------------
+axis_kinds:
+
+  ordered_scale:
+    about: "Thang có thứ tự, mang mức độ. Vị trí trong thang là thông tin."
+    profile_must_provide: [scale, rank1, rank_lowest]
+    rules:
+      - id: AX-ORD-01
+        rule: >
+          Luật tham chiếu thang bằng VỊ TRÍ (rank1, rank_lowest) khi nói về
+          "mức cao nhất/thấp nhất"; chỉ gọi tên phần tử khi nói về đặc tính
+          riêng của mức đó.
+        why: >
+          DS khác có thể có nhiều mức hơn. Khoá luật vào tên phần tử làm luật
+          chết khi thang dài ra.
+      - id: AX-ORD-02
+        rule: "Luật KHÔNG được giả định thang có đúng N phần tử."
+        forbidden: "Đếm số phần tử của thang rồi suy ra hành vi."
+
+  ordered_scale_physical:
+    about: "Thang có thứ tự KÈM kích thước vật lý thật. Cho phép kiểm ngưỡng vật lý."
+    profile_must_provide: [steps, "giá trị thật của từng bước", unit]
+    rules:
+      - id: AX-PHY-01
+        rule: >
+          Binding BẮT BUỘC khai giá trị thật của từng bước. Thiếu → báo lỗi
+          cấu hình, KHÔNG bỏ qua các kiểm tra phụ thuộc nó.
+        why: >
+          Không có số thật thì mọi luật dạng "phải >= ngưỡng" trở thành vô
+          hiệu một cách âm thầm — đây là kiểu hỏng tệ nhất: kiểm tra vẫn
+          "pass" nhưng không kiểm gì.
+      - id: AX-PHY-02
+        rule: >
+          Khi một ngưỡng buộc phải nâng bước: chọn bước NHỎ NHẤT thoả ngưỡng.
+          Chỉ NÂNG, không bao giờ HẠ.
+        why: >
+          Ngưỡng là sàn, không phải giá trị đích. Bước đang lớn hơn sàn là đã
+          hợp lệ — hạ nó xuống là phá quyết định của tầng trên.
+      - id: AX-PHY-03
+        rule: "Không bước nào thoả ngưỡng → escalate. KHÔNG lấy bước lớn nhất rồi coi là xong."
+
+  closed_role_set:
+    about: "Tập vai đóng. Mỗi vai có định nghĩa nghiệp vụ, không phải nhãn tự do."
+    profile_must_provide: [roles, bind]
+    rules:
+      - id: AX-INV-03
+        rule: "Giá trị phải nằm trong tập vai đã khai. Cấm tự thêm vai thứ N+1."
+        check: "value in axis.roles"
+        escalate_instead: >
+          Gặp ca không khớp vai nào → escalate để bàn xem có cần thêm vai,
+          KHÔNG nhét tạm vào vai gần giống nhất.
+        why: >
+          Nhét tạm vào vai gần giống là cách tập vai mất nghĩa: sau vài lần,
+          vai nào cũng có thể là bất cứ gì, và luật dựa trên vai thành vô nghĩa.
+      - id: AX-ROLE-01
+        rule: >
+          Tên vai lấy theo từ vựng đội đã dùng và đã duyệt. KHÔNG phát minh
+          tên mới cho cùng một khái niệm.
+        why: >
+          Thêm một phương ngữ là cách nhanh nhất để một câu trả lời đã chốt ở
+          file này không lan được sang file khác.
+        note: >
+          Nếu tên vai vô tình mang nghĩa trình bày (vd một từ chỉ màu), ghi
+          rủi ro vào binding của profile — KHÔNG đổi luật.
+
+  default_plus_exception:
+    about: "Một giá trị mặc định, cộng tối đa một ngoại lệ dùng trong ngữ cảnh hẹp."
+    profile_must_provide: [default]
+    profile_may_provide: [exception, "ngữ cảnh của ngoại lệ"]
+    rules:
+      - id: AX-SHP-01
+        rule: "Mặc định áp cho mọi trường hợp, trừ đúng ngữ cảnh ngoại lệ policy chỉ định."
+      - id: AX-SHP-02
+        rule: "Ngoại lệ CHỈ dùng trong ngữ cảnh policy chỉ định, không dùng ở chỗ nào khác."
+        disableable: true
+        disable_when: "DS không có giá trị ngoại lệ, hoặc công ty không dùng"
+        why_narrow: >
+          Trục này không mang thông tin nghiệp vụ. Dùng rải rác thì thành nhiễu
+          thị giác; dùng đúng một chỗ thì thành dấu hiệu nhận diện chỗ đó.
+      - id: AX-SHP-INV-01
+        rule: "Giá trị ngoại lệ chỉ xuất hiện ở node khớp ngữ cảnh đã khai."
+        check: "value == axis.exception implies matches(node, policy.<axis>_exception)"
+        skip_if: "AX-SHP-02 bị tắt trong policy"
+
+  icon_slots:
+    about: "Hai chỗ trống (trước nhãn / sau nhãn) bật tắt được, không đổi tên variant."
+    rules:
+      - id: AX-ICN-01
+        rule: >
+          Icon KHÔNG phải một giá trị trên các trục khác. Bật/tắt icon không
+          làm đổi variant — nên nó quyết SAU và độc lập.
+      - id: AX-ICN-INV-01
+        rule: "Không bật cả 2 slot cùng lúc trên một instance."
+        check: "not (icon.leading != null and icon.trailing != null)"
+        why: "Chưa có ca thật nào cần cả hai — cấm để chặn agent tự bịa."
+        override: "Chỉ mở khi có ngữ cảnh cụ thể được duyệt tường minh."
+      - id: AX-ICN-02
+        rule: >
+          Icon placeholder trên trang thư viện của DS KHÔNG phải bằng chứng
+          rằng instance thật nên có icon. Đó là icon demo component.
+        why: "Đã sai thật vì lý do này — xem decisions.md 07/09 (Bước 6 icon)."
+
+  enum:
+    about: "Danh sách đóng, KHÔNG có thứ tự và KHÔNG mang mức độ."
+    profile_must_provide: [values]
+    rules:
+      - id: AX-ENM-01
+        rule: "Giá trị phải nằm trong danh sách. Không suy ra thứ bậc từ thứ tự khai báo."
+        why: >
+          Đây là chỗ dễ nhầm với ordered_scale. Nếu thứ tự khai báo bắt đầu
+          mang nghĩa, trục đã bị mô hình sai kiểu — đổi sang ordered_scale.
+
+  scalar_physical:
+    about: "Một số kèm đơn vị (thời lượng, khoảng cách), không phải thang bước."
+    profile_must_provide: [unit]
+    rules:
+      - id: AX-SCL-01
+        rule: "Phải khai đơn vị. Số trơ không đơn vị là lỗi cấu hình."
+      - id: AX-SCL-02
+        rule: >
+          Nếu giá trị ảnh hưởng tới khả năng người dùng kịp phản ứng, phải khai
+          sàn và cách suy giá trị từ nội dung — không dùng một hằng số duy nhất.
+
+# -----------------------------------------------------------------------------
+# 3. LUẬT ÁP CHO MỌI QUYẾT ĐỊNH
+# -----------------------------------------------------------------------------
+axis_invariants:
+  - id: AX-INV-01
+    rule: "Mỗi quyết định phải trích được đúng 1 rule id hợp lệ cho từng trục."
+    check: "every(node, n => n.rule_ids covers n.component.axes)"
+    undisableable: true
+    if_no_id_exists: >
+      Không trích được id nào nghĩa là LUẬT THIẾU. Bổ sung luật rồi quyết —
+      KHÔNG tự quyết rồi bỏ trống id.
+
+  - id: AX-INV-02
+    rule: "Tầng spec không được khai state do runtime sinh."
+    check: "state not in axis.state.runtime_only"
+    why: "Khai vào là lỗi mô hình, không phải tuỳ chọn."
+
+# -----------------------------------------------------------------------------
+# 4. A11Y PHỔ QUÁT — đúng cho mọi component, mọi công ty
+# -----------------------------------------------------------------------------
+universal_a11y:
+  - id: A11Y-INV-01
+    rule: "Điều khiển không có chữ hiển thị BẮT BUỘC có tên thay thế (tooltip / accessible name)."
+    check: "label == null implies (tooltip != null or accessibleName != null)"
+    undisableable: true
+
+  - id: A11Y-01
+    rule: "Điều khiển bị vô hiệu phải nêu được LÝ DO vì sao vô hiệu."
+    why: "[Nielsen #9] Người dùng không sửa được thứ họ không biết vì sao sai."
+
+  - id: A11Y-02
+    rule: >
+      Giá trị ở mức nhấn thấp nhất (không khung, không nền) có rủi ro không đạt
+      tương phản thành phần UI và khó nhận ra là điều khiển được.
+    requires:
+      - "Màu chữ tương phản >= 4.5:1 với nền chứa nó"
+      - "Hover/Focus phải rõ rệt — đây là lúc nó tự khai báo mình là điều khiển"
+      - "Không dùng cho hành động duy nhất trên màn hình"
+    source: "WCAG 1.4.11 Non-text Contrast"
+
+# -----------------------------------------------------------------------------
+# 5. KỶ LUẬT SUY LUẬN — phần chống agent bịa
+# -----------------------------------------------------------------------------
+discipline:
+  never_guess:
+    rule: >
+      Không có căn cứ thì KHÔNG chọn giá trị "nghe hợp lý". Escalate, vẫn dựng
+      được màn bằng giá trị fallback trung tính, gắn nhãn cần-quyết-định.
+    why: >
+      Đoán sai ở trục mức nhấn không phải lỗi thẩm mỹ mà là lỗi hướng dẫn người
+      dùng: mức nhấn cao nhất là thứ người ta bấm theo phản xạ. Phong nhầm một
+      đường ít dùng thành đường chính sẽ đẩy người dùng đi sai luồng mỗi ngày.
+    escalate_is_a_correct_answer: >
+      Escalate là ĐÁP ÁN ĐÚNG, không phải thất bại. Nếu sau này dùng bộ luật
+      này làm dữ liệu huấn luyện, escalate phải xuất hiện như nhãn dương với tỉ
+      lệ đủ lớn — nếu không, model sẽ học cách luôn có đáp án, tức là học đoán.
+
+  evidence_tiers:
+    when: >
+      Mọi lúc luật cần một dữ kiện nghiệp vụ mà cấu trúc màn hình KHÔNG suy ra
+      được (điển hình: đường nào dùng nhiều hơn, mức ưu tiên thật của hành động).
+    tiers:
+      - tier: 1
+        name: "Tài liệu nghiệp vụ nêu tường minh"
+        requires: "Trích NGUYÊN VĂN vào rule_evidence. Không trích được = không tính tầng 1."
+      - tier: 2
+        name: "Tiền lệ trong file thiết kế đã duyệt"
+        requires: "Ghi node-id / đường dẫn của tiền lệ"
+        caution: "Chỉ dùng khi 2 màn thật sự cùng loại nghiệp vụ."
+      - tier: 3
+        name: "Escalate — không đoán"
+        behavior: "Vẫn dựng, để mức trung tính, KHÔNG tự phong nút nào lên mức nhấn cao nhất."
+    feeds_back: >
+      Mỗi lần escalate ở tier 3 là một lỗ hổng của tài liệu nghiệp vụ mà lần sau
+      phòng trước được — ghi lại để bổ sung rubric đánh giá tài liệu.
+
+  retry_limit:
+    rule: "Bị validator từ chối: đọc nguyên context lỗi, tự sửa, thử lại — TỐI ĐA 3 lần."
+    then: "Dừng, báo người. Không lặp vô hạn."
+
+  validator_is_not_proof:
+    rule: >
+      "Validator pass 0 lỗi" KHÔNG phải bằng chứng render đúng. Validator tầng
+      tên chỉ xác nhận component TỒN TẠI, không xác nhận property/path đúng.
+    then: "Kết luận về hình ảnh chỉ rút ra sau khi đọc lại state THẬT đã render."
+
+# -----------------------------------------------------------------------------
+# 6. ĐẦU VÀO CẢM ỨNG — mục duy nhất được phép có số
+#
+# Vì sao hợp lệ: các ngưỡng này không phải quyết định của công ty nào. Chúng
+# đến từ giới hạn vật lý của đầu ngón tay và từ chuẩn/hướng dẫn quốc tế.
+# Thang bước cụ thể thì mỗi DS tự chọn → nằm ở binding.
+#
+# LUẬT ÁP DỤNG mấy ngưỡng này nằm ở kinds/interactive_control (vì chỉ đúng cho
+# thứ bấm được), KHÔNG nằm ở đây.
+# -----------------------------------------------------------------------------
+touch_input:
+  physical_reason: >
+    Đầu ngón tay tiếp xúc khoảng 10-14mm (xấp xỉ 40-50px ở mật độ điển hình).
+    Con trỏ chuột có hotspot 1px. Cùng một mục tiêu, độ chính xác đầu vào lệch
+    nhau khoảng 40 lần. Đây là lý do gốc, không phải quy ước thẩm mỹ.
+
+  thresholds:
+    - id: TOUCH-24
+      value_px: 24
+      standard: "WCAG 2.5.8 Target Size (Minimum)"
+      level: "AA (WCAG 2.2)"
+      exception: >
+        Ngoại lệ khoảng cách: mục tiêu nhỏ hơn 24 vẫn đạt nếu vòng tròn đường
+        kính 24 quanh nó không chồng lên vòng tròn của mục tiêu khác.
+      use_for: "Ngưỡng tuân thủ pháp lý tối thiểu"
+    - id: TOUCH-44
+      value_px: 44
+      standard: "WCAG 2.5.5 Target Size (Enhanced) · Apple Human Interface Guidelines"
+      level: "AAA (WCAG) / bắt buộc thực tế trên iOS"
+      use_for: "Sàn dùng được thực tế trên cảm ứng"
+    - id: TOUCH-48
+      value_px: 48
+      standard: "Material Design 3 minimum touch target"
+      level: "Bắt buộc thực tế trên Android"
+      use_for: "Sàn cho mục tiêu không có nhãn chữ, hoặc sản phẩm Android-first"
+
+  measured_on_both_axes: >
+    Chuẩn đo CẢ 2 CHIỀU. Mục tiêu có nhãn chữ thường thừa chiều rộng nên chỉ
+    cần lo chiều cao; mục tiêu chỉ có icon gần vuông nên chiều rộng vỡ cùng lúc
+    với chiều cao — đây là chỗ vỡ đầu tiên trong thực tế.
+
+  hit_area_vs_visible:
+    fact: >
+      Chuẩn đo VÙNG BẤM, không đo phần nhìn thấy. Nên hợp lệ khi giữ mục tiêu
+      nhỏ về thị giác nhưng cho vùng bấm đạt sàn.
+    limitation: >
+      [GIỚI HẠN THẬT] Công cụ thiết kế không có khái niệm vùng-bấm-mở-rộng.
+      Cách này CHỈ ghi được thành ghi chú bàn giao cho dev — renderer KHÔNG
+      làm được.
+    rule: "KHÔNG viết luật dựa vào vùng bấm mở rộng như thể pipeline làm được."
+
+pointer_vs_viewport:
+  correct_condition: "Loại con trỏ (thô / tinh) — không phải chiều rộng khung nhìn"
+  why: >
+    Laptop cảm ứng rộng 1280px là con trỏ thô. Cửa sổ desktop kéo hẹp còn 700px
+    vẫn là con trỏ tinh. Suy theo chiều rộng sai ở cả hai đầu.
+  design_tool_reality:
+    limitation: >
+      [GIỚI HẠN THẬT] Công cụ thiết kế không có khái niệm loại con trỏ. Trong
+      file thiết kế buộc phải dùng breakpoint chiều rộng làm PROXY GẦN ĐÚNG.
+    rule: >
+      Ghi rõ đây là proxy. Tầng code dùng điều kiện con trỏ thật; tầng thiết kế
+      dùng breakpoint. Hai tầng không khớp tuyệt đối, và điều đó chấp nhận được
+      MIỄN LÀ được ghi ra.
+  profile_must_provide: ["breakpoint nào là ranh giới proxy cho con trỏ thô"]
+
+# -----------------------------------------------------------------------------
+# 7. HỢP ĐỒNG CHO FILE KIND
+# -----------------------------------------------------------------------------
+component_kind_contract:
+  a_kind_file_may_contain:
+    - "Luật hành vi/UX đúng cho MỌI thành viên của loại"
+    - "Trục nào loại này bắt buộc phải có (requires_axes)"
+    - "Invariant kiểm được, tham chiếu profile.* cho mọi ngưỡng"
+  a_kind_file_must_not_contain:
+    - "Giá trị cụ thể (đưa vào binding)"
+    - "Ngưỡng do công ty chọn (đưa vào policy)"
+    - "Luật chỉ đúng cho 1 thành viên (đưa vào components/)"
+    - "Luật cần biết về component KHÁC (đưa vào _composition)"
+    - "Khai kind cha — kind phẳng, không thừa kế"
+  guardrails: "Xem manifest.yaml § guardrails — compiler kiểm, không phải lời khuyên"
+
+profile_contract:
+  must_provide:
+    - "Binding cho mọi trục mà component khai ở manifest"
+    - "Giá trị thật cho trục kiểu ordered_scale_physical (AX-PHY-01)"
+    - "Mọi ngưỡng số và danh sách do công ty chọn"
+    - "Cách ghép chuỗi cuối nếu DS gộp nhiều trục vào 1 property"
+  must_be_able_to_disable_rules:
+    shape: {"<RULE-ID>": {enabled: false, reason: "bắt buộc ghi lý do"}}
+    why: >
+      Có luật mô tả CƠ CHẾ mà DS khác không có. Không tắt được thì lớp portable
+      sẽ dần đầy điều kiện "nếu là công ty X" — tức quay về chỗ cũ.
+    constraint: >
+      Chỉ tắt được luật mô tả cơ chế phụ thuộc DS. KHÔNG tắt được luật thuộc
+      discipline, universal_a11y, hay luật có cờ undisableable.
+  resolved_view:
+    rule: "Compiler PHẢI emit được bản đã resolve. Agent đọc bản đó, không đọc lớp nguồn."
+    why: >
+      Đây là chi phí thật của việc tách lớp: đọc 1 quyết định cần nhiều file.
+      Không có bản resolve thì agent phải tự gom, và sẽ có lần nó gom thiếu rồi
+      đoán — đúng thứ discipline.never_guess cấm.
+
+# -----------------------------------------------------------------------------
+# 8. XUẤT XỨ
+# -----------------------------------------------------------------------------
+provenance:
+  every_non_universal_statement_must_cite: >
+    Phát biểu ở lớp rules mà không tự đứng được bằng lý lẽ phổ quát PHẢI trích
+    profile.policy.* hoặc profile.binding.* — không viết giá trị trực tiếp.
+  every_change_needs_a_decision_entry:
+    fields: [date, by, decision, quote, correction_of, affects]
+    quote_rule: "Trích NGUYÊN VĂN. Diễn giải lại làm mất khả năng đối chiếu."
+    never_delete: "Mục bị thay thế thì thêm superseded_by, KHÔNG xoá."
+  source_markers:
+    "[LUẬT]": "Suy luận phổ quát, tự đứng được"
+    "[CHÍNH SÁCH]": "Trích policy.yaml"
+    "[DS]": "Trích ds/*.binding.yaml"
+    "[XÁC NHẬN — <người> <ngày>]": "Người có thẩm quyền đã duyệt"
+    "[ĐỀ XUẤT]": "Agent suy luận, CHƯA duyệt — review trước khi chạy thật"
+    "[GIỚI HẠN THẬT]": "Điều pipeline KHÔNG làm được — không hứa quá tay"

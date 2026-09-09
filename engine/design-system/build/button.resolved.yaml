@@ -1,0 +1,1278 @@
+_generated:
+  by: compile.js
+  at: '2026-09-09'
+  component: Button
+  kinds:
+    - interactive_control
+    - action_trigger
+  from_layers:
+    - rules/_core.rules.yaml
+    - rules/kinds/interactive_control.rules.yaml
+    - rules/kinds/action_trigger.rules.yaml
+    - rules/components/button.rules.yaml
+    - rules/_composition.rules.yaml
+  warning: FILE SINH TỰ ĐỘNG — KHÔNG sửa tay. Sửa ở rules/ hoặc profile.<cty>/ rồi chạy lại compile.js
+  read_this_file_only: >-
+    Agent đọc đúng file này. Không cần mở lớp nguồn; mọi tham chiếu profile.* đã có giá trị ở §
+    values.
+values:
+  policy:
+    touch:
+      target_context: web_responsive
+      floor_px:
+        value: 44
+      floor_px_icon_only:
+        value: 48
+      pointer_proxy_breakpoint:
+        value: md
+        binding_ref: binding.breakpoints.values.md
+        resolves_to_px: 768
+        semantics: Khung nhìn < 768px → thiết kế như con trỏ thô.
+        marker: '[GIỚI HẠN THẬT] PROXY, không phải điều kiện đúng.'
+        real_condition: '@media (pointer: coarse) — dùng ở tầng code'
+      dense_table_below_breakpoint:
+        value: null
+        status: ⚠️ CHƯA QUYẾT — CẦN WILLIAMS
+        question: >
+          Dưới breakpoint proxy, bảng nhiều cột dày xử lý thế nào? ICTL-Z-08 nói sàn không đạt được
+          là lỗi layout, nhưng pattern thay thế thì công ty chọn.
+        blocking: ICTL-Z-08 sẽ escalate mỗi lần gặp ca này cho tới khi mục này được quyết.
+    standard_row_actions:
+      value:
+        - Xem
+        - Sửa
+        - Xoá
+      semantics: >
+        Chỉ ĐÚNG 3 hành động này cố định theo CMP-ROW-01. Mọi hành động khác trong cùng ô thao tác
+        chạy pipeline bình thường (CMP-ROW-02), kể cả khi nó chỉ hiện ở một số dòng.
+      matching_note: >
+        Khớp theo Ý NGHĨA hành động, không khớp cứng chuỗi nhãn. "Xem chi tiết" khớp "Xem". Nhãn lạ
+        không rõ thuộc nhóm nào → escalate, không tự xếp vào.
+    row_action_inline_max:
+      value: 3
+    size_by_position:
+      footer_action_bar: md
+      detail_header: sm
+      section_title_bar: sm
+      table_row_action: sm
+      dense_table_cell: xs
+      chip_tag: xs
+      empty_state: lg
+      internal_landing_cta: lg
+      _default: md
+      escalate_when: Vị trí mới chưa có trong bảng → bổ sung ở đây, KHÔNG chọn bước gần giống.
+    oversize_allowed_positions:
+      value:
+        - empty_state
+        - internal_landing_cta
+    footer_action_bar_screen_types:
+      value:
+        - create-edit
+    shape_exception:
+      enabled: true
+      context: Điều khiển điều hướng về trên top navigation / Detail Header
+      scope_strict: true
+      intent_role: no_path
+    delete_in_standard_cell:
+      intent_role: no_path
+      escalate_to_destructive_when: >
+        Tài liệu gọi đích danh xoá vĩnh viễn / không khôi phục được / ảnh hưởng diện rộng hơn 1 dòng
+        (case_d).
+      still_requires_confirm_step: true
+    destructive_examples:
+      value:
+        - Xoá đơn
+        - Huỷ đơn đã xác nhận
+        - Xoá vĩnh viễn
+    excluded:
+      intents:
+        - value:
+            - Info
+            - Success
+            - Warning
+          reason: '[XÁC NHẬN — Williams 07/09] Không dùng cho Button. Đưa vào backlog.'
+      pseudo_axis:
+        - value: Loading
+          reason: '[XÁC NHẬN — Williams 07/09] Ít dùng trong sản phẩm.'
+    icon_policy:
+      submit_for_approval_is_distinct: {}
+      exits_have_no_icon:
+        note: Muốn nhất quán hoá về sau thì Williams phải nói rõ — đừng tự đổi.
+      export_icon: {}
+  binding:
+    meta:
+      component: Button
+      layer: ds-binding-component
+      version: 2.0-draft
+      created: '2026-09-08'
+      shared: profile.ghn/ds/_shared.binding.yaml
+    breakpoints:
+      values:
+        sm: 640
+        md: 768
+        lg: 1024
+        xl: 1280
+        2xl: 1536
+      unit: px
+      name_collision_warning:
+        severity: cao
+        mitigation: >
+          Luôn viết đủ tiền tố khi trích: `binding.size.md` và `binding.breakpoints.md`. KHÔNG bao
+          giờ viết "md" trơ trong file rule.
+    icon_set:
+      name: Font Awesome 6 Pro
+      confirmed_page: Icons (Use fontawesome 6 Pro) — nodeId 12:2
+      confirmed_icons:
+        - eye
+        - eye-slash
+        - home
+        - bell
+        - user-hair
+        - lock
+        - medal
+        - gear
+        - camera
+        - arrow-left-long
+        - arrow-right-long
+        - arrow-up-long
+        - arrow-down-long
+        - chevron-left
+        - chevron-right
+        - chevron-up
+        - chevron-down
+        - arrow-right-from-bracket
+        - arrow-progress
+        - arrows-rotate
+        - arrow-up-arrow-down
+        - clock
+        - clock-rotate-left
+        - filter-list
+        - trash
+        - pen
+        - route
+        - truck-fast
+        - bullhorn
+        - circle-info
+        - grip-dots
+        - grip-dots-vertical
+        - file-arrow-up
+        - money-check-dollar
+        - magnifying-glass-dollar
+        - hexagon-exclamation
+        - screwdriver-wrench
+    icon_names:
+      Quay lại / điều hướng về trước:
+        name: arrow-left-long
+        status: '[FIGMA]'
+      Thêm mới / tạo mới:
+        name: plus
+        status: '[XÁC NHẬN — Williams 07/09, chờ import]'
+      Xoá:
+        name: trash
+        status: '[FIGMA]'
+      Sửa / chỉnh sửa:
+        name: pen
+        status: '[FIGMA]'
+      Xuất dữ liệu ra file:
+        name: arrow-down-to-line
+        status: '[XÁC NHẬN — Williams 07/09]'
+      Tải mẫu về:
+        name: download
+        status: '[XÁC NHẬN — Williams 07/09, chờ import]'
+      Tải lên / nhập file:
+        name: file-arrow-up
+        status: '[FIGMA]'
+      In:
+        name: print
+        status: '[XÁC NHẬN — Williams 07/09, chờ import]'
+      Sao chép:
+        name: copy
+        status: '[XÁC NHẬN — Williams 07/09, chờ import]'
+      Bộ lọc:
+        name: filter-list
+        status: '[FIGMA]'
+      Làm mới danh sách:
+        name: arrows-rotate
+        status: '[FIGMA]'
+      Gửi đi để XIN DUYỆT:
+        name: stamp
+        status: '[XÁC NHẬN — Williams 07/09]'
+      Duyệt / chấp nhận:
+        name: check
+        status: '[XÁC NHẬN — Williams 07/09, chờ import]'
+      Từ chối / đóng:
+        name: xmark
+        status: '[XÁC NHẬN — Williams 07/09, chờ import]'
+      Gom nhiều hành động vào menu:
+        name: ellipsis
+        status: '[XÁC NHẬN — Williams 07/09]'
+      Mở rộng / xem thêm:
+        name: chevron-down
+        status: '[FIGMA]'
+      Thu gọn:
+        name: chevron-up
+        status: '[FIGMA]'
+      Cài đặt:
+        name: gear
+        status: '[FIGMA]'
+      Gửi thông thường (chưa dùng):
+        name: paper-plane
+        status: '[ĐỀ XUẤT — chưa có ví dụ thật, KHÔNG dùng]'
+    new_icon_process:
+      marker: '[GIỚI HẠN THẬT]'
+      rule: >
+        Hành động chưa có trong icon_names → agent đề xuất 1-3 tên, nhưng PHẢI có người mở plugin bộ
+        icon trong công cụ thiết kế xác nhận tên tồn tại + import trước khi renderer dùng thật.
+    file_level_quirks:
+      no_responsive_dimension_mode:
+        marker: '[GIỚI HẠN THẬT]'
+        consequence: >
+          DS KHÔNG có cơ chế đổi kích thước theo thiết bị qua variable mode. Mọi sàn/ngưỡng theo
+          thiết bị PHẢI do compiler áp khi chọn variant — không đẩy xuống cho công cụ thiết kế tự
+          giải được.
+        affects_every_component_with: ordered_scale_physical
+        implication_for_handoff: >
+          Bản thiết kế phải có frame riêng cho breakpoint hẹp; không có cách nào để 1 frame tự đổi
+          kích thước theo khung nhìn.
+      color_modes_exist:
+        status: >
+          CHƯA khảo sát ảnh hưởng tới luật. Ghi lại vì component nào bind màu sẽ cần biết — hiện
+          chưa có luật nào phụ thuộc.
+    cross_component_traps:
+      badge_color_alias:
+        component: Badge
+        trap: >
+          Property 'Color' của Badge nhận Grey / Success / Error — KHÔNG có variant tên
+          'Destructive'. Dùng 'Destructive' làm setProperties() thất bại TOÀN BỘ (all-or-nothing),
+          badge rơi về label mặc định.
+      setproperties_is_all_or_nothing:
+        trap: >
+          Một property sai tên làm TOÀN BỘ lệnh setProperties thất bại, không phải chỉ property đó.
+          Node rơi về giá trị mặc định của component.
+        consequence: >
+          Không được coi "render không báo lỗi" là bằng chứng đúng — phải đọc lại property THẬT sau
+          khi render [_core.discipline.validator_is_not_proof].
+    component:
+      name: Button / Button organism
+      component_set_id: 814:46116
+      component_key: 4e004e9d80a82cf3b0ec50e3b8cb9c6fb8eeb210
+      library_key: lk-250e103acf2b45b04608ee560ea1a546cd58015985b5b548800febe7e720fb83abfcf9e680931bb089ee0468c5b18d7a350dafbcc8d16f038ef58c80ab5cce1c
+      total_variants: 920
+    figma_properties:
+      emphasis_and_shape: Style
+      intent: Type
+      size: Size
+      state: State
+    intent:
+      axis_kind: closed_role_set
+      roles:
+        - primary
+        - alternate
+        - destructive
+        - no_path
+      bind:
+        primary: Primary
+        alternate: Secondary
+        destructive: Destructive
+        no_path: Grey
+    emphasis:
+      axis_kind: ordered_scale
+      scale:
+        - Fill
+        - Outline
+        - Ghost
+      rank1: Fill
+      rank_lowest: Ghost
+      bind:
+        Fill: Fill
+        Outline: Outline
+        Ghost: Ghost
+    shape:
+      axis_kind: default_plus_exception
+      default: Round
+      exception: Circle
+      bind:
+        Round: Round
+        Circle: Circle
+      meaning:
+        Round: Bo góc vừa phải — hình dạng tiêu chuẩn
+        Circle: Bo tròn HOÀN TOÀN hai đầu (dạng viên thuốc/pill)
+      exception_full_spec:
+        variant:
+          Style: Outline Circle
+          Type: Grey
+          Size: sm
+          State: Default
+        icon:
+          placement: leading
+          meaning: mũi tên trái
+        node_id: 814:46667
+        context_is_policy: profile.policy.shape_exception
+    state:
+      axis_kind: closed_role_set
+      roles:
+        - Default
+        - Disabled
+      bind:
+        Default: Default
+        Disabled: Disable
+      runtime_only:
+        - Hover
+        - Focus
+      naming_trap: >
+        Vai là "Disabled" nhưng chuỗi DS là "Disable". Đây đúng loại lệch mà lớp binding tồn tại để
+        hấp thụ — rules/ viết "Disabled", renderer nhận "Disable".
+    render_template:
+      Style: '{emphasis} {shape}'
+      example: emphasis=Outline + shape=Round → Style='Outline Round'
+      required_because: DS gộp 2 trục vào 1 property — xem quirks.merged_style
+    size:
+      axis_kind: ordered_scale_physical
+      unit: px
+      steps:
+        - xs
+        - sm
+        - md
+        - lg
+        - xl
+      height_px:
+        xs: 32
+        sm: 40
+        md: 44
+        lg: 48
+        xl: 52
+      padding_vertical_px:
+        xs: 8
+        sm: 10
+        md: 12
+        lg: 14
+        xl: 16
+      padding_horizontal_px:
+        xs: 12
+        sm: 16
+        md: 16
+        lg: 16
+        xl: 16
+      icon_box_px:
+        xs: 16
+        sm: 16
+        md: 16
+        lg: 20
+        xl: 20
+      corner_radius_px: 8
+      item_spacing_px: 16
+    quirks:
+      merged_style:
+        severity: trung bình
+      status_color_types:
+        status: '[XÁC NHẬN — Williams 07/09] Không dùng cho Button → profile.policy.excluded'
+      variant_gap_removed:
+        status: Vô hiệu hoá bởi profile.policy.excluded.pseudo_axis (bỏ Loading) — không còn khoảng trống
+rules:
+  core:
+    meta:
+      layer: core
+      portable: true
+      version: 2.0-draft
+      created: '2026-09-08'
+      supersedes: _core.rules.yaml v1.0 — v1 chứa 6 trục của Button, sai lớp
+    axis_kinds:
+      ordered_scale:
+        about: Thang có thứ tự, mang mức độ. Vị trí trong thang là thông tin.
+        profile_must_provide:
+          - scale
+          - rank1
+          - rank_lowest
+        rules:
+          - id: AX-ORD-01
+            rule: >
+              Luật tham chiếu thang bằng VỊ TRÍ (rank1, rank_lowest) khi nói về "mức cao nhất/thấp
+              nhất"; chỉ gọi tên phần tử khi nói về đặc tính riêng của mức đó.
+            why: >
+              DS khác có thể có nhiều mức hơn. Khoá luật vào tên phần tử làm luật chết khi thang dài
+              ra.
+          - id: AX-ORD-02
+            rule: Luật KHÔNG được giả định thang có đúng N phần tử.
+            forbidden: Đếm số phần tử của thang rồi suy ra hành vi.
+      ordered_scale_physical:
+        about: Thang có thứ tự KÈM kích thước vật lý thật. Cho phép kiểm ngưỡng vật lý.
+        profile_must_provide:
+          - steps
+          - giá trị thật của từng bước
+          - unit
+        rules:
+          - id: AX-PHY-01
+            rule: >
+              Binding BẮT BUỘC khai giá trị thật của từng bước. Thiếu → báo lỗi cấu hình, KHÔNG bỏ
+              qua các kiểm tra phụ thuộc nó.
+            why: >
+              Không có số thật thì mọi luật dạng "phải >= ngưỡng" trở thành vô hiệu một cách âm thầm
+              — đây là kiểu hỏng tệ nhất: kiểm tra vẫn "pass" nhưng không kiểm gì.
+          - id: AX-PHY-02
+            rule: >
+              Khi một ngưỡng buộc phải nâng bước: chọn bước NHỎ NHẤT thoả ngưỡng. Chỉ NÂNG, không
+              bao giờ HẠ.
+            why: >
+              Ngưỡng là sàn, không phải giá trị đích. Bước đang lớn hơn sàn là đã hợp lệ — hạ nó
+              xuống là phá quyết định của tầng trên.
+          - id: AX-PHY-03
+            rule: Không bước nào thoả ngưỡng → escalate. KHÔNG lấy bước lớn nhất rồi coi là xong.
+      closed_role_set:
+        about: Tập vai đóng. Mỗi vai có định nghĩa nghiệp vụ, không phải nhãn tự do.
+        profile_must_provide:
+          - roles
+          - bind
+        rules:
+          - id: AX-INV-03
+            rule: Giá trị phải nằm trong tập vai đã khai. Cấm tự thêm vai thứ N+1.
+            check: value in axis.roles
+            escalate_instead: >
+              Gặp ca không khớp vai nào → escalate để bàn xem có cần thêm vai, KHÔNG nhét tạm vào
+              vai gần giống nhất.
+            why: >
+              Nhét tạm vào vai gần giống là cách tập vai mất nghĩa: sau vài lần, vai nào cũng có thể
+              là bất cứ gì, và luật dựa trên vai thành vô nghĩa.
+          - id: AX-ROLE-01
+            rule: >
+              Tên vai lấy theo từ vựng đội đã dùng và đã duyệt. KHÔNG phát minh tên mới cho cùng một
+              khái niệm.
+            why: >
+              Thêm một phương ngữ là cách nhanh nhất để một câu trả lời đã chốt ở file này không lan
+              được sang file khác.
+            note: >
+              Nếu tên vai vô tình mang nghĩa trình bày (vd một từ chỉ màu), ghi rủi ro vào binding
+              của profile — KHÔNG đổi luật.
+      default_plus_exception:
+        about: Một giá trị mặc định, cộng tối đa một ngoại lệ dùng trong ngữ cảnh hẹp.
+        profile_must_provide:
+          - default
+        profile_may_provide:
+          - exception
+          - ngữ cảnh của ngoại lệ
+        rules:
+          - id: AX-SHP-01
+            rule: Mặc định áp cho mọi trường hợp, trừ đúng ngữ cảnh ngoại lệ policy chỉ định.
+          - id: AX-SHP-02
+            rule: Ngoại lệ CHỈ dùng trong ngữ cảnh policy chỉ định, không dùng ở chỗ nào khác.
+            disableable: true
+            disable_when: DS không có giá trị ngoại lệ, hoặc công ty không dùng
+            why_narrow: >
+              Trục này không mang thông tin nghiệp vụ. Dùng rải rác thì thành nhiễu thị giác; dùng
+              đúng một chỗ thì thành dấu hiệu nhận diện chỗ đó.
+          - id: AX-SHP-INV-01
+            rule: Giá trị ngoại lệ chỉ xuất hiện ở node khớp ngữ cảnh đã khai.
+            check: value == axis.exception implies matches(node, policy.<axis>_exception)
+            skip_if: AX-SHP-02 bị tắt trong policy
+      icon_slots:
+        about: Hai chỗ trống (trước nhãn / sau nhãn) bật tắt được, không đổi tên variant.
+        rules:
+          - id: AX-ICN-01
+            rule: >
+              Icon KHÔNG phải một giá trị trên các trục khác. Bật/tắt icon không làm đổi variant —
+              nên nó quyết SAU và độc lập.
+          - id: AX-ICN-INV-01
+            rule: Không bật cả 2 slot cùng lúc trên một instance.
+            check: not (icon.leading != null and icon.trailing != null)
+            why: Chưa có ca thật nào cần cả hai — cấm để chặn agent tự bịa.
+            override: Chỉ mở khi có ngữ cảnh cụ thể được duyệt tường minh.
+          - id: AX-ICN-02
+            rule: >
+              Icon placeholder trên trang thư viện của DS KHÔNG phải bằng chứng rằng instance thật
+              nên có icon. Đó là icon demo component.
+            why: Đã sai thật vì lý do này — xem decisions.md 07/09 (Bước 6 icon).
+      enum:
+        about: Danh sách đóng, KHÔNG có thứ tự và KHÔNG mang mức độ.
+        profile_must_provide:
+          - values
+        rules:
+          - id: AX-ENM-01
+            rule: Giá trị phải nằm trong danh sách. Không suy ra thứ bậc từ thứ tự khai báo.
+            why: >
+              Đây là chỗ dễ nhầm với ordered_scale. Nếu thứ tự khai báo bắt đầu mang nghĩa, trục đã
+              bị mô hình sai kiểu — đổi sang ordered_scale.
+      scalar_physical:
+        about: Một số kèm đơn vị (thời lượng, khoảng cách), không phải thang bước.
+        profile_must_provide:
+          - unit
+        rules:
+          - id: AX-SCL-01
+            rule: Phải khai đơn vị. Số trơ không đơn vị là lỗi cấu hình.
+          - id: AX-SCL-02
+            rule: >
+              Nếu giá trị ảnh hưởng tới khả năng người dùng kịp phản ứng, phải khai sàn và cách suy
+              giá trị từ nội dung — không dùng một hằng số duy nhất.
+    axis_invariants:
+      - id: AX-INV-01
+        rule: Mỗi quyết định phải trích được đúng 1 rule id hợp lệ cho từng trục.
+        check: every(node, n => n.rule_ids covers n.component.axes)
+        undisableable: true
+        if_no_id_exists: >
+          Không trích được id nào nghĩa là LUẬT THIẾU. Bổ sung luật rồi quyết — KHÔNG tự quyết rồi
+          bỏ trống id.
+      - id: AX-INV-02
+        rule: Tầng spec không được khai state do runtime sinh.
+        check: state not in axis.state.runtime_only
+        why: Khai vào là lỗi mô hình, không phải tuỳ chọn.
+    universal_a11y:
+      - id: A11Y-INV-01
+        rule: Điều khiển không có chữ hiển thị BẮT BUỘC có tên thay thế (tooltip / accessible name).
+        check: label == null implies (tooltip != null or accessibleName != null)
+        undisableable: true
+      - id: A11Y-01
+        rule: Điều khiển bị vô hiệu phải nêu được LÝ DO vì sao vô hiệu.
+        why: '[Nielsen #9] Người dùng không sửa được thứ họ không biết vì sao sai.'
+      - id: A11Y-02
+        rule: >
+          Giá trị ở mức nhấn thấp nhất (không khung, không nền) có rủi ro không đạt tương phản thành
+          phần UI và khó nhận ra là điều khiển được.
+        requires:
+          - Màu chữ tương phản >= 4.5:1 với nền chứa nó
+          - Hover/Focus phải rõ rệt — đây là lúc nó tự khai báo mình là điều khiển
+          - Không dùng cho hành động duy nhất trên màn hình
+    discipline:
+      never_guess:
+        rule: >
+          Không có căn cứ thì KHÔNG chọn giá trị "nghe hợp lý". Escalate, vẫn dựng được màn bằng giá
+          trị fallback trung tính, gắn nhãn cần-quyết-định.
+        why: >
+          Đoán sai ở trục mức nhấn không phải lỗi thẩm mỹ mà là lỗi hướng dẫn người dùng: mức nhấn
+          cao nhất là thứ người ta bấm theo phản xạ. Phong nhầm một đường ít dùng thành đường chính
+          sẽ đẩy người dùng đi sai luồng mỗi ngày.
+        escalate_is_a_correct_answer: >
+          Escalate là ĐÁP ÁN ĐÚNG, không phải thất bại. Nếu sau này dùng bộ luật này làm dữ liệu
+          huấn luyện, escalate phải xuất hiện như nhãn dương với tỉ lệ đủ lớn — nếu không, model sẽ
+          học cách luôn có đáp án, tức là học đoán.
+      evidence_tiers:
+        when: >
+          Mọi lúc luật cần một dữ kiện nghiệp vụ mà cấu trúc màn hình KHÔNG suy ra được (điển hình:
+          đường nào dùng nhiều hơn, mức ưu tiên thật của hành động).
+        tiers:
+          - tier: 1
+            name: Tài liệu nghiệp vụ nêu tường minh
+            requires: Trích NGUYÊN VĂN vào rule_evidence. Không trích được = không tính tầng 1.
+          - tier: 2
+            name: Tiền lệ trong file thiết kế đã duyệt
+            requires: Ghi node-id / đường dẫn của tiền lệ
+            caution: Chỉ dùng khi 2 màn thật sự cùng loại nghiệp vụ.
+          - tier: 3
+            name: Escalate — không đoán
+            behavior: Vẫn dựng, để mức trung tính, KHÔNG tự phong nút nào lên mức nhấn cao nhất.
+        feeds_back: >
+          Mỗi lần escalate ở tier 3 là một lỗ hổng của tài liệu nghiệp vụ mà lần sau phòng trước
+          được — ghi lại để bổ sung rubric đánh giá tài liệu.
+      retry_limit:
+        rule: 'Bị validator từ chối: đọc nguyên context lỗi, tự sửa, thử lại — TỐI ĐA 3 lần.'
+        then: Dừng, báo người. Không lặp vô hạn.
+      validator_is_not_proof:
+        rule: >
+          "Validator pass 0 lỗi" KHÔNG phải bằng chứng render đúng. Validator tầng tên chỉ xác nhận
+          component TỒN TẠI, không xác nhận property/path đúng.
+        then: Kết luận về hình ảnh chỉ rút ra sau khi đọc lại state THẬT đã render.
+    touch_input:
+      physical_reason: >
+        Đầu ngón tay tiếp xúc khoảng 10-14mm (xấp xỉ 40-50px ở mật độ điển hình). Con trỏ chuột có
+        hotspot 1px. Cùng một mục tiêu, độ chính xác đầu vào lệch nhau khoảng 40 lần. Đây là lý do
+        gốc, không phải quy ước thẩm mỹ.
+      thresholds:
+        - id: TOUCH-24
+          value_px: 24
+          standard: WCAG 2.5.8 Target Size (Minimum)
+          level: AA (WCAG 2.2)
+          exception: >
+            Ngoại lệ khoảng cách: mục tiêu nhỏ hơn 24 vẫn đạt nếu vòng tròn đường kính 24 quanh nó
+            không chồng lên vòng tròn của mục tiêu khác.
+          use_for: Ngưỡng tuân thủ pháp lý tối thiểu
+        - id: TOUCH-44
+          value_px: 44
+          standard: WCAG 2.5.5 Target Size (Enhanced) · Apple Human Interface Guidelines
+          level: AAA (WCAG) / bắt buộc thực tế trên iOS
+          use_for: Sàn dùng được thực tế trên cảm ứng
+        - id: TOUCH-48
+          value_px: 48
+          standard: Material Design 3 minimum touch target
+          level: Bắt buộc thực tế trên Android
+          use_for: Sàn cho mục tiêu không có nhãn chữ, hoặc sản phẩm Android-first
+      measured_on_both_axes: >
+        Chuẩn đo CẢ 2 CHIỀU. Mục tiêu có nhãn chữ thường thừa chiều rộng nên chỉ cần lo chiều cao;
+        mục tiêu chỉ có icon gần vuông nên chiều rộng vỡ cùng lúc với chiều cao — đây là chỗ vỡ đầu
+        tiên trong thực tế.
+      hit_area_vs_visible:
+        fact: >
+          Chuẩn đo VÙNG BẤM, không đo phần nhìn thấy. Nên hợp lệ khi giữ mục tiêu nhỏ về thị giác
+          nhưng cho vùng bấm đạt sàn.
+        limitation: >
+          [GIỚI HẠN THẬT] Công cụ thiết kế không có khái niệm vùng-bấm-mở-rộng. Cách này CHỈ ghi
+          được thành ghi chú bàn giao cho dev — renderer KHÔNG làm được.
+        rule: KHÔNG viết luật dựa vào vùng bấm mở rộng như thể pipeline làm được.
+    pointer_vs_viewport:
+      correct_condition: Loại con trỏ (thô / tinh) — không phải chiều rộng khung nhìn
+      why: >
+        Laptop cảm ứng rộng 1280px là con trỏ thô. Cửa sổ desktop kéo hẹp còn 700px vẫn là con trỏ
+        tinh. Suy theo chiều rộng sai ở cả hai đầu.
+      design_tool_reality:
+        limitation: >
+          [GIỚI HẠN THẬT] Công cụ thiết kế không có khái niệm loại con trỏ. Trong file thiết kế buộc
+          phải dùng breakpoint chiều rộng làm PROXY GẦN ĐÚNG.
+        rule: >
+          Ghi rõ đây là proxy. Tầng code dùng điều kiện con trỏ thật; tầng thiết kế dùng breakpoint.
+          Hai tầng không khớp tuyệt đối, và điều đó chấp nhận được MIỄN LÀ được ghi ra.
+      profile_must_provide:
+        - breakpoint nào là ranh giới proxy cho con trỏ thô
+  kind:interactive_control:
+    meta:
+      kind: interactive_control
+      layer: kind
+      portable: true
+      version: 2.0-draft
+      requires:
+        - _core.rules.yaml
+      requires_axes:
+        - emphasis
+        - size
+        - state
+    undisableable:
+      - ICTL-Z-05
+      - ICTL-Z-06
+      - ICTL-INV-14
+    region:
+      definition: >
+        "Khu vực" = cụm điều khiển cùng cấp mà người dùng quét mắt cùng lúc: thanh hành động chân
+        form, đầu một section, ô thao tác của MỘT dòng bảng.
+      critical: >
+        Ô thao tác của TỪNG dòng là khu vực RIÊNG của dòng đó, không phải khu vực toàn màn. Nhầm chỗ
+        này làm luật "tối đa 1 rank1 mỗi khu vực" bị áp sai phạm vi và chặn oan hành động chính của
+        dòng.
+    emphasis:
+      decides: emphasis
+      axis_kind: ordered_scale
+      ask: Trong khu vực chứa nó, điều khiển này đứng thứ mấy?
+      rules:
+        - id: ICTL-E-01
+          emphasis: emphasis.rank1
+          test: Đây là hành động được khuyến khích nhất trong khu vực?
+          constraint: Tối đa 1 rank1 mỗi khu vực [CMP-FTR-01 kiểm ở cấp khu vực]
+        - id: ICTL-E-02
+          emphasis: emphasis.scale[1]
+          test: |
+            Đứng cạnh một rank1 trong cùng khu vực, và không phải hành động được khuyến khích nhất?
+          important: >
+            Mức nhấn KHÔNG đồng nghĩa với vai trên trục intent. Nhiều vai intent khác nhau đều có
+            thể dùng cùng một mức nhấn. emphasis nói "to nhỏ thế nào", intent nói "là loại hành động
+            gì" — 2 trục độc lập, quyết riêng.
+        - id: ICTL-E-03
+          emphasis: emphasis.rank_lowest
+          definition: >
+            Mức nhấn THẤP NHẤT. Dùng khi điều khiển không được phép cạnh tranh sự chú ý với chính
+            nội dung nó nằm trong. Khác mức giữa ở chỗ: mức giữa vẫn vẽ khung, vẫn chiếm một hình
+            chữ nhật và đọc ra là điều khiển ngay khi chưa rê chuột. Mức thấp nhất không khung không
+            nền — nó đứng yên như chữ, chỉ hiện ra khi cần.
+          a11y: Xem _core.universal_a11y A11Y-02 — rủi ro tương phản của mức này
+          triggers:
+            - id: ICTL-E-03-c
+              name: Chỉ có icon, trong thanh công cụ
+              test: Không có nhãn chữ, nằm ở header/toolbar, ý nghĩa hiển nhiên?
+              pairs_with: shape = default (AX-SHP-01). KHÔNG dùng shape ngoại lệ.
+              requires:
+                - Tên thay thế bắt buộc [A11Y-INV-01]
+                - Sàn cảm ứng cao hơn [ICTL-Z-06]
+          never_use_when:
+            - case: Thanh hành động chân form
+              use_instead: rank1 hoặc mức giữa
+              why: Đây là chỗ người dùng tìm hành động chính. Mức thấp nhất ở đây làm nó biến mất.
+            - case: Điều khiển trên thanh tiêu đề section
+              use_instead: emphasis.scale[1]
+              why: Xuất hiện đúng 1 lần, cần đủ rõ để tìm thấy — không có vấn đề nhiễu do lặp lại
+            - case: Hành động duy nhất của màn hình trống
+              use_instead: emphasis.rank1
+              why: Là việc duy nhất người dùng làm được lúc đó — phải nổi bật nhất
+            - case: Điều khiển duy nhất trong một khu vực
+              use_instead: emphasis.scale[1]
+              why: Không có gì để nó phải nhường sự chú ý
+      fallback:
+        action: default
+        value: emphasis.scale[1]
+        note: Không rõ thì chọn mức giữa — an toàn, không cướp sự chú ý. Ghi openQuestions.
+    size:
+      decides: size
+      axis_kind: ordered_scale_physical
+      determined_by: VỊ TRÍ đặt điều khiển
+      why_not_importance: >
+        Mức quan trọng đã do intent + emphasis gánh. Nếu size cũng gánh nó thì 3 trục cùng nói một
+        việc, và một điều khiển quan trọng nằm trong ô bảng dày sẽ phá vỡ nhịp thị giác của bảng.
+      rules:
+        - id: ICTL-Z-01
+          rule: Size = tra profile.policy.size_by_position theo vị trí điều khiển đang đứng.
+          fallback: profile.policy.size_by_position._default
+          escalate_when: |
+            Vị trí chưa có trong bảng tra → escalate để bổ sung policy, KHÔNG chọn bước gần giống.
+        - id: ICTL-Z-02
+          rule: >
+            Các bước lớn nhất của thang chỉ dùng ở vị trí policy cho phép tường minh
+            (profile.policy.oversize_allowed_positions).
+          guard: KHÔNG dùng trong form thường — phá vỡ nhịp thị giác của layout.
+          why: >
+            Điều khiển lớn hơn nhịp chung của form đọc ra như một khối lạ, và làm người dùng tưởng
+            nó thuộc một cấp thông tin khác.
+        - id: ICTL-Z-05
+          name: Sàn cảm ứng cho điều khiển CÓ nhãn chữ
+          undisableable: true
+          when: Con trỏ thô (cảm ứng)
+          condition_real: '@media (pointer: coarse) — điều kiện ĐÚNG, dùng ở tầng code'
+          condition_design_proxy: >
+            profile.policy.touch.pointer_proxy_breakpoint — PROXY GẦN ĐÚNG ở tầng thiết kế (xem
+            _core.pointer_vs_viewport). Ghi rõ là proxy khi bàn giao.
+          rule: >
+            Bước size chọn ở ICTL-Z-01 phải có giá trị thật >= profile.policy.touch.floor_px. Không
+            đạt → nâng theo AX-PHY-02.
+          resolution_order: ICTL-Z-01 quyết ý định trước; sàn chỉ NÂNG, không bao giờ HẠ [AX-PHY-02]
+          no_step_qualifies: escalate [AX-PHY-03]
+          why_not_a_second_table: >
+            Đây là SÀN áp lên bảng vị trí đã có, không phải bảng size thứ hai cho mobile. Nhân bản
+            bảng làm chi phí bảo trì gấp đôi và mỗi vị trí mới phải quyết 2 lần.
+        - id: ICTL-Z-06
+          name: Sàn cảm ứng cho điều khiển KHÔNG có nhãn chữ — cao hơn
+          undisableable: true
+          when: Con trỏ thô VÀ không có nhãn chữ (icon-only)
+          rule: Giá trị thật >= profile.policy.touch.floor_px_icon_only
+          why_higher: >
+            Chuẩn đo cả 2 chiều. Điều khiển có nhãn chữ thường thừa chiều rộng nên chỉ cần lo chiều
+            cao; điều khiển chỉ có icon gần vuông nên chiều rộng vỡ cùng lúc với chiều cao.
+          cross_check: Đồng thời phải thoả A11Y-INV-01 (tên thay thế)
+        - id: ICTL-Z-07
+          name: Trên cảm ứng, size KHÔNG mang thứ bậc
+          rule: >
+            Khi sàn đẩy nhiều vị trí về cùng một bước, KHÔNG nâng điều khiển quan trọng lên bước cao
+            hơn để tạo lại khác biệt thị giác.
+          instead: Thứ bậc do emphasis và vị trí/thứ tự gánh.
+          why: >
+            Nâng size để tạo thứ bậc là đốt chiều dọc trên đúng màn hình ít chiều dọc nhất, mà không
+            thêm thông tin nào người dùng chưa có từ emphasis.
+          machine_checkable: false
+          review_signal: >
+            "Nâng để tạo thứ bậc" là ý định, không phải giá trị — không kiểm cứng được. Dấu hiệu
+            gián tiếp: cùng 1 khu vực trên cảm ứng có >= 2 bước size khác nhau → hỏi lại
+            [ICTL-INV-15].
+        - id: ICTL-Z-08
+          name: Sàn không đạt được = lỗi layout, không phải lỗi điều khiển
+          test: Có vị trí nào BẮT BUỘC phải xuống dưới sàn mới vừa không?
+          rule: Nếu có → lỗi ở container. Escalate để đổi pattern layout.
+          forbidden: Thu nhỏ điều khiển xuống dưới sàn để vừa layout cũ.
+          value: >
+            Sàn vì vậy còn là máy phát hiện lỗi layout: bắt được lỗi ở tầng cao (chọn sai pattern)
+            qua triệu chứng ở tầng thấp (điều khiển quá nhỏ).
+          pattern_choice_is_policy: >
+            Pattern thay thế do policy chỉ định — luật KHÔNG tự chọn. Chưa được quyết thì escalate
+            [xem profile.policy.touch].
+    state:
+      decides: state
+      axis_kind: closed_role_set
+      rules:
+        - id: ICTL-ST-01
+          state: Default
+          when: Mặc định
+        - id: ICTL-ST-02
+          state: Disabled
+          when: Tài liệu nghiệp vụ nêu điều kiện tiên quyết chưa thoả
+          derive_from: § luồng (điều kiện) hoặc § trường hợp biên (khi không khả dụng)
+          must_also: Nêu LÝ DO bị vô hiệu [A11Y-01]
+          important: >
+            Disabled là STATE — giữ nguyên vai intent đã chọn, KHÔNG đổi vai chỉ vì điều khiển đang
+            vô hiệu.
+    icon:
+      decides: icon
+      axis_kind: icon_slots
+      rules:
+        - id: ICTL-IC-01
+          priority: 5
+          icon: none
+          test: Mặc định — không thuộc 3 trường hợp dưới thì KHÔNG gắn icon.
+        - id: ICTL-IC-02
+          priority: 10
+          icon: leading
+          test: >
+            Hành động này có nằm trong một BỘ Ý NGHĨA ICON PHỔ QUÁT đã dùng lặp lại nhiều nơi trong
+            sản phẩm không?
+          placement: Trước nhãn — icon là tín hiệu nhận diện nhanh, đọc trước khi đọc chữ
+          requires: >
+            Icon phải là icon ĐÃ dùng cho đúng ý nghĩa này ở nơi khác. KHÔNG tự sáng tác icon mới
+            cho một hành động.
+          lookup: >-
+            Ý nghĩa: rules/components/<component>.rules.yaml § icon_meaning_vocabulary. Tên thật:
+            profile.binding.icon_names
+        - id: ICTL-IC-03
+          priority: 15
+          icon: trailing
+          test: >
+            Kích hoạt có MỞ RA lựa chọn khác (dropdown, menu, mở rộng/thu gọn) thay vì thực thi hành
+            động ngay không?
+          placement: Sau nhãn — icon báo hiệu 'còn nữa', không phải kết thúc hành động
+          counter_examples:
+            - ❌ Hành động lưu kèm mũi tên sang phải — lưu là thực thi ngay → ICTL-IC-01
+        - id: ICTL-IC-04
+          icon: icon-only
+          test: 'Xem ICTL-E-03-c: không nhãn chữ, trong toolbar/header, nghĩa hiển nhiên?'
+          requires:
+            - Tên thay thế bắt buộc [A11Y-INV-01]
+            - emphasis = rank_lowest, trừ khi shape ngoại lệ áp dụng
+            - Sàn cảm ứng cao hơn [ICTL-Z-06]
+      fallback:
+        action: default = ICTL-IC-01 (none), escalate nếu nghi ngờ
+        why_not_guess: >
+          Bịa icon mới tạo ra một quy ước KHÔNG nhất quán với phần còn lại của sản phẩm — lỗi này
+          khó phát hiện hơn sai intent/emphasis, vì icon "trông vẫn hợp lý" khi nhìn một mình, chỉ
+          lộ ra khi đặt cạnh các màn khác.
+    invariants:
+      - id: ICTL-INV-02
+        rule: Không 2 điều khiển ở mức nhấn rank1 nằm liền kề nhau trong cùng container
+        check: no_adjacent(controls, emphasis == rank1)
+        why: Hai mức cao nhất cạnh nhau triệt tiêu lẫn nhau — không còn chỗ nào là chỗ mắt dừng.
+      - id: ICTL-INV-14
+        rule: Trên con trỏ thô, mọi điều khiển phải đạt sàn cảm ứng
+        check: |
+          pointer == 'coarse' implies
+            resolve_physical(size) >= (has_visible_label
+                                       ? profile.policy.touch.floor_px
+                                       : profile.policy.touch.floor_px_icon_only)
+        undisableable: true
+        depends_on: profile.binding.size giá trị thật — thiếu thì báo lỗi cấu hình [AX-PHY-01]
+        fails_loudly_if: Thiếu giá trị thật → LỖI, KHÔNG bỏ qua kiểm tra
+      - id: ICTL-INV-15
+        rule: Trên con trỏ thô, một khu vực không nên chứa nhiều bước size khác nhau
+        check: pointer == 'coarse' implies distinct(region.controls.size).length <= 1
+        severity: warning
+        why_warning_not_error: >
+          Đây là dấu hiệu gián tiếp của ICTL-Z-07, không phải bằng chứng. Có ca hợp lệ (một khu vực
+          chứa cả điều khiển có nhãn và điều khiển icon-only, 2 sàn khác nhau). Cảnh báo để review,
+          không chặn.
+  kind:action_trigger:
+    meta:
+      kind: action_trigger
+      layer: kind
+      portable: true
+      version: 2.0-draft
+      requires:
+        - _core.rules.yaml
+      requires_axes:
+        - intent
+    undisableable:
+      - ATRG-T-01
+    intent:
+      decides: intent
+      axis_kind: closed_role_set
+      ask: >
+        Hành động này có phải MỘT ĐƯỜNG để hoàn thành mục đích của màn hình không? Nếu có, có mấy
+        đường tương đương và đường nào dùng nhiều nhất?
+      derive_from:
+        - tài liệu nghiệp vụ § mục đích màn hình
+        - § luồng
+        - § trường hợp biên
+      rules:
+        - id: ATRG-T-01
+          priority: 5
+          role: intent.destructive
+          undisableable: true
+          test: Kích hoạt xong có mất dữ liệu / không undo được không?
+          requires: Bắt buộc kèm bước xác nhận [CMP-DLG-01]
+          examples_are_policy: 'Ví dụ cụ thể theo nghiệp vụ: profile.policy.destructive_examples'
+          priority_note: >
+            Vai này ưu tiên cao nhất vì nó nói về AN TOÀN DỮ LIỆU, không về thứ bậc thị giác. Một
+            hành động phá huỷ vẫn có thể nằm ở mức nhấn thấp.
+        - id: ATRG-T-02
+          priority: 10
+          role: intent.primary
+          test_step_1: Đây có phải MỘT ĐƯỜNG hoàn thành mục đích màn hình không?
+          test_step_2: >
+            Màn này có mấy đường tương đương? Chỉ 1 → vai chính, xong. Từ 2 trở lên → chạy
+            _core.discipline.evidence_tiers để xác định đường nào dùng nhiều nhất.
+          counter_examples:
+            - Xuất dữ liệu ra file — không phải đường tới mục đích, là tiện ích phụ trợ → no-path
+            - Huỷ / Quay lại — không phải đường tới mục đích → no-path
+        - id: ATRG-T-03
+          priority: 20
+          role: intent.alternate
+          test: |
+            Có dẫn tới CÙNG mục đích với vai chính, bằng một cách khác, nhưng ít người dùng hơn?
+          definition: >
+            Vai thay thế = đường TƯƠNG ĐƯƠNG về mục đích với vai chính, chỉ khác về tần suất sử
+            dụng. KHÔNG phải "hành động kém quan trọng hơn" — mà là "cách khác để làm cùng một
+            việc".
+          worked_case:
+            context: Một màn có 2 cách hoàn thành cùng mục đích, một cách dùng nhiều hơn
+            reasoning: >
+              Cả hai đều hoàn thành mục đích → cả hai là đường tới mục đích. Cách dùng nhiều hơn →
+              vai chính. Cách còn lại → vai thay thế.
+          counter_examples:
+            - ❌ 'Huỷ' KHÔNG phải vai thay thế — không dẫn tới mục đích nào → no-path
+            - >-
+              ❌ 'Lưu nháp' KHÔNG phải vai thay thế — không hoàn thành mục đích, chỉ tạm dừng →
+              no-path
+            - ❌ Đừng chọn vai thay thế chỉ vì nó đứng thứ hai về VỊ TRÍ — phải xét mục đích
+        - id: ATRG-T-04
+          priority: 30
+          role: intent.no_path
+          test: Bỏ hẳn hành động này đi, người dùng vẫn hoàn thành được mục đích màn hình chứ?
+          definition: >
+            Vai no-path = hành động KHÔNG nằm trên đường tới mục đích màn hình. Gồm 2 nhóm: (a) lối
+            ra / tạm dừng, (b) tiện ích phụ trợ.
+          note: >
+            Đây là vai bị nhầm nhiều nhất. Nó là INTENT (ý nghĩa), không phải trạng thái vô hiệu, và
+            không phải "mức nhấn thấp".
+          naming_note: >
+            Tên chuỗi của vai này do profile khai (profile.binding.intent). Nếu tên đó mang nghĩa
+            trình bày thay vì nghĩa hành động, ghi rủi ro ở binding — luật ở đây chỉ nói về VAI,
+            không về tên.
+      critical_disambiguation:
+        warning: ⚠️ Một nhãn chữ có thể mang 2 nghĩa hoàn toàn khác nhau
+        exit_vs_destroy:
+          case_a:
+            pattern: Nhãn kiểu 'Huỷ' nghĩa là thoát khỏi form, bỏ thao tác đang làm dở
+            role: intent.no_path
+          case_b:
+            pattern: Nhãn kiểu 'Huỷ <đối tượng nghiệp vụ>' nghĩa là phá huỷ dữ liệu đã lưu
+            role: intent.destructive
+          how_to_tell: >
+            Đọc tài liệu § luồng: hành động này có làm thay đổi dữ liệu ĐÃ LƯU không? Có → phá huỷ.
+            Chỉ rời khỏi màn hình → no-path.
+        routine_vs_permanent_delete:
+          case_c:
+            pattern: >
+              Hành động xoá nằm trong bộ hành động CHUẨN của một dòng danh sách (định nghĩa "bộ
+              chuẩn": CMP-ROW-01)
+            meaning: Xoá một dòng khỏi danh sách — thao tác quản lý dữ liệu THƯỜNG QUY, làm hằng ngày
+            role: intent.no_path
+            emphasis: theo CMP-ROW-01
+          case_d:
+            pattern: >
+              Tài liệu gọi ĐÍCH DANH là xoá vĩnh viễn / không thể khôi phục / ảnh hưởng diện rộng
+              hơn 1 dòng dữ liệu thường
+            role: intent.destructive
+            note: Vẫn theo ATRG-T-01
+          how_to_tell: >
+            Xoá MỘT dòng, nằm trong bộ hành động chuẩn → mặc định no-path. KHÔNG tự nâng lên phá huỷ
+            chỉ vì đó là "xoá". Chỉ nâng khi khớp case_d. Nghi ngờ giữa 2 case → escalate, không tự
+            chọn.
+          why_this_matters: >
+            Nâng oan lên vai phá huỷ kéo theo CMP-DLG-01 (bắt buộc dialog xác nhận) — tức là bắt
+            người dùng xác nhận mỗi lần xoá một dòng trong công việc hằng ngày. Đó là cách làm hỏng
+            một luồng vận hành bằng một luật an toàn đặt sai chỗ.
+      fallback:
+        action: escalate
+        message: >
+          Không xác định được ý nghĩa hành động của '{label}' từ tài liệu. Cần designer chỉ định vai
+          intent.
+    icon_meaning_vocabulary:
+      mappings:
+        - action: Quay lại / điều hướng về trước
+          meaning: mũi tên trái
+          placement: leading
+        - action: Thêm mới / tạo mới
+          meaning: dấu cộng
+          placement: leading
+        - action: Xoá
+          meaning: thùng rác
+          placement: leading
+        - action: Sửa / chỉnh sửa
+          meaning: bút
+          placement: leading
+        - action: Xuất dữ liệu ra file
+          meaning: mũi tên xuống
+          placement: leading
+        - action: Tải mẫu về
+          meaning: mũi tên xuống (tải về)
+          placement: leading
+        - action: Tải lên / nhập file
+          meaning: file kèm mũi tên lên
+          placement: leading
+        - action: In
+          meaning: máy in
+          placement: leading
+        - action: Sao chép
+          meaning: 2 trang chồng nhau
+          placement: leading
+        - action: Bộ lọc
+          meaning: phễu / danh sách có gạch
+          placement: leading
+        - action: Làm mới danh sách
+          meaning: mũi tên xoay vòng
+          placement: leading
+        - action: Gửi đi để XIN DUYỆT
+          meaning: con dấu
+          placement: leading
+          note: '[CHÍNH SÁCH] Tách riêng khỏi ''gửi thông thường'' — xem profile.policy.icon_policy'
+        - action: Duyệt / chấp nhận
+          meaning: dấu tích
+          placement: leading
+        - action: Từ chối / đóng
+          meaning: dấu X
+          placement: leading
+        - action: Gom nhiều hành động vào menu
+          meaning: ba dấu chấm
+          placement: icon-only
+        - action: Mở rộng / xem thêm
+          meaning: mũi tên xuống nhỏ
+          placement: trailing
+        - action: Thu gọn
+          meaning: mũi tên lên nhỏ
+          placement: trailing
+        - action: Cài đặt
+          meaning: bánh răng
+          placement: leading hoặc icon-only tuỳ không gian
+        - action: Lối ra khỏi form (huỷ / quay lại / đóng / lưu nháp)
+          meaning: none
+          placement: —
+          note: >
+            [CHÍNH SÁCH] Việc cố tình KHÔNG gắn icon cho nhóm này là quyết định của công ty, không
+            phổ quát — xem profile.policy.icon_policy.
+      not_in_table:
+        rule: Hành động không có trong bảng → KHÔNG tự chọn ý nghĩa. Dùng ICTL-IC-01 (none) và escalate.
+        growth: >
+          Mỗi lần một hành động mới được duyệt, thêm 1 dòng vào bảng này (ý nghĩa) và 1 dòng vào
+          profile.binding.icon_names (tên thật) — không sửa tay từng màn hình.
+    invariants:
+      - id: ATRG-INV-01
+        rule: |
+          Hành động ở vai phá huỷ phải nhận diện được từ tài liệu nghiệp vụ, không phải từ nhãn chữ.
+        check: role == intent.destructive implies rule_evidence.type != null
+        why: >
+          Nhãn chữ mơ hồ theo cả 2 chiều (xem critical_disambiguation): có nhãn nghe vô hại mà phá
+          dữ liệu, có nhãn nghe đáng sợ mà chỉ đóng form.
+  component:
+    meta:
+      component: Button
+      layer: component
+      version: 2.0-draft
+      kinds:
+        - interactive_control
+        - action_trigger
+      requires:
+        - _core.rules.yaml
+        - kinds/interactive_control.rules.yaml
+        - kinds/action_trigger.rules.yaml
+      binding: profile.ghn/ds/button.binding.yaml
+      examples: examples/button.examples.yaml
+    rules: []
+    invariants: []
+    rules_live_at:
+      intent:
+        where: kinds/action_trigger.rules.yaml
+        ids:
+          - ATRG-T-01
+          - ATRG-T-02
+          - ATRG-T-03
+          - ATRG-T-04
+          - ATRG-INV-01
+      emphasis:
+        where: kinds/interactive_control.rules.yaml
+        ids:
+          - ICTL-E-01
+          - ICTL-E-02
+          - ICTL-E-03
+          - ICTL-E-03-c
+          - ICTL-INV-02
+      shape:
+        where: _core.rules.yaml § axis_kinds.default_plus_exception
+        ids:
+          - AX-SHP-01
+          - AX-SHP-02
+          - AX-SHP-INV-01
+        note: >
+          Ngữ cảnh cụ thể của ngoại lệ là CHÍNH SÁCH, khai ở profile.<công ty>/policy.yaml §
+          shape_exception — không khai ở lớp luật.
+      size:
+        where: kinds/interactive_control.rules.yaml
+        ids:
+          - ICTL-Z-01
+          - ICTL-Z-02
+          - ICTL-Z-05
+          - ICTL-Z-06
+          - ICTL-Z-07
+          - ICTL-Z-08
+          - ICTL-INV-14
+          - ICTL-INV-15
+      state:
+        where: kinds/interactive_control.rules.yaml
+        ids:
+          - ICTL-ST-01
+          - ICTL-ST-02
+      icon:
+        where: kinds/interactive_control.rules.yaml
+        ids:
+          - ICTL-IC-01
+          - ICTL-IC-02
+          - ICTL-IC-03
+          - ICTL-IC-04
+        meaning_table: kinds/action_trigger.rules.yaml § icon_meaning_vocabulary
+        names: profile.ghn/ds/_shared.binding.yaml § icon_names
+      cross_component:
+        where: _composition.rules.yaml
+        ids:
+          - CMP-DLG-01
+          - CMP-FTR-01
+          - CMP-FTR-02
+          - CMP-FTR-03
+          - CMP-HDR-01
+          - CMP-ROW-01
+          - CMP-ROW-02
+          - CMP-ROW-03
+          - CMP-ROW-INV-01
+          - CMP-ROW-INV-02
+          - CMP-CNT-01
+      universal:
+        where: _core.rules.yaml § universal_a11y + § axis_invariants
+        ids:
+          - A11Y-INV-01
+          - A11Y-01
+          - A11Y-02
+          - AX-INV-01
+          - AX-INV-02
+          - AX-INV-03
+          - AX-ICN-INV-01
+    growth_warning:
+      guardrail: manifest.yaml § guardrails.component_file_stays_small (> 5 rule → cảnh báo)
+      what_it_means: >
+        File này phình lên KHÔNG có nghĩa Button phức tạp hơn dự kiến. Nó có nghĩa một `kind` đang
+        thiếu hoặc sai. Cách sửa là bốc luật lên đúng kind (hoặc tạo kind mới nếu đủ >= 3 thành viên
+        thật), KHÔNG phải nuôi file này.
+      test_before_adding: >
+        Trước khi thêm một luật vào đây, trả lời: "Chip / Switch / MenuItem có cần luật này không?"
+        Nếu CÓ dù chỉ một cái → nó thuộc kind, không thuộc đây. Nếu nó cần biết về component khác →
+        nó thuộc _composition.
+  composition:
+    rules:
+      - id: CMP-DLG-01
+        involves:
+          - action_trigger
+          - overlay
+        undisableable: true
+        rule: Hành động ở vai phá huỷ BẮT BUỘC có bước xác nhận trong cùng luồng.
+        check: role == intent.destructive implies exists(ConfirmStep in flow)
+        broader_than_role: >
+          Áp cho mọi hành động XOÁ DỮ LIỆU nói chung, KHÔNG chỉ phụ thuộc vai. Một hành động xoá ra
+          vai no-path theo ATRG-T-04.case_c vẫn cần bước xác nhận — vai quyết định hình thức thị
+          giác, không quyết định nhu cầu an toàn.
+        why_undisableable: Đây là luật an toàn dữ liệu, không phải quy ước thiết kế.
+      - id: CMP-FTR-01
+        involves:
+          - interactive_control
+          - screen
+        rule: Mỗi thanh hành động chân form có ĐÚNG 1 điều khiển ở mức nhấn cao nhất.
+        check: count(footerActionBar.controls[emphasis == rank1]) == 1
+        why: >
+          Đây là khu vực người dùng tìm hành động chính. 0 nút rank1 thì không biết bấm gì; 2 nút
+          rank1 thì chúng triệt tiêu nhau.
+        relation_to_kind_rule: Cụ thể hoá ICTL-E-01 ở cấp một khu vực có tên.
+      - id: CMP-FTR-03
+        involves:
+          - interactive_control
+          - screen
+        rule: Thanh hành động chân form không được chứa điều khiển ở mức nhấn thấp nhất.
+        check: footerActionBar.controls all emphasis != rank_lowest
+        relation_to_kind_rule: Cụ thể hoá ICTL-E-03.never_use_when case đầu tiên.
+      - id: CMP-HDR-01
+        involves:
+          - interactive_control
+          - header
+        rule: Header chi tiết không chứa hành động nào ngoài điều khiển điều hướng về.
+        check: detailHeader.controls.length <= 1
+        why: >
+          Header là chỗ định vị "tôi đang ở đâu", không phải chỗ hành động. Nhét hành động vào đây
+          tạo ra 2 khu vực hành động trên cùng một màn và người dùng phải quét cả hai.
+      - id: CMP-ROW-01
+        involves:
+          - interactive_control
+          - action_trigger
+          - table
+        name: Bộ hành động CHUẨN của dòng — mặc định mức nhấn giữa, KHÔNG phải thấp nhất
+        test: >
+          Hành động này có thuộc bộ CỐ ĐỊNH, lặp lại ở MỌI dòng của danh sách (theo
+          profile.policy.standard_row_actions) không?
+        emphasis: emphasis.scale[1]
+        intent_default: intent.no_path
+        why: >
+          Đây là chỗ người dùng thao tác thường xuyên nhất trên một bảng — cần đủ rõ ràng, KHÔNG mờ
+          đi xuống mức thấp nhất chỉ vì nó lặp lại theo dòng.
+        delete_stays_no_path: Xem ATRG-T-04.critical_disambiguation.routine_vs_permanent_delete
+      - id: CMP-ROW-02
+        involves:
+          - interactive_control
+          - action_trigger
+          - table
+        name: Hành động NGOÀI bộ chuẩn — KHÔNG có mức nhấn mặc định
+        rule: >
+          Chỉ hành động thuộc profile.policy.standard_row_actions là cố định theo CMP-ROW-01. Mọi
+          điều khiển KHÁC trong cùng ô thao tác — kể cả khi chỉ hiện ở một số dòng tuỳ điều kiện —
+          KHÔNG được gán mức nhấn cố định chỉ vì nó nằm trong dòng danh sách. Phải đánh giá MỨC ĐỘ
+          ƯU TIÊN thật của hành động đó trong ngữ cảnh dòng này trước; mức ưu tiên đó mới QUYẾT ĐỊNH
+          dạng của nó, không phải suy ngược lại.
+        operationalised_as: >
+          Chạy đầy đủ ATRG-T-* (vai intent) rồi ICTL-E-* (mức nhấn), coi "khu vực" ở bước mức nhấn
+          là chính ô thao tác của dòng đó (xem kinds/interactive_control § region.critical).
+        why: >
+          Mức quan trọng thật của các hành động này khác nhau tuỳ ngữ cảnh nghiệp vụ: có hành động
+          là hành động CHÍNH của dòng (ưu tiên cao → có thể xứng đáng rank1), có hành động chỉ là
+          tiện ích phụ nhẹ (ưu tiên thấp → ra mức giữa hoặc thấp nhất). Dạng LUÔN là kết quả suy ra
+          TỪ mức ưu tiên đã đánh giá — không phải hai lựa chọn tách rời chọn độc lập với nhau.
+      - id: CMP-ROW-03
+        involves:
+          - interactive_control
+          - table
+        name: Ngưỡng gom hành động vào menu
+        rule: |
+          Đếm số hành động khả dụng của dòng.
+            <= profile.policy.row_action_inline_max → hiện TỪNG điều khiển riêng,
+               KHÔNG gom. Bộ chuẩn theo CMP-ROW-01.
+            >  ngưỡng → gom TẤT CẢ vào 1 điều khiển icon-only ở mức nhấn thấp nhất,
+               kích hoạt mới xổ menu.
+        two_decisions_stacked: >
+          Đây là 2 quyết định chồng lên nhau, đừng lẫn:
+            (1) Bộ hành động CHUẨN luôn ở mức nhấn giữa, bất kể có bao nhiêu.
+            (2) Khi vượt ngưỡng, GOM chúng thành 1 điều khiển mức thấp nhất — lúc
+                này mức thấp nhất là do "đại diện cho cả cụm", KHÔNG phải do
+                "hành động phụ".
+          Một điều khiển ngoài bộ chuẩn và không phải điều khiển gom thì theo CMP-ROW-02, KHÔNG mặc
+          định mức thấp nhất.
+        counter_examples:
+          - ❌ Gom khi số hành động vẫn <= ngưỡng — thừa
+          - ❌ Cho bộ hành động chuẩn dùng mức thấp nhất — SAI, phải mức giữa (CMP-ROW-01)
+      - id: CMP-ROW-INV-01
+        involves:
+          - interactive_control
+          - table
+        rule: >
+          Điều khiển trong container lặp thuộc bộ chuẩn → mức nhấn giữa. KHÔNG thuộc bộ chuẩn →
+          không có mức nhấn cố định, nhưng BẮT BUỘC đã chạy qua đánh giá mức ưu tiên.
+        check: >
+          isStandardRowAction == true  implies emphasis == emphasis.scale[1]; isStandardRowAction ==
+          false implies (rule_ids.intent != null and rule_ids.emphasis != null)
+        why_second_branch: >
+          Không kiểm được "mức ưu tiên đánh giá đúng chưa", nhưng kiểm được "đã thật sự chạy
+          pipeline chưa" — rule_ids trống nghĩa là bước đánh giá bị bỏ qua.
+        requires_spec_field: isStandardRowAction (true/false) cho mọi điều khiển trong container lặp
+      - id: CMP-ROW-INV-02
+        involves:
+          - interactive_control
+          - table
+        rule: Ô thao tác vượt ngưỡng policy BẮT BUỘC gom vào 1 điều khiển menu
+        check: |
+          count(actionCell.actions) > profile.policy.row_action_inline_max
+            implies (count(actionCell.visibleControls) == 1
+                     and actionCell.visibleControls[0].icon == 'icon-only')
+      - id: CMP-CNT-01
+        involves:
+          - interactive_control
+          - card
+          - overlay
+        rule: >
+          Điều khiển nằm bên trong container nội dung (card / thân dialog / list item) → mức nhấn
+          thấp nhất.
+        test: Điều khiển nằm trong chỗ mà NỘI DUNG mới là thứ người dùng đọc?
+        why: 'Điều khiển là công cụ, không phải nội dung. [Nielsen #8 Aesthetic and Minimalist Design]'
+        exception: >
+          Trừ khi nó là hành động duy nhất khả dụng lúc đó (màn trống) — lúc đó
+          ICTL-E-03.never_use_when thắng.
+invariants_count: 16
+disabled_rules: []
+composition_not_applicable:
+  - id: CMP-FTR-02
+    involves:
+      - screen

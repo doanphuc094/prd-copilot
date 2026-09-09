@@ -1,0 +1,215 @@
+# =============================================================================
+# policy.yaml — CHÍNH SÁCH GHN (lớp B)
+#
+# QUYẾT ĐỊNH của GHN, không phải chân lý. Ở công ty khác, quyết ngược lại vẫn
+# có thể hợp lý. Đổi công ty → viết lại file này, KHÔNG sửa rules/.
+#
+# Cấu trúc: `shared` áp cho mọi component; mỗi component có scope riêng.
+# Compiler gộp shared + scope của component đang compile thành một namespace
+# phẳng, nên luật trích `profile.policy.X` không cần biết X nằm ở đâu.
+#
+# company: GHN / Freight Tech
+# owner: Williams (Product Designer)
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  company: GHN
+  layer: policy
+  version: 2.0-draft
+  created: "2026-09-08"
+  status: "[ĐỀ XUẤT — chờ Williams review]"
+
+# =============================================================================
+# DÙNG CHUNG MỌI COMPONENT
+# =============================================================================
+shared:
+
+  # ---------------------------------------------------------------------------
+  # CẢM ỨNG / RESPONSIVE
+  # Ngữ cảnh đã chốt: WEB RESPONSIVE trước.
+  # Quote Williams 08/09: "Tao cần cho web responsive trước"
+  #
+  # Đặt ở `shared` vì sàn cảm ứng áp cho MỌI mục tiêu bấm được — nút X đóng
+  # toast, nút đóng chip, checkbox trong dòng bảng — không riêng Button.
+  # ---------------------------------------------------------------------------
+  touch:
+    target_context: web_responsive
+    source: "[ĐỀ XUẤT — 08/09, chờ Williams xác nhận]"
+
+    floor_px:
+      value: 44
+      from_threshold: TOUCH-44
+      rationale: >
+        WCAG 2.5.5 AAA + Apple HIG. Chọn 44 (không phải 48) vì đây là web
+        responsive, không phải sản phẩm Android-first.
+      used_by: [ICTL-Z-05, ICTL-INV-14]
+
+    floor_px_icon_only:
+      value: 48
+      from_threshold: TOUCH-48
+      rationale: >
+        Mục tiêu chỉ có icon gần vuông → chuẩn đo cả 2 chiều nên chiều rộng vỡ
+        cùng lúc với chiều cao. Nâng lên ngưỡng Material 48 để có biên an toàn.
+      used_by: [ICTL-Z-06, ICTL-INV-14]
+
+    pointer_proxy_breakpoint:
+      value: md
+      binding_ref: "binding.breakpoints.values.md"
+      resolves_to_px: 768
+      semantics: "Khung nhìn < 768px → thiết kế như con trỏ thô."
+      marker: "[GIỚI HẠN THẬT] PROXY, không phải điều kiện đúng."
+      real_condition: "@media (pointer: coarse) — dùng ở tầng code"
+      known_mismatch:
+        - "Laptop cảm ứng 1280px: proxy nói tinh, thực tế thô → THIẾU sàn (rủi ro thật)"
+        - "Cửa sổ desktop kéo hẹp 700px: proxy nói thô, thực tế tinh → THỪA sàn (vô hại)"
+      accepted_because: >
+        Sai theo hướng thừa sàn là vô hại. Sai theo hướng thiếu sàn ít gặp với
+        người dùng nội bộ GHN — ghi nhận, không chặn. Tầng code dùng điều kiện
+        con trỏ thật để bù.
+      used_by: [ICTL-Z-05, ICTL-Z-06]
+
+    dense_table_below_breakpoint:
+      value: null
+      status: "⚠️ CHƯA QUYẾT — CẦN WILLIAMS"
+      question: >
+        Dưới breakpoint proxy, bảng nhiều cột dày xử lý thế nào? ICTL-Z-08 nói
+        sàn không đạt được là lỗi layout, nhưng pattern thay thế thì công ty chọn.
+      options:
+        - id: card_list
+          desc: "Mỗi dòng thành 1 card, hành động nằm trong card"
+          tradeoff: "Mất khả năng so sánh giữa các dòng; tốn chiều dọc"
+        - id: bottom_sheet
+          desc: "Giữ bảng, hành động dòng dồn vào tấm trượt lên từ đáy"
+          tradeoff: "Thêm 1 lớp tương tác; GHN DS đã có component cho pattern này"
+        - id: horizontal_scroll
+          desc: "Giữ nguyên bảng, cho trượt ngang"
+          tradeoff: >
+            Cột thao tác bị trượt khỏi tầm nhìn — đây đúng là vấn đề đã gặp
+            thật khi render màn #06 (bảng 11 cột tổng 1700px bị ép về 1380px,
+            cột "Thao tác" bị cắt). Chọn cái này là chấp nhận lại đúng lỗi đó.
+      recommendation: >
+        [ĐỀ XUẤT] bottom_sheet — DS đã có component, và giữ được khả năng so
+        sánh giữa các dòng (thứ mà bảng tồn tại để làm) trong khi vẫn cho hành
+        động đủ lớn.
+      blocking: "ICTL-Z-08 sẽ escalate mỗi lần gặp ca này cho tới khi mục này được quyết."
+      used_by: [ICTL-Z-08]
+
+# =============================================================================
+# SCOPE: BUTTON
+# =============================================================================
+button:
+
+  standard_row_actions:
+    value: [Xem, Sửa, Xoá]
+    source: "[XÁC NHẬN — Williams 07/09]"
+    quote: "Trong ô thao tác: các button như Xem/Xóa/Sửa sẽ là outline grey"
+    used_by: [CMP-ROW-01, CMP-ROW-02, CMP-ROW-INV-01]
+    semantics: >
+      Chỉ ĐÚNG 3 hành động này cố định theo CMP-ROW-01. Mọi hành động khác
+      trong cùng ô thao tác chạy pipeline bình thường (CMP-ROW-02), kể cả khi
+      nó chỉ hiện ở một số dòng.
+    matching_note: >
+      Khớp theo Ý NGHĨA hành động, không khớp cứng chuỗi nhãn. "Xem chi tiết"
+      khớp "Xem". Nhãn lạ không rõ thuộc nhóm nào → escalate, không tự xếp vào.
+
+  row_action_inline_max:
+    value: 3
+    source: "[XÁC NHẬN — Williams 07/09]"
+    quote: >
+      "Có dùng - thường là ô thao tác có >2 hoặc 3 action tao mới gom thành
+      dạng đó. Nếu ô thao tác chứa đủ 3 nút thì không cần làm dạng này"
+    used_by: [CMP-ROW-03, CMP-ROW-INV-02]
+
+  size_by_position:
+    footer_action_bar:      md
+    detail_header:          sm
+    section_title_bar:      sm
+    table_row_action:       sm
+    dense_table_cell:       xs
+    chip_tag:               xs
+    empty_state:            lg
+    internal_landing_cta:   lg
+    _default:               md
+    source: "[XÁC NHẬN — Williams 07/09] — trích từ BTN-Z-01/02/03 của v0.2"
+    used_by: ICTL-Z-01
+    escalate_when: "Vị trí mới chưa có trong bảng → bổ sung ở đây, KHÔNG chọn bước gần giống."
+
+  oversize_allowed_positions:
+    value: [empty_state, internal_landing_cta]
+    source: "[XÁC NHẬN — Williams 07/09] — trích từ BTN-Z-04"
+    used_by: ICTL-Z-02
+
+  footer_action_bar_screen_types:
+    value: [create-edit]
+    source: "[DESIGN] — trích từ BTN-INV-3 của v0.2"
+    used_by: CMP-FTR-02
+
+  shape_exception:
+    enabled: true
+    context: "Điều khiển điều hướng về trên top navigation / Detail Header"
+    scope_strict: true
+    source: "[XÁC NHẬN — Williams 07/09, kèm ảnh mẫu]"
+    rationale: "Ít khi dùng hình bo tròn hai đầu. Trong sản phẩm chỉ có đúng một chỗ này."
+    intent_role: no_path
+    why_no_path: "'Trở về' không dẫn tới mục đích màn hình → vai no_path theo ATRG-T-04"
+    full_variant_at: "binding.shape.exception_full_spec"
+    used_by: [AX-SHP-02, AX-SHP-INV-01]
+
+  delete_in_standard_cell:
+    intent_role: no_path
+    source: "[XÁC NHẬN — Williams 07/09]"
+    quote: "Tao confirm là đúng. Xóa nằm trong ô thao tác chuẩn là grey/ outline"
+    used_by: "ATRG-T-04.critical_disambiguation.routine_vs_permanent_delete"
+    escalate_to_destructive_when: >
+      Tài liệu gọi đích danh xoá vĩnh viễn / không khôi phục được / ảnh hưởng
+      diện rộng hơn 1 dòng (case_d).
+    still_requires_confirm_step: true
+
+  destructive_examples:
+    value: ["Xoá đơn", "Huỷ đơn đã xác nhận", "Xoá vĩnh viễn"]
+    source: "[XÁC NHẬN — Williams 07/09]"
+    used_by: ATRG-T-01
+
+  excluded:
+    intents:
+      - value: [Info, Success, Warning]
+        reason: "[XÁC NHẬN — Williams 07/09] Không dùng cho Button. Đưa vào backlog."
+        reopen_condition: "Nếu cần vai mang màu trạng thái, mở lại và viết luật guard TRƯỚC."
+        cross_component_note: >
+          Bộ này CHÍNH LÀ trục status mà Toast (loại feedback_transient) sẽ
+          bắt buộc phải có — xem binding.quirks.status_color_types.
+    pseudo_axis:
+      - value: Loading
+        reason: "[XÁC NHẬN — Williams 07/09] Ít dùng trong sản phẩm."
+        modelling_note: >
+          Bỏ cái này cũng gỡ 1 mâu thuẫn mô hình: Loading vốn là STATE bị đặt
+          nhầm vào trục intent trong DS.
+    renderer_note: >
+      Các giá trị này VẪN tồn tại trong DS và renderer có thể gặp ở file cũ.
+      Tầng spec KHÔNG sinh ra chúng — xem AX-INV-03.
+
+  icon_policy:
+    submit_for_approval_is_distinct:
+      decision: "'Gửi duyệt' dùng ý nghĩa CON DẤU, tách riêng khỏi 'gửi thông thường'"
+      source: "[XÁC NHẬN — Williams 07/09]"
+      rationale: "Gửi đi để XIN DUYỆT — con dấu đúng nghĩa hơn gửi tin nhắn/email."
+    exits_have_no_icon:
+      decision: "Nhóm lối ra (Huỷ / Quay lại / Đóng / Lưu nháp) cố tình KHÔNG icon"
+      source: "[XÁC NHẬN — Williams 07/09]"
+      rationale: "Để phân biệt với 'Trở về' dạng điều hướng trang (có icon mũi tên trái)."
+      note: "Muốn nhất quán hoá về sau thì Williams phải nói rõ — đừng tự đổi."
+    export_icon:
+      decision: "'Xuất Excel / Xuất file / Xuất dữ liệu' dùng ý nghĩa MŨI TÊN XUỐNG"
+      source: "[XÁC NHẬN — Williams 07/09]"
+      correction_of: >
+        Đề xuất ban đầu là biểu tượng file-export. Từng gắn cờ mâu thuẫn với
+        "Tạo đơn bằng Excel" — đọc nhầm, đó là 2 hành động khác nhau hoàn toàn.
+
+# =============================================================================
+# BẬT / TẮT LUẬT
+# Chỉ tắt được luật mô tả cơ chế phụ thuộc DS. Luật có cờ undisableable thì
+# compiler từ chối tắt (báo lỗi).
+# =============================================================================
+rule_toggles:
+  AX-SHP-02: {enabled: true, reason: "GHN DS có hình bo tròn hai đầu, dùng cho nút điều hướng về"}

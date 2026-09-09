@@ -1,0 +1,251 @@
+{
+  "spec_version": "1.0",
+  "feature": "Chi tiết khách hàng",
+  "_source": "Screen description scratchpad 01-khach-hang-chi-tiet.md — Figma B2B-PORTAL (s2NE6ikwLnsZSUp97RBfof, node 21219:13346), đối chiếu ghn-ds-keymap-flat.json + role-to-component-mapping.md",
+  "_purpose": "Spec mẫu #2 (loại khuôn TRANG CHI TIẾT, khác #06 là list phức tạp) — test xem schema v1 + HTML prototype renderer có dùng lại được cho loại khuôn khác list hay không.",
+  "global": {
+    "platform": "web",
+    "system": "portal_b2b",
+    "permission_model": {
+      "type": "none_ui_enforced",
+      "business_convention_note": "BD phụ trách bảng giá + phụ phí, Ops phụ trách Thông tin vận hành — chỉ là quy ước tổ chức, KHÔNG do UI enforce.",
+      "_note_resolved_2026-09-06": "[ĐÃ CHỐT, resolves finding #18] Thêm enum thứ 3 'none_ui_enforced' vào global.permission_model.type — Williams xác nhận: #01 hoàn toàn KHÔNG có cơ chế phân quyền ẩn/hiện/chặn thao tác theo role trên UI, mọi role thấy và bấm được hết. Việc phân công thực tế (business_convention_note) chỉ mang tính tài liệu/traceability, KHÔNG phải rule renderer — không field nào trong schema đọc field này để ẩn/hiện gì cả. Khi type=none_ui_enforced thì KHÔNG cần field scoped_by (không có entity nào để lọc)."
+    },
+    "button_color_semantics": {
+      "primary": { "color": "Cam", "default_style": "Fill", "style_override_allowed": ["Outline"] },
+      "secondary": { "color": "Xanh dương", "default_style": "Outline", "style_override_allowed": ["Fill"] },
+      "destructive": { "color": "Đỏ", "default_style": "Fill", "style_override_allowed": ["Outline"] },
+      "cancel": { "color": "Grey", "default_style": "Outline", "style_override_allowed": ["Fill"] },
+      "confirmed": true,
+      "_note_finding10_resolved": "2026-09-06, Williams xác nhận: TẤT CẢ 4 role đều được phép override style (không chỉ secondary như bản cũ). Resolves finding #10 — primary Outline (#01 'Thay đổi thông tin khách hàng') và destructive Outline (#01 'Dừng hoạt động') đều HỢP LỆ, không phải lỗi mô tả."
+    },
+    "badge_color_semantics": {
+      "grey": "chưa xử lý / trung tính / không đủ quan trọng để nổi bật",
+      "green": "đã xử lý tích cực / đang hoạt động",
+      "red": "CHỈ khi thực sự quan trọng, cần người dùng chú ý",
+      "confirmed": true
+    },
+    "validate_timing": "on_submit",
+    "usage_scenario": "Hồ sơ trung tâm 1 khách hàng B2B — BD nhập/duyệt điều kiện thương mại (bảng giá, phụ phí), Ops cấu hình cách hệ thống tự động gửi yêu cầu vận hành cho GSVT, không cần tra nhiều màn rời."
+  },
+  "screens": {
+    "scr_kh1": {
+      "order": 1,
+      "name": "Chi tiết khách hàng",
+      "screen_type": "detail",
+      "module": "Quản lý khách hàng",
+      "_note_module": "Williams xác nhận thuộc Portal B2B, tên layer Figma 'Freight' chỉ là tên nội bộ. Module 'Quản lý khách hàng' CHƯA có trong MENU-THEO-HE-THONG.md (mục B2B đang để trống) — cần bổ sung dòng module này (việc kỹ thuật, không phải hỏi Williams).",
+      "page_header": {
+        "is_top_level": false,
+        "back_button": { "component": "Button organism (93x40 - 93x32 theo tài liệu gốc)", "button_role": "cancel", "label": "Trở về", "_note_resolved": "2026-09-06, Williams xác nhận: màu Grey (role cancel), CÓ label text 'Trở về' kèm icon mũi tên — không phải icon-only. Resolves finding #11." },
+        "title_format": "id_name",
+        "status_badge": { "display_type": "badge", "example": "Đang hoạt động" },
+        "breadcrumb": ["Quản lý khách hàng", "Chi tiết khách hàng"],
+        "primary_action": {
+          "label": "Thay đổi thông tin khách hàng",
+          "button_role": "primary",
+          "style_override": "Outline",
+          "opens_edit_mode": true,
+          "_note_resolved": "Finding #10 đã chốt (2026-09-06, xem global.button_color_semantics._note_finding10_resolved) — primary + Outline là HỢP LỆ, không phải lỗi mô tả."
+        }
+      },
+      "context_6dim": {
+        "what": "Trang chi tiết 1 khách hàng B2B — xem/sửa thông tin doanh nghiệp, GPKD, thông tin thanh toán; quản lý bảng giá + phụ phí theo FTL/LTL; cấu hình cách hệ thống tự động gửi yêu cầu vận hành cho GSVT; xem lịch sử thay đổi.",
+        "why": "Hồ sơ trung tâm khách hàng — BD nhập/duyệt điều kiện thương mại, Ops cấu hình vận hành, tránh tra nhiều màn rời.",
+        "who": "Mọi role thấy/bấm được hết trên UI (chưa có phân quyền ẩn/hiện) — chỉ phân công theo quy ước: BD phụ trách bảng giá+phụ phí, Ops phụ trách Thông tin vận hành.",
+        "how": "1 trang duy nhất, không phải flow nhiều bước — mọi thao tác thực hiện tại chỗ, có khối riêng theo từng nhóm dữ liệu. Bấm 'Thay đổi thông tin khách hàng' → vào edit mode toàn trang → hiện footer_action_bar [Huỷ]/[Lưu thông tin].",
+        "edges": "2 trạng thái rỗng riêng (GPKD chưa có tài liệu; bảng giá/phụ phí chưa có dữ liệu) — không phải chỉ 1 trạng thái đầy đủ dữ liệu duy nhất.",
+        "history": "Màn hình đầu tiên mô tả thật theo template PRD Copilot — chưa có version trước."
+      },
+      "sections": {
+        "sec_ig1": {
+          "order": 1,
+          "type": "info_block_group",
+          "_note_new_type": "LOẠI SECTION MỚI (đã thêm vào catalog Mục 3 schema-v1-draft.md) — 2 khối label/value cạnh nhau CÙNG 1 HÀNG, mỗi khối có heading + content riêng (khác 'form_section' đơn khối, khác 'tabs'). [Đã vào catalog, chờ ví dụ thứ 2 để xác nhận hội tụ — finding #12]",
+          "columns": 2,
+          "edit_mode_layout": "stacked_full_width",
+          "_note_edit_mode_layout": "2026-09-06, Williams xác nhận qua feedback flow: khi bật edit mode (primary_action.opens_edit_mode=true), layout ĐỔI từ lưới 2-cột cạnh nhau sang XẾP DỌC full-width theo hàng riêng — khối 'Thông tin chung' kéo dài hết chiều rộng, khối 'Giấy phép kinh doanh' (chứa file_upload_single) xuống hàng riêng bên dưới.",
+          "blocks": [
+            {
+              "block_id": "blk_thongtinchung",
+              "heading": "Thông tin chung",
+              "style": "label_value_list",
+              "editable_in_edit_mode": true,
+              "fields": [
+                { "label": "Tên doanh nghiệp", "input_type": "text" },
+                { "label": "Tên thương hiệu", "input_type": "text" },
+                { "label": "Client ID", "input_type": "text", "readonly": true },
+                { "label": "Mã số thuế", "input_type": "text" },
+                { "label": "Số giấy phép KD", "input_type": "text" },
+                { "label": "Địa chỉ công ty", "input_type": "text" },
+                { "label": "Ghi chú", "input_type": "textarea" }
+              ],
+              "_note_editor": "'Editable_in_edit_mode' + ai được sửa field nào (BD/Ops) KHÔNG có trong câu trả lời gốc — Williams note rõ 'chưa rõ' cho riêng khối này. [CÒN MỞ]"
+            },
+            {
+              "block_id": "blk_gpkd",
+              "heading": "Giấy phép kinh doanh",
+              "style": "label_value_list_plus_file_upload",
+              "fields": [
+                { "label": "Số giấy phép kinh doanh", "input_type": "text" }
+              ],
+              "file_upload_single": {
+                "_note_new_type": "COMPONENT MỚI — upload 1 file đơn (khác upload_block Excel hàng loạt đã có). 2 trạng thái: [CÒN MỞ — finding #13]",
+                "empty_state": "Chưa có tài liệu giấy phép kinh doanh",
+                "has_file_state": {
+                  "display": "[tên file] + 'Ngày cập nhật: [ngày]' + 1 nút nhỏ (125x40)",
+                  "button_label": "_UNKNOWN — chưa xác nhận, có thể 'Xem file' hoặc 'Tải xuống'"
+                }
+              }
+            }
+          ]
+        },
+        "sec_thanhtoan": {
+          "order": 2,
+          "type": "form_section",
+          "style": "label_value_list_full_width",
+          "editable_in_edit_mode": true,
+          "fields": [
+            { "label": "Địa chỉ xuất hoá đơn", "input_type": "text" },
+            { "label": "Email nhận hoá đơn", "input_type": "text" },
+            { "label": "SĐT liên hệ thanh toán", "input_type": "phone" },
+            { "label": "Người liên hệ thanh toán", "input_type": "text" },
+            { "label": "Ghi chú thanh toán", "input_type": "textarea" }
+          ]
+        },
+        "sec_config": {
+          "order": 3,
+          "type": "tabs",
+          "tabs": [
+            { "label": "FTL" },
+            { "label": "LTL" }
+          ],
+          "_note": "Nội dung 3 khối con (bảng giá / phụ phí / thông tin vận hành) đổi theo tab đang chọn — mỗi tab có bộ dữ liệu riêng, cùng cấu trúc.",
+          "content_per_tab": {
+            "sec_bangia": {
+              "order": 1,
+              "type": "table_card",
+              "toolbar": {
+                "right_actions": [
+                  { "label": "Tạo bảng giá mới {LOẠI}", "button_role": "primary" }
+                ]
+              },
+              "columns": [
+                { "label": "#", "display_type": "text" },
+                { "label": "Tên bảng giá", "display_type": "text_bold" },
+                { "label": "Số lượng", "display_type": "text" },
+                { "label": "Trạng thái", "display_type": "badge" },
+                { "label": "Ngày thay đổi", "display_type": "text" },
+                { "label": "Thao tác", "display_type": "button" }
+              ],
+              "row_actions": [
+                { "label": "Dừng hoạt động", "variant": "direct", "button_role": "destructive", "style_override": "Outline", "_note_resolved": "Finding #10 đã chốt (2026-09-06) — destructive + Outline hợp lệ." },
+                { "label": "Lên lịch hoạt động", "variant": "direct", "button_role": "secondary", "conditional_disable": "trạng thái bảng giá = 'Đang áp dụng' HOẶC 'Hết hiệu lực'" },
+                { "label": "...", "variant": "overflow_menu", "menu_items": [
+                  { "label": "Xem chi tiết", "icon": "eye" },
+                  { "label": "Chỉnh sửa", "icon": "pencil" }
+                ]}
+              ],
+              "empty_state": {
+                "no_data_ever": "Chưa có bảng giá — Chọn 'Tạo bảng giá mới FTL' để bắt đầu thiết lập"
+              },
+              "pagination": { "enabled_when": "tổng số dòng đang hiển thị >= 10 dòng" },
+              "success_message_banner": { "hidden_by_default": true, "shown_after": "tạo/sửa bảng giá thành công" }
+            },
+            "sec_phuphi": {
+              "order": 2,
+              "type": "tabs",
+              "tabs": [ { "label": "Phí bốc xếp" }, { "label": "Phí khác" } ],
+              "content": {
+                "type": "table_card",
+                "toolbar": {
+                  "right_actions": [
+                    { "label": "Tạo phí bốc xếp mới {LOẠI}", "button_role": "primary" }
+                  ]
+                },
+                "columns": [
+                  { "label": "#", "display_type": "text" },
+                  { "label": "Tên phí bốc xếp", "display_type": "text_bold" },
+                  { "label": "Loại", "display_type": "text" },
+                  { "label": "Trạng thái", "display_type": "switch_badge", "_note_new_type": "display_type MỚI — 1 ô chứa CẢ Switch (bật/tắt phụ phí) VÀ Badge (mô tả trạng thái) cùng lúc, khác 'badge' đơn thuần dùng ở bảng giá cùng màn. [CÒN MỞ — finding #14]" },
+                  { "label": "Ngày thay đổi", "display_type": "text" },
+                  { "label": "Người thay đổi", "display_type": "text" },
+                  { "label": "Thao tác", "display_type": "button" }
+                ],
+                "row_actions": [
+                  { "label": "Xem chi tiết", "variant": "direct", "button_role": "secondary" },
+                  { "label": "Chỉnh sửa", "variant": "direct", "icon_only": "pencil" },
+                  { "label": "Xoá", "variant": "direct", "icon_only": "trash", "button_role": "destructive", "_note_ux": "Williams ghi nhận: icon xoá (đỏ) hiện nổi bật hơn icon sửa — dự định SAU NÀY giảm cấp thị giác xuống ngang icon sửa, CHƯA áp dụng ở bản mô tả/spec này. Giữ nguyên destructive/nổi bật cho tới khi có xác nhận đổi." }
+                ],
+                "empty_state": { "no_data_ever": "Chưa có phụ phí — Chọn 'Tạo phí bốc xếp mới FTL' để bắt đầu thiết lập" },
+                "pagination": { "enabled_when": "tổng số dòng đang hiển thị >= 10 dòng" },
+                "success_message_banner": { "hidden_by_default": true, "shown_after": "tạo/sửa phụ phí thành công" }
+              },
+              "_note_khac_bang_gia": "2 bảng (bảng giá, phụ phí) KHÔNG dùng chung 1 bộ nút Thao tác — mỗi bảng có bộ hành động riêng theo đúng nghiệp vụ, không phải pattern Xem/Sửa/Xoá cố định dùng lại y hệt."
+            },
+            "sec_vanhanh": {
+              "order": 3,
+              "type": "form_section",
+              "style": "radio_group_with_description",
+              "_note_new_type": "input_type MỚI trong Mục 3c — khác 'radio_group' hiện có (list gọn nhiều lựa chọn). Đây là 2 lựa chọn LOẠI TRỪ LẪN NHAU, MỖI lựa chọn có mô tả dài (1-2 câu) hiển thị ngay dưới label — component thật là Organism/Checkbox/sm dù hành vi là radio (Williams xác nhận, cần ghi chú để không nhầm 'Checkbox' = multi-select). [CÒN MỞ — finding #15]",
+              "field": {
+                "label": "Cấu hình gửi yêu cầu vận hành",
+                "required": true,
+                "input_type": "radio_group_with_description",
+                "options": [
+                  { "label": "Tự động", "description": "Hệ thống tự gửi yêu cầu cho GSVT theo đúng tải trọng khách đặt, không cần Ops can thiệp." },
+                  { "label": "Thủ công", "description": "Hệ thống chờ Ops sắp xếp trước, sau đó mới gửi yêu cầu xuống GSVT." }
+                ]
+              }
+            }
+          }
+        },
+        "sec_history": {
+          "order": 4,
+          "type": "table_card",
+          "columns": [
+            { "label": "#", "display_type": "text" },
+            { "label": "Log ID", "display_type": "text" },
+            { "label": "Người cập nhật", "display_type": "text" },
+            { "label": "Ngày cập nhật", "display_type": "text" },
+            { "label": "Thay đổi", "display_type": "link", "opens_screen": "scr_history_diff" }
+          ],
+          "pagination": { "enabled_when": "tổng số dòng đang hiển thị >= 10 dòng" }
+        }
+      },
+      "footer_action_bar": {
+        "visible_when": "edit_mode = true (bấm primary_action ở page_header)",
+        "buttons": [
+          { "label": "Huỷ", "button_role": "cancel" },
+          { "label": "Lưu thông tin", "button_role": "primary" }
+        ],
+        "_note": "Khớp đúng field footer_action_bar đã cataloged sẵn ở schema-v1-draft.md Mục 3 (ghi chú '(01)') — không phải finding mới, chỉ là ví dụ thật đầu tiên xác nhận catalog đã đoán đúng từ trước khi có #01."
+      }
+    },
+    "scr_history_diff": {
+      "order": 2,
+      "name": "Đối chiếu giá trị cũ – giá trị mới",
+      "screen_type": "modal",
+      "module": "Quản lý khách hàng",
+      "_note_resolved": "2026-09-06, Williams xác nhận layout bảng 3 cột (trường/giá trị cũ/giá trị mới) là ĐÚNG cấu trúc thật — resolves finding #17. Chỉ sửa 1 chi tiết trực quan: giá trị cũ (diff_old) phải có gạch ngang (strikethrough), giá trị mới (diff_new) giữ kiểu nổi bật thường.",
+      "sections": {},
+      "footer": {
+        "buttons": [
+          { "label": "Đóng", "button_role": "cancel" }
+        ]
+      }
+    }
+  },
+  "_findings_khi_viet_spec_nay": [
+    "10. [ĐÃ CHỐT 2026-09-06] page_header.primary_action ('Thay đổi thông tin khách hàng') là role primary style Outline, row_actions 'Dừng hoạt động' (destructive) style Outline — Williams xác nhận TẤT CẢ 4 role đều được phép style_override_allowed, không phải lỗi mô tả. Xem global.button_color_semantics._note_finding10_resolved.",
+    "11. [ĐÃ CHỐT 2026-09-06] Nút 'Trở về' — Button organism thật, màu Grey (role cancel), CÓ label text 'Trở về' kèm icon (không phải icon-only).",
+    "12. [Đã vào catalog, chờ ví dụ thứ 2] Loại section mới 'info_block_group' — 2 khối label/value cạnh nhau cùng hàng, mỗi khối có heading+content riêng; thêm hành vi edit_mode_layout=stacked_full_width (xác nhận qua feedback flow 2026-09-06).",
+    "13. [Đã vào catalog, chờ ví dụ thứ 2] Component mới 'file_upload_single' — upload 1 file đơn kèm ngày cập nhật, 2 trạng thái rỗng/đã có, khác upload_block (Excel hàng loạt) đã có.",
+    "14. [Đã vào catalog, chờ ví dụ thứ 2] display_type mới 'switch_badge' cho cột bảng có cả Switch bật/tắt VÀ Badge trạng thái trong cùng 1 ô — khác 'badge' đơn thuần.",
+    "15. [Đã vào catalog, chờ ví dụ thứ 2] input_type mới 'radio_group_with_description' — 2 lựa chọn loại trừ lẫn nhau, mỗi lựa chọn có mô tả dài bên dưới, component thật Organism/Checkbox/sm dù hành vi là radio.",
+    "16. [XÁC NHẬN ĐÚNG, không phải finding mới] footer_action_bar (Mục 3 catalog cũ) khớp chính xác với #01 — catalog đã đoán đúng từ trước dựa theo ghi chú '(01)', giờ có ví dụ thật xác nhận cấu trúc [Huỷ]/[Lưu thông tin] + trigger từ primary_action.opens_edit_mode.",
+    "17. [ĐÃ CHỐT 2026-09-06] Modal 'Đối chiếu giá trị cũ – giá trị mới' — Williams xác nhận layout bảng 3 cột ĐÚNG cấu trúc thật; chỉ sửa 1 chi tiết trực quan (giá trị cũ cần gạch ngang), đã sửa ở prototype.",
+    "18. [ĐÃ CHỐT 2026-09-06, Williams] permission_model.type: thêm enum thứ 3 'none_ui_enforced' — dùng khi màn hình hoàn toàn KHÔNG có cơ chế phân quyền ẩn/hiện/chặn thao tác theo role trên UI (mọi role thấy/bấm được hết), phân biệt rõ với 'module' (có quyền module = xem toàn bộ dữ liệu module — vẫn có khái niệm quyền, chỉ là cấp module) và 'entity_scoped' (lọc theo entity con). Thêm field phụ 'business_convention_note' (free text, optional) để ghi lại quy ước phân công thực tế — chỉ mang tính tài liệu, không phải rule renderer.",
+    "19. [CÒN MỞ, XUNG ĐỘT VỚI #06 — CẦN WILLIAMS RECONCILE] Feedback 2026-09-06 (mid-review #01): 'bảng dữ liệu có các ô title nền xám FAFAFA, các cột có stroke dọc phân chia rõ ràng'. Đã áp dụng cho #01 (thead th background:#fafafa + border-right giữa các cột). NHƯNG #06 đã CHỐT trước đó (từ ảnh thiết kế thật #06) là header nền TRẮNG (--bg-surface), không phải xám — hai chỉ dẫn này mâu thuẫn nhau. Có thể là: (a) 2 loại bảng khác nhau có style khác nhau thật (bảng chính màn list vs bảng phụ trong trang chi tiết), hoặc (b) 1 trong 2 lần feedback bị nhầm. CHƯA tự sửa ngược #06 — cần Williams xác nhận đây có phải rule chung mới, hay riêng cho #01."
+  ]
+}

@@ -1,0 +1,195 @@
+# =============================================================================
+# button.binding.yaml — GIÁ TRỊ DS RIÊNG CỦA BUTTON (lớp C)
+#
+# Chỉ chứa thứ RIÊNG của Button. Thứ dùng chung (breakpoints, bộ icon, quirk
+# cấp file, bẫy liên component) nằm ở ds/_shared.binding.yaml
+#
+# File này đổi khi DS ra bản mới — kể cả khi KHÔNG đổi công ty.
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  component: Button
+  layer: ds-binding-component
+  version: 2.0-draft
+  created: "2026-09-08"
+  shared: profile.ghn/ds/_shared.binding.yaml
+
+component:
+  name: "Button / Button organism"
+  component_set_id: "814:46116"
+  component_key: "4e004e9d80a82cf3b0ec50e3b8cb9c6fb8eeb210"
+  library_key: "lk-250e103acf2b45b04608ee560ea1a546cd58015985b5b548800febe7e720fb83abfcf9e680931bb089ee0468c5b18d7a350dafbcc8d16f038ef58c80ab5cce1c"
+  total_variants: 920
+  source: "[FIGMA] đọc trực tiếp component set 08/09"
+
+# -----------------------------------------------------------------------------
+# TÊN PROPERTY THẬT TRONG DS
+# -----------------------------------------------------------------------------
+figma_properties:
+  emphasis_and_shape: Style      # ⚠️ 1 property gộp 2 trục — xem quirks.merged_style
+  intent: Type
+  size: Size
+  state: State
+  source: "[FIGMA]"
+
+# -----------------------------------------------------------------------------
+# BINDING: VAI → CHUỖI DS HIỂU
+# -----------------------------------------------------------------------------
+intent:
+  axis_kind: closed_role_set
+  roles: [primary, alternate, destructive, no_path]
+  bind:
+    primary:     "Primary"
+    alternate:   "Secondary"
+    destructive: "Destructive"
+    no_path:     "Grey"
+  vocabulary_decision:
+    source: "[XÁC NHẬN — Williams 08/09]"
+    quote: "Không giữ theo semantic follow đúng với type của button rules"
+    meaning: >
+      Chuỗi DS lấy NGUYÊN theo property Type của DS này. KHÔNG dùng role name
+      của semantic.json (primary/secondary/destructive/cancel), KHÔNG đặt tên mới.
+  risk_noted:
+    issue: >
+      "Grey" là một từ chỉ MÀU, không mô tả ý nghĩa hành động — trong khi vai
+      của nó là "không nằm trên đường tới mục đích màn hình".
+    accepted_because: "Williams chốt dùng từ vựng Type để tránh thêm phương ngữ thứ ba."
+    migration_cost_if_ds_changes: >
+      DS khác gọi trục này là Neutral/Tertiary/Default thì chỉ sửa ĐÚNG 1 DÒNG
+      ở đây. Luật không đụng tới — đó chính là giá trị của lớp binding.
+  superseded:
+    semantic_json_roles: [primary, secondary, destructive, cancel]
+    status: "KHÔNG DÙNG NỮA — xem decisions.md 08/09-B"
+
+emphasis:
+  axis_kind: ordered_scale
+  scale: [Fill, Outline, Ghost]
+  rank1: Fill
+  rank_lowest: Ghost
+  bind: {Fill: "Fill", Outline: "Outline", Ghost: "Ghost"}
+  source: "[FIGMA]"
+
+shape:
+  axis_kind: default_plus_exception
+  default:   Round
+  exception: Circle
+  bind: {Round: "Round", Circle: "Circle"}
+  meaning:
+    Round:  "Bo góc vừa phải — hình dạng tiêu chuẩn"
+    Circle: "Bo tròn HOÀN TOÀN hai đầu (dạng viên thuốc/pill)"
+  verified_by: "[FIGMA] so ảnh render 814:46117 (Round) vs 814:46121 (Circle) ngày 07/09"
+  correction_note: >
+    Từng hiểu sai: tưởng Round = có nhãn chữ, Circle = nút tròn chỉ icon. SAI —
+    cả hai đều chứa nhãn chữ bình thường, khác nhau chỉ ở độ bo góc.
+  exception_full_spec:
+    variant: {Style: "Outline Circle", Type: "Grey", Size: "sm", State: "Default"}
+    icon: {placement: leading, meaning: "mũi tên trái"}
+    node_id: "814:46667"
+    context_is_policy: "profile.policy.shape_exception"
+
+state:
+  axis_kind: closed_role_set
+  roles: [Default, Disabled]
+  bind:
+    Default:  "Default"
+    Disabled: "Disable"          # ⚠️ DS viết "Disable", thiếu 'd'
+  runtime_only: [Hover, Focus]
+  source: "[FIGMA]"
+  naming_trap: >
+    Vai là "Disabled" nhưng chuỗi DS là "Disable". Đây đúng loại lệch mà lớp
+    binding tồn tại để hấp thụ — rules/ viết "Disabled", renderer nhận "Disable".
+
+# -----------------------------------------------------------------------------
+# CÁCH GHÉP CHUỖI CUỐI
+# -----------------------------------------------------------------------------
+render_template:
+  Style: "{emphasis} {shape}"
+  example: "emphasis=Outline + shape=Round → Style='Outline Round'"
+  required_because: "DS gộp 2 trục vào 1 property — xem quirks.merged_style"
+
+# -----------------------------------------------------------------------------
+# SIZE — thang + kích thước vật lý thật
+#
+# BẮT BUỘC phải có (AX-PHY-01): thiếu height_px thì ICTL-Z-05/Z-06 và
+# ICTL-INV-14 không kiểm được sàn cảm ứng, và sẽ "pass" mà không kiểm gì.
+# -----------------------------------------------------------------------------
+size:
+  axis_kind: ordered_scale_physical
+  unit: px
+  steps: [xs, sm, md, lg, xl]
+  height_px:
+    xs: 32
+    sm: 40
+    md: 44
+    lg: 48
+    xl: 52
+  padding_vertical_px:   {xs: 8,  sm: 10, md: 12, lg: 14, xl: 16}
+  padding_horizontal_px: {xs: 12, sm: 16, md: 16, lg: 16, xl: 16}
+  icon_box_px:           {xs: 16, sm: 16, md: 16, lg: 20, xl: 20}
+  corner_radius_px: 8         # giống nhau mọi bước
+  item_spacing_px: 16         # giống nhau mọi bước
+  measured_nodes:
+    xs: "1062:17669"
+    sm: "814:47167"
+    md: "814:46117"
+    lg: "814:47449"
+    xl: "814:47731"
+  measured_variant_filter: "Style=Fill Round, Type=Primary, State=Default"
+  measured_on: "2026-09-08"
+  source: "[FIGMA]"
+
+  threshold_compliance:
+    xs: {px: 32, TOUCH-24: pass, TOUCH-44: fail, TOUCH-48: fail}
+    sm: {px: 40, TOUCH-24: pass, TOUCH-44: fail, TOUCH-48: fail}
+    md: {px: 44, TOUCH-24: pass, TOUCH-44: pass, TOUCH-48: fail}
+    lg: {px: 48, TOUCH-24: pass, TOUCH-44: pass, TOUCH-48: pass}
+    xl: {px: 52, TOUCH-24: pass, TOUCH-44: pass, TOUCH-48: pass}
+  notable: >
+    md = đúng 44 và lg = đúng 48 — trùng khít 2 ngưỡng cảm ứng. DS này được xây
+    có tính tới cảm ứng, không phải tình cờ. Không cần phát minh bước size mới
+    cho responsive, chỉ cần biết cắt ở đâu.
+
+  icon_only_width_note: >
+    Nút icon-only KHÔNG thừa chiều rộng như nút có nhãn. Tính từ padding + icon:
+      xs = 12+12+16 = 40 rộng × 32 cao  → fail TOUCH-44 cả 2 chiều
+      md = 16+16+16 = 48 rộng × 44 cao  → pass TOUCH-44
+    Đây là căn cứ số cho việc ICTL-Z-06 đặt sàn icon-only cao hơn.
+
+# -----------------------------------------------------------------------------
+# QUIRK RIÊNG CỦA BUTTON TRONG DS NÀY
+# -----------------------------------------------------------------------------
+quirks:
+  merged_style:
+    legacy_id: BTN-ANOMALY-2
+    severity: "trung bình"
+    finding: "Property 'Style' gộp 2 khái niệm: mức nhấn (Fill/Outline/Ghost) × hình dạng (Round/Circle)"
+    problem: >
+      Hai trục không liên quan bị nhét chung 1 dropdown 6 giá trị phẳng → nếu
+      agent đọc như danh sách 6 lựa chọn, nó không có logic tách biệt để trả
+      lời "vì sao chọn hình dạng này" độc lập với "vì sao chọn mức nhấn này".
+      Nó buộc phải đoán.
+    real_consequence: >
+      Đã mắc đúng lỗi này: tưởng Circle nghĩa là "nút chỉ có icon" (nhầm hình
+      dạng với mức nhấn + nội dung). Williams phải sửa lại.
+    handled_by: >
+      Kiến trúc tách trục: mức nhấn quyết ở ICTL-E-*, hình dạng quyết ở
+      AX-SHP-*, ghép lại ở render_template.
+    leak_direction_note: >
+      Đây là chỗ giá trị RỈ vào cấu trúc luật: chính quirk này là lý do 2 trục
+      phải quyết riêng. Ở DS khác có 2 property riêng thì việc quyết riêng vẫn
+      vô hại, nên luật vẫn portable — nhưng đáng ghi lại là leak.
+
+  status_color_types:
+    legacy_id: BTN-ANOMALY-3
+    finding: "DS có các Type mang màu trạng thái: Info, Success, Warning"
+    status: "[XÁC NHẬN — Williams 07/09] Không dùng cho Button → profile.policy.excluded"
+    important_cross_component_note: >
+      Bộ giá trị này CHÍNH LÀ trục status mà một component loại
+      feedback_transient (Toast) sẽ BẮT BUỘC phải có. Cùng bộ từ, một loại
+      cấm, một loại bắt buộc — đây là lý do trục phải thuộc component, không
+      thuộc một namespace phẳng dùng chung.
+
+  variant_gap_removed:
+    finding: "Ghost Round/Circle không có Loading → chỉ 46/48 tổ hợp Style×Type tồn tại"
+    status: "Vô hiệu hoá bởi profile.policy.excluded.pseudo_axis (bỏ Loading) — không còn khoảng trống"

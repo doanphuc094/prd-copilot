@@ -1,0 +1,116 @@
+{
+  "_note": "Bảng tra cứu spacing/radius/color/typography token GHN DS. Số liệu ĐO TRỰC TIẾP từ file thật (B2B-Tạo-đơn) qua Figma MCP, KHÔNG phải đoán. Đây là nguồn sự thật duy nhất khi viết spec.json — KHÔNG tự bịa padding/gap/màu/font size khác. Cập nhật 2026-08-02 sau vòng review thứ 2 của user (Williams).",
+
+  "spacing": { "s0": 0, "s2": 2, "s6": 6, "s8": 8, "s10": 10, "s12": 12, "s16": 16, "s24": 24, "s48": 48 },
+  "radius": { "r4": 4, "r8": 8, "r12": 12, "r16": 16 },
+
+  "colorTokens": {
+    "bg/app/basewhite": { "hex": "#ffffff", "rgb01": { "r": 1, "g": 1, "b": 1 } },
+    "bg/app/elevated": { "hex": "#f4f4f5", "rgb01": { "r": 0.9569, "g": 0.9569, "b": 0.9608 } },
+    "bg/app/subtle": { "hex": "#fafafa", "rgb01": { "r": 0.9804, "g": 0.9804, "b": 0.9804 } },
+    "bg/info/muted": { "hex": "#eff6ff", "rgb01": { "r": 0.9373, "g": 0.9647, "b": 1 } },
+    "border/app/default": { "hex": "#d4d4d8", "rgb01": { "r": 0.8314, "g": 0.8314, "b": 0.8471 } },
+    "border/app/disabled": { "hex": "#e4e4e7", "rgb01": { "r": 0.8941, "g": 0.8941, "b": 0.9059 } },
+    "border/app/hover": { "hex": "#a1a1aa" },
+    "border/primary/default": { "hex": "#ff5200" },
+    "text/text-default": { "hex": "#09090b", "rgb01": { "r": 0.0353, "g": 0.0353, "b": 0.0431 } },
+    "text/text-primary": { "hex": "#ff5200" },
+    "text/text-placeholder": { "hex": "#71717a" },
+    "icon/icon-default": { "hex": "#09090b" },
+    "icon/icon-muted": { "hex": "#52525b" },
+    "icon/icon-disabled": { "hex": "#a1a1aa" },
+    "icon/icon-primary": { "hex": "#ff5200" }
+  },
+
+  "typography": {
+    "Heading/H5 Bold": { "size": 20, "lineHeight": 30, "weight": 700, "specFontWeight": "Bold", "letterSpacing": 0.2 },
+    "Title/Title 1": { "size": 16, "lineHeight": 24, "weight": 700, "specFontWeight": "Bold" },
+    "Sub Title/Subtitle 2": { "size": 14, "lineHeight": 24, "weight": 600, "specFontWeight": "SemiBold" },
+    "Content/Body 1": { "size": 16, "lineHeight": 24, "weight": 400, "specFontWeight": "Regular" },
+    "Content/Body 2": { "size": 14, "lineHeight": 24, "weight": 400, "specFontWeight": "Regular" },
+    "Content/Body 3": { "size": 12, "lineHeight": 20, "weight": 400, "specFontWeight": "Regular" }
+  },
+
+  "quyChuanBatBuoc_ApDungToanBoThietKe": {
+    "_ghiChu": "Các quy tắc user chốt ngày 2026-08-02, áp dụng cho MỌI màn hình về sau, không hỏi lại.",
+
+    "sidebarMenuItem": {
+      "padding": [12, 12, 12, 12],
+      "gapIconVsText": 12,
+      "block": "Khối menu items PHẢI fillContainer (fill container), từng item cũng fillContainer — nếu không icon/text sẽ dính sát mép trái.",
+      "containerPadding": [2, 2, 2, 2]
+    },
+
+    "contentPagePadding": {
+      "value": [16, 24, 16, 24],
+      "moTa": "Vùng content phía DƯỚI header block: padding ngang 24, padding dọc 16. ÁP DỤNG CHO TOÀN BỘ THIẾT KẾ."
+    },
+
+    "titleTrang": {
+      "style": "Heading/H5 Bold (20px/30/Bold, text default)",
+      "moTa": "SỬA 2026-08-02: title của block/card (vd 'Thông tin giá xăng dầu') dùng H5 Bold 20px, KHÔNG PHẢI Title 1 16px như đã ghi nhầm trước đó. Xác nhận qua get_design_context node 21882:67967 (Frame48096435, Accordin header). Áp dụng cho mọi title dạng 'block heading' của card/table ở các design khác.",
+      "nguon": "node 21882:67967"
+    },
+
+    "bangDuLieu_khungNgoai": {
+      "cornerRadius": 8,
+      "stroke": "1px, màu border/app/default (#d4d4d8), strokeAlign INSIDE",
+      "clipsContent": true,
+      "moTa": "Khung bao ngoài bảng dữ liệu LUÔN bo góc 8 + kẻ viền 1px màu border/app/default. Bật clipsContent để góc bo ăn vào nội dung."
+    },
+
+    "bangDuLieu_headerRow": {
+      "background": "bg/app/elevated (#f4f4f5)",
+      "font": "Title/Title 1 (16px Bold)",
+      "textColor": "text/text-default (#09090b)",
+      "padding": [12, 16, 12, 16],
+      "luuY": "KHÔNG để nền trắng ở khối chữ bên trong. Áp dụng cho TOÀN BỘ header row của mọi bảng dữ liệu.",
+      "nguon": "node 21882:67983"
+    },
+
+    "bangDuLieu_contentRow": {
+      "paddingRow": [16, 0, 16, 0],
+      "paddingCell": [0, 16, 0, 16],
+      "ketQua": "padding hiệu dụng ngang 16 / dọc 16",
+      "font": "Content/Body 1 (16px Regular)",
+      "textColor": "text/text-default (#09090b)",
+      "duongKe": "Mỗi row (trừ row đầu) có strokeTopWeight 1px màu border/app/default",
+      "luuY": "Áp dụng cho TOÀN BỘ content row của mọi bảng dữ liệu.",
+      "nguon": "node 21882:67994"
+    },
+
+    "pagination": {
+      "layout": "1 hàng, gap 24, canh giữa (justify CENTER)",
+      "thanhPhan": "[icon chevron-left + 'Đầu trang'] → các số trang → ['Cuối trang' + icon chevron-right]",
+      "quyTacBatBuoc": "TUYỆT ĐỐI KHÔNG hiện dropdown chọn số hàng/trang — ẩn hoàn toàn cho MỌI trường hợp.",
+      "luuY": "'Đầu trang'/'Cuối trang' là TEXT + icon thường (font awesome/Base), KHÔNG dùng Button organism.",
+      "nguon": "node 348:46806"
+    },
+
+    "nutBoLoc": {
+      "component": "⚫ Button :: Button / Button organism",
+      "props": { "Style": "Outline Round", "Size": "md", "Type": "Grey", "iconLeft#17:0": true },
+      "icon": "filter",
+      "iconPath": "font awesome / Base (ngay cấp 1 trong Button, KHÔNG lồng trong 'Button / Button Content (Base)')",
+      "luuY": "Áp dụng cho toàn bộ UI style của nút Bộ lọc."
+    },
+
+    "headerTrang_GlobalActionHome": {
+      "background": "bg/app/elevated (#f4f4f5)",
+      "borderBottom": "1px màu border/app/disabled (#e4e4e7)",
+      "paddingDoc": 16,
+      "beTrai": "BREADCRUMB (không phải ô tìm kiếm), padding ngang 24",
+      "bePhai": "Avatar + họ tên (Title 1) + dòng 'id - số điện thoại' (Body 3), padding ngang 32, gap 12",
+      "quyTacBatBuoc": "Áp dụng cho MỌI trường hợp. Nếu UI reference user đưa có dạng khác (vd ô tìm kiếm) thì VẪN follow dạng breadcrumb, KHÔNG follow theo UI reference.",
+      "nguon": "node 21882:67941"
+    }
+  },
+
+  "iconFontAwesome": {
+    "component": "⚫ Icons (Use fontawesome 6 Pro) :: font awesome / Base",
+    "propertyNoiDung": "↳ Content#5679:21 (TEXT — giá trị là tên icon, vd 'filter', 'user')",
+    "quyTacBatBuoc": "LUÔN set 'Type': 'regular' — KHÔNG dùng 'light' (mặc định của component là light, gây lỗi hiện chữ thường thay vì icon).",
+    "sizeThuongDung": { "sidebarMenu": "20", "trongNut/pagination": "16", "breadcrumb": "14" },
+    "fontCanCai": "Font Awesome 6 Pro (bản trả phí, có sẵn trong thư mục icon/ của project) — phải cài vào Windows rồi thoát hẳn Figma Desktop mở lại."
+  }
+}

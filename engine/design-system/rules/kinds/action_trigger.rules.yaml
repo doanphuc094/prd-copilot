@@ -1,0 +1,244 @@
+# =============================================================================
+# action_trigger.rules.yaml — LOẠI: KÍCH HOẠT HÀNH ĐỘNG
+#
+# Thành viên: thứ mà khi kích hoạt sẽ THỰC THI một hành động nghiệp vụ.
+#   đang dùng:  Button
+#   dự kiến:    MenuItem, RowAction, LinkButton
+#
+# Trục bắt buộc: intent
+#
+# Vì sao tách khỏi interactive_control: một Slider hay Switch là điều khiển
+# tương tác nhưng KHÔNG "dẫn tới mục đích màn hình" theo nghĩa của trục intent
+# — nó đổi một giá trị. Ngược lại, một mục trong menu ngữ cảnh là action_trigger
+# nhưng không có trục emphasis riêng. Hai loại chồng nhau ở Button, không trùng.
+#
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  kind: action_trigger
+  layer: kind
+  portable: true
+  version: 2.0-draft
+  requires: [_core.rules.yaml]
+  requires_axes: [intent]
+
+undisableable: [ATRG-T-01]
+
+# =============================================================================
+# INTENT — ý nghĩa hành động
+# =============================================================================
+intent:
+  decides: intent
+  axis_kind: closed_role_set
+  ask: >
+    Hành động này có phải MỘT ĐƯỜNG để hoàn thành mục đích của màn hình không?
+    Nếu có, có mấy đường tương đương và đường nào dùng nhiều nhất?
+  derive_from: ["tài liệu nghiệp vụ § mục đích màn hình", "§ luồng", "§ trường hợp biên"]
+
+  # Cây quyết định gốc — 4 vai phân tách bằng đúng 2 câu hỏi:
+  #   "Có phải MỘT ĐƯỜNG hoàn thành mục đích màn hình không?"
+  #     Không → vai no-path                                    (ATRG-T-04)
+  #     Có    → có mấy đường tương đương?
+  #               1 đường, hoặc đường dùng nhiều nhất → vai chính     (ATRG-T-02)
+  #               đường tương đương nhưng ít dùng hơn → vai thay thế  (ATRG-T-03)
+  #   Cắt ngang cả cây: mất dữ liệu không đảo ngược được → vai phá huỷ (ATRG-T-01)
+
+  rules:
+    - id: ATRG-T-01
+      priority: 5
+      role: "intent.destructive"
+      undisableable: true
+      test: "Kích hoạt xong có mất dữ liệu / không undo được không?"
+      requires: "Bắt buộc kèm bước xác nhận [CMP-DLG-01]"
+      examples_are_policy: "Ví dụ cụ thể theo nghiệp vụ: profile.policy.destructive_examples"
+      priority_note: >
+        Vai này ưu tiên cao nhất vì nó nói về AN TOÀN DỮ LIỆU, không về thứ bậc
+        thị giác. Một hành động phá huỷ vẫn có thể nằm ở mức nhấn thấp.
+
+    - id: ATRG-T-02
+      priority: 10
+      role: "intent.primary"
+      test_step_1: "Đây có phải MỘT ĐƯỜNG hoàn thành mục đích màn hình không?"
+      test_step_2: >
+        Màn này có mấy đường tương đương? Chỉ 1 → vai chính, xong. Từ 2 trở lên
+        → chạy _core.discipline.evidence_tiers để xác định đường nào dùng nhiều nhất.
+      counter_examples:
+        - "Xuất dữ liệu ra file — không phải đường tới mục đích, là tiện ích phụ trợ → no-path"
+        - "Huỷ / Quay lại — không phải đường tới mục đích → no-path"
+
+    - id: ATRG-T-03
+      priority: 20
+      role: "intent.alternate"
+      test: >
+        Có dẫn tới CÙNG mục đích với vai chính, bằng một cách khác, nhưng ít
+        người dùng hơn?
+      definition: >
+        Vai thay thế = đường TƯƠNG ĐƯƠNG về mục đích với vai chính, chỉ khác về
+        tần suất sử dụng. KHÔNG phải "hành động kém quan trọng hơn" — mà là
+        "cách khác để làm cùng một việc".
+      worked_case:
+        context: "Một màn có 2 cách hoàn thành cùng mục đích, một cách dùng nhiều hơn"
+        reasoning: >
+          Cả hai đều hoàn thành mục đích → cả hai là đường tới mục đích. Cách
+          dùng nhiều hơn → vai chính. Cách còn lại → vai thay thế.
+      counter_examples:
+        - "❌ 'Huỷ' KHÔNG phải vai thay thế — không dẫn tới mục đích nào → no-path"
+        - "❌ 'Lưu nháp' KHÔNG phải vai thay thế — không hoàn thành mục đích, chỉ tạm dừng → no-path"
+        - "❌ Đừng chọn vai thay thế chỉ vì nó đứng thứ hai về VỊ TRÍ — phải xét mục đích"
+
+    - id: ATRG-T-04
+      priority: 30
+      role: "intent.no_path"
+      test: "Bỏ hẳn hành động này đi, người dùng vẫn hoàn thành được mục đích màn hình chứ?"
+      definition: >
+        Vai no-path = hành động KHÔNG nằm trên đường tới mục đích màn hình.
+        Gồm 2 nhóm: (a) lối ra / tạm dừng, (b) tiện ích phụ trợ.
+      note: >
+        Đây là vai bị nhầm nhiều nhất. Nó là INTENT (ý nghĩa), không phải trạng
+        thái vô hiệu, và không phải "mức nhấn thấp".
+      naming_note: >
+        Tên chuỗi của vai này do profile khai (profile.binding.intent). Nếu tên
+        đó mang nghĩa trình bày thay vì nghĩa hành động, ghi rủi ro ở binding —
+        luật ở đây chỉ nói về VAI, không về tên.
+
+  # ---------------------------------------------------------------------------
+  # PHÂN BIỆT NHÃN MƠ HỒ — chỗ agent sai nhiều nhất
+  # ---------------------------------------------------------------------------
+  critical_disambiguation:
+    warning: "⚠️ Một nhãn chữ có thể mang 2 nghĩa hoàn toàn khác nhau"
+
+    exit_vs_destroy:
+      case_a:
+        pattern: "Nhãn kiểu 'Huỷ' nghĩa là thoát khỏi form, bỏ thao tác đang làm dở"
+        role: "intent.no_path"
+      case_b:
+        pattern: "Nhãn kiểu 'Huỷ <đối tượng nghiệp vụ>' nghĩa là phá huỷ dữ liệu đã lưu"
+        role: "intent.destructive"
+      how_to_tell: >
+        Đọc tài liệu § luồng: hành động này có làm thay đổi dữ liệu ĐÃ LƯU
+        không? Có → phá huỷ. Chỉ rời khỏi màn hình → no-path.
+
+    routine_vs_permanent_delete:
+      case_c:
+        pattern: >
+          Hành động xoá nằm trong bộ hành động CHUẨN của một dòng danh sách
+          (định nghĩa "bộ chuẩn": CMP-ROW-01)
+        meaning: "Xoá một dòng khỏi danh sách — thao tác quản lý dữ liệu THƯỜNG QUY, làm hằng ngày"
+        role: "intent.no_path"
+        emphasis: "theo CMP-ROW-01"
+      case_d:
+        pattern: >
+          Tài liệu gọi ĐÍCH DANH là xoá vĩnh viễn / không thể khôi phục / ảnh
+          hưởng diện rộng hơn 1 dòng dữ liệu thường
+        role: "intent.destructive"
+        note: "Vẫn theo ATRG-T-01"
+      how_to_tell: >
+        Xoá MỘT dòng, nằm trong bộ hành động chuẩn → mặc định no-path. KHÔNG tự
+        nâng lên phá huỷ chỉ vì đó là "xoá". Chỉ nâng khi khớp case_d. Nghi ngờ
+        giữa 2 case → escalate, không tự chọn.
+      why_this_matters: >
+        Nâng oan lên vai phá huỷ kéo theo CMP-DLG-01 (bắt buộc dialog xác nhận)
+        — tức là bắt người dùng xác nhận mỗi lần xoá một dòng trong công việc
+        hằng ngày. Đó là cách làm hỏng một luồng vận hành bằng một luật an toàn
+        đặt sai chỗ.
+
+  fallback:
+    action: escalate
+    message: >
+      Không xác định được ý nghĩa hành động của '{label}' từ tài liệu. Cần
+      designer chỉ định vai intent.
+
+# =============================================================================
+# BẢNG Ý NGHĨA ICON THEO HÀNH ĐỘNG
+#
+# Đây là phần PORTABLE của bảng icon: hành động → Ý NGHĨA HÌNH ẢNH. Ý nghĩa
+# này gần như phổ quát giữa các bộ icon. Tên icon cụ thể của từng bộ nằm ở
+# profile.binding.icon_names (lớp C).
+#
+# Đặt ở action_trigger chứ không ở component nào, vì mọi thành viên của loại
+# đều cần nó: một mục menu "Xoá" và một nút "Xoá" dùng cùng ý nghĩa hình ảnh.
+# =============================================================================
+icon_meaning_vocabulary:
+  mappings:
+    - action: "Quay lại / điều hướng về trước"
+      meaning: "mũi tên trái"
+      placement: leading
+    - action: "Thêm mới / tạo mới"
+      meaning: "dấu cộng"
+      placement: leading
+    - action: "Xoá"
+      meaning: "thùng rác"
+      placement: leading
+    - action: "Sửa / chỉnh sửa"
+      meaning: "bút"
+      placement: leading
+    - action: "Xuất dữ liệu ra file"
+      meaning: "mũi tên xuống"
+      placement: leading
+    - action: "Tải mẫu về"
+      meaning: "mũi tên xuống (tải về)"
+      placement: leading
+    - action: "Tải lên / nhập file"
+      meaning: "file kèm mũi tên lên"
+      placement: leading
+    - action: "In"
+      meaning: "máy in"
+      placement: leading
+    - action: "Sao chép"
+      meaning: "2 trang chồng nhau"
+      placement: leading
+    - action: "Bộ lọc"
+      meaning: "phễu / danh sách có gạch"
+      placement: leading
+    - action: "Làm mới danh sách"
+      meaning: "mũi tên xoay vòng"
+      placement: leading
+    - action: "Gửi đi để XIN DUYỆT"
+      meaning: "con dấu"
+      placement: leading
+      note: "[CHÍNH SÁCH] Tách riêng khỏi 'gửi thông thường' — xem profile.policy.icon_policy"
+    - action: "Duyệt / chấp nhận"
+      meaning: "dấu tích"
+      placement: leading
+    - action: "Từ chối / đóng"
+      meaning: "dấu X"
+      placement: leading
+    - action: "Gom nhiều hành động vào menu"
+      meaning: "ba dấu chấm"
+      placement: icon-only
+    - action: "Mở rộng / xem thêm"
+      meaning: "mũi tên xuống nhỏ"
+      placement: trailing
+    - action: "Thu gọn"
+      meaning: "mũi tên lên nhỏ"
+      placement: trailing
+    - action: "Cài đặt"
+      meaning: "bánh răng"
+      placement: "leading hoặc icon-only tuỳ không gian"
+    - action: "Lối ra khỏi form (huỷ / quay lại / đóng / lưu nháp)"
+      meaning: none
+      placement: "—"
+      note: >
+        [CHÍNH SÁCH] Việc cố tình KHÔNG gắn icon cho nhóm này là quyết định của
+        công ty, không phổ quát — xem profile.policy.icon_policy.
+
+  not_in_table:
+    rule: "Hành động không có trong bảng → KHÔNG tự chọn ý nghĩa. Dùng ICTL-IC-01 (none) và escalate."
+    growth: >
+      Mỗi lần một hành động mới được duyệt, thêm 1 dòng vào bảng này (ý nghĩa)
+      và 1 dòng vào profile.binding.icon_names (tên thật) — không sửa tay từng
+      màn hình.
+
+# =============================================================================
+# INVARIANTS của loại
+# =============================================================================
+invariants:
+  - id: ATRG-INV-01
+    rule: >
+      Hành động ở vai phá huỷ phải nhận diện được từ tài liệu nghiệp vụ, không
+      phải từ nhãn chữ.
+    check: "role == intent.destructive implies rule_evidence.type != null"
+    why: >
+      Nhãn chữ mơ hồ theo cả 2 chiều (xem critical_disambiguation): có nhãn
+      nghe vô hại mà phá dữ liệu, có nhãn nghe đáng sợ mà chỉ đóng form.

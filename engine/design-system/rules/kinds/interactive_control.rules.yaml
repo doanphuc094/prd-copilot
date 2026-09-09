@@ -1,0 +1,287 @@
+# =============================================================================
+# interactive_control.rules.yaml — LOẠI: ĐIỀU KHIỂN TƯƠNG TÁC
+#
+# Thành viên: mọi thứ người dùng bấm / kéo / bật được.
+#   đang dùng:  Button
+#   dự kiến:    Chip, Switch, Slider, Checkbox, Radio
+#
+# Trục bắt buộc: emphasis · size · state
+#
+# Luật ở đây đúng cho MỌI thành viên. Nếu một luật chỉ đúng cho Button,
+# nó thuộc rules/components/button.rules.yaml. Nếu nó cần biết về component
+# khác, nó thuộc rules/_composition.rules.yaml.
+#
+# Đọc _core.rules.yaml trước — kiểu trục, kỷ luật, ngưỡng cảm ứng ở đó.
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  kind: interactive_control
+  layer: kind
+  portable: true
+  version: 2.0-draft
+  requires: [_core.rules.yaml]
+  requires_axes: [emphasis, size, state]
+
+undisableable: [ICTL-Z-05, ICTL-Z-06, ICTL-INV-14]
+
+region:
+  definition: >
+    "Khu vực" = cụm điều khiển cùng cấp mà người dùng quét mắt cùng lúc: thanh
+    hành động chân form, đầu một section, ô thao tác của MỘT dòng bảng.
+  critical: >
+    Ô thao tác của TỪNG dòng là khu vực RIÊNG của dòng đó, không phải khu vực
+    toàn màn. Nhầm chỗ này làm luật "tối đa 1 rank1 mỗi khu vực" bị áp sai
+    phạm vi và chặn oan hành động chính của dòng.
+
+# =============================================================================
+# EMPHASIS — thứ bậc trong khu vực
+# =============================================================================
+emphasis:
+  decides: emphasis
+  axis_kind: ordered_scale
+  ask: "Trong khu vực chứa nó, điều khiển này đứng thứ mấy?"
+
+  rules:
+    - id: ICTL-E-01
+      emphasis: "emphasis.rank1"
+      test: "Đây là hành động được khuyến khích nhất trong khu vực?"
+      constraint: "Tối đa 1 rank1 mỗi khu vực [CMP-FTR-01 kiểm ở cấp khu vực]"
+
+    - id: ICTL-E-02
+      emphasis: "emphasis.scale[1]"
+      test: >
+        Đứng cạnh một rank1 trong cùng khu vực, và không phải hành động được
+        khuyến khích nhất?
+      important: >
+        Mức nhấn KHÔNG đồng nghĩa với vai trên trục intent. Nhiều vai intent
+        khác nhau đều có thể dùng cùng một mức nhấn. emphasis nói "to nhỏ thế
+        nào", intent nói "là loại hành động gì" — 2 trục độc lập, quyết riêng.
+
+    - id: ICTL-E-03
+      emphasis: "emphasis.rank_lowest"
+      definition: >
+        Mức nhấn THẤP NHẤT. Dùng khi điều khiển không được phép cạnh tranh sự
+        chú ý với chính nội dung nó nằm trong. Khác mức giữa ở chỗ: mức giữa
+        vẫn vẽ khung, vẫn chiếm một hình chữ nhật và đọc ra là điều khiển ngay
+        khi chưa rê chuột. Mức thấp nhất không khung không nền — nó đứng yên
+        như chữ, chỉ hiện ra khi cần.
+      a11y: "Xem _core.universal_a11y A11Y-02 — rủi ro tương phản của mức này"
+
+      triggers:
+        - id: ICTL-E-03-c
+          name: "Chỉ có icon, trong thanh công cụ"
+          test: "Không có nhãn chữ, nằm ở header/toolbar, ý nghĩa hiển nhiên?"
+          pairs_with: "shape = default (AX-SHP-01). KHÔNG dùng shape ngoại lệ."
+          requires:
+            - "Tên thay thế bắt buộc [A11Y-INV-01]"
+            - "Sàn cảm ứng cao hơn [ICTL-Z-06]"
+
+      never_use_when:
+        - case: "Thanh hành động chân form"
+          use_instead: "rank1 hoặc mức giữa"
+          why: "Đây là chỗ người dùng tìm hành động chính. Mức thấp nhất ở đây làm nó biến mất."
+        - case: "Điều khiển trên thanh tiêu đề section"
+          use_instead: "emphasis.scale[1]"
+          why: "Xuất hiện đúng 1 lần, cần đủ rõ để tìm thấy — không có vấn đề nhiễu do lặp lại"
+        - case: "Hành động duy nhất của màn hình trống"
+          use_instead: "emphasis.rank1"
+          why: "Là việc duy nhất người dùng làm được lúc đó — phải nổi bật nhất"
+        - case: "Điều khiển duy nhất trong một khu vực"
+          use_instead: "emphasis.scale[1]"
+          why: "Không có gì để nó phải nhường sự chú ý"
+
+  fallback:
+    action: default
+    value: "emphasis.scale[1]"
+    note: "Không rõ thì chọn mức giữa — an toàn, không cướp sự chú ý. Ghi openQuestions."
+
+# =============================================================================
+# SIZE — do VỊ TRÍ quyết, không do mức quan trọng
+# =============================================================================
+size:
+  decides: size
+  axis_kind: ordered_scale_physical
+  determined_by: "VỊ TRÍ đặt điều khiển"
+  why_not_importance: >
+    Mức quan trọng đã do intent + emphasis gánh. Nếu size cũng gánh nó thì 3
+    trục cùng nói một việc, và một điều khiển quan trọng nằm trong ô bảng dày
+    sẽ phá vỡ nhịp thị giác của bảng.
+
+  rules:
+    - id: ICTL-Z-01
+      rule: "Size = tra profile.policy.size_by_position theo vị trí điều khiển đang đứng."
+      fallback: "profile.policy.size_by_position._default"
+      escalate_when: >
+        Vị trí chưa có trong bảng tra → escalate để bổ sung policy, KHÔNG chọn
+        bước gần giống.
+
+    - id: ICTL-Z-02
+      rule: >
+        Các bước lớn nhất của thang chỉ dùng ở vị trí policy cho phép tường
+        minh (profile.policy.oversize_allowed_positions).
+      guard: "KHÔNG dùng trong form thường — phá vỡ nhịp thị giác của layout."
+      why: >
+        Điều khiển lớn hơn nhịp chung của form đọc ra như một khối lạ, và làm
+        người dùng tưởng nó thuộc một cấp thông tin khác.
+
+    # -------------------------------------------------------------------------
+    # SÀN CẢM ỨNG
+    # Ngưỡng vật lý + nguyên tắc: _core.touch_input
+    # Giá trị sàn công ty chọn: profile.policy.touch.*
+    # -------------------------------------------------------------------------
+    - id: ICTL-Z-05
+      name: "Sàn cảm ứng cho điều khiển CÓ nhãn chữ"
+      undisableable: true
+      when: "Con trỏ thô (cảm ứng)"
+      condition_real: "@media (pointer: coarse) — điều kiện ĐÚNG, dùng ở tầng code"
+      condition_design_proxy: >
+        profile.policy.touch.pointer_proxy_breakpoint — PROXY GẦN ĐÚNG ở tầng
+        thiết kế (xem _core.pointer_vs_viewport). Ghi rõ là proxy khi bàn giao.
+      rule: >
+        Bước size chọn ở ICTL-Z-01 phải có giá trị thật >=
+        profile.policy.touch.floor_px. Không đạt → nâng theo AX-PHY-02.
+      resolution_order: "ICTL-Z-01 quyết ý định trước; sàn chỉ NÂNG, không bao giờ HẠ [AX-PHY-02]"
+      no_step_qualifies: "escalate [AX-PHY-03]"
+      why_not_a_second_table: >
+        Đây là SÀN áp lên bảng vị trí đã có, không phải bảng size thứ hai cho
+        mobile. Nhân bản bảng làm chi phí bảo trì gấp đôi và mỗi vị trí mới
+        phải quyết 2 lần.
+
+    - id: ICTL-Z-06
+      name: "Sàn cảm ứng cho điều khiển KHÔNG có nhãn chữ — cao hơn"
+      undisableable: true
+      when: "Con trỏ thô VÀ không có nhãn chữ (icon-only)"
+      rule: "Giá trị thật >= profile.policy.touch.floor_px_icon_only"
+      why_higher: >
+        Chuẩn đo cả 2 chiều. Điều khiển có nhãn chữ thường thừa chiều rộng nên
+        chỉ cần lo chiều cao; điều khiển chỉ có icon gần vuông nên chiều rộng
+        vỡ cùng lúc với chiều cao.
+      cross_check: "Đồng thời phải thoả A11Y-INV-01 (tên thay thế)"
+
+    - id: ICTL-Z-07
+      name: "Trên cảm ứng, size KHÔNG mang thứ bậc"
+      rule: >
+        Khi sàn đẩy nhiều vị trí về cùng một bước, KHÔNG nâng điều khiển quan
+        trọng lên bước cao hơn để tạo lại khác biệt thị giác.
+      instead: "Thứ bậc do emphasis và vị trí/thứ tự gánh."
+      why: >
+        Nâng size để tạo thứ bậc là đốt chiều dọc trên đúng màn hình ít chiều
+        dọc nhất, mà không thêm thông tin nào người dùng chưa có từ emphasis.
+      machine_checkable: false
+      review_signal: >
+        "Nâng để tạo thứ bậc" là ý định, không phải giá trị — không kiểm cứng
+        được. Dấu hiệu gián tiếp: cùng 1 khu vực trên cảm ứng có >= 2 bước size
+        khác nhau → hỏi lại [ICTL-INV-15].
+
+    - id: ICTL-Z-08
+      name: "Sàn không đạt được = lỗi layout, không phải lỗi điều khiển"
+      test: "Có vị trí nào BẮT BUỘC phải xuống dưới sàn mới vừa không?"
+      rule: "Nếu có → lỗi ở container. Escalate để đổi pattern layout."
+      forbidden: "Thu nhỏ điều khiển xuống dưới sàn để vừa layout cũ."
+      value: >
+        Sàn vì vậy còn là máy phát hiện lỗi layout: bắt được lỗi ở tầng cao
+        (chọn sai pattern) qua triệu chứng ở tầng thấp (điều khiển quá nhỏ).
+      pattern_choice_is_policy: >
+        Pattern thay thế do policy chỉ định — luật KHÔNG tự chọn. Chưa được
+        quyết thì escalate [xem profile.policy.touch].
+
+# =============================================================================
+# STATE
+# =============================================================================
+state:
+  decides: state
+  axis_kind: closed_role_set
+  rules:
+    - id: ICTL-ST-01
+      state: Default
+      when: "Mặc định"
+    - id: ICTL-ST-02
+      state: Disabled
+      when: "Tài liệu nghiệp vụ nêu điều kiện tiên quyết chưa thoả"
+      derive_from: "§ luồng (điều kiện) hoặc § trường hợp biên (khi không khả dụng)"
+      must_also: "Nêu LÝ DO bị vô hiệu [A11Y-01]"
+      important: >
+        Disabled là STATE — giữ nguyên vai intent đã chọn, KHÔNG đổi vai chỉ vì
+        điều khiển đang vô hiệu.
+
+# =============================================================================
+# ICON
+# =============================================================================
+icon:
+  decides: icon
+  axis_kind: icon_slots
+  rules:
+    - id: ICTL-IC-01
+      priority: 5
+      icon: none
+      test: "Mặc định — không thuộc 3 trường hợp dưới thì KHÔNG gắn icon."
+      rationale: >
+        Đa số điều khiển hoàn-thành-mục-đích không cần icon: nhãn chữ đã đủ rõ,
+        và đây là hành động người dùng chủ động tìm, không cần quét nhanh bằng mắt.
+
+    - id: ICTL-IC-02
+      priority: 10
+      icon: leading
+      test: >
+        Hành động này có nằm trong một BỘ Ý NGHĨA ICON PHỔ QUÁT đã dùng lặp lại
+        nhiều nơi trong sản phẩm không?
+      placement: "Trước nhãn — icon là tín hiệu nhận diện nhanh, đọc trước khi đọc chữ"
+      requires: >
+        Icon phải là icon ĐÃ dùng cho đúng ý nghĩa này ở nơi khác. KHÔNG tự
+        sáng tác icon mới cho một hành động.
+      lookup: "Ý nghĩa: rules/components/<component>.rules.yaml § icon_meaning_vocabulary. Tên thật: profile.binding.icon_names"
+
+    - id: ICTL-IC-03
+      priority: 15
+      icon: trailing
+      test: >
+        Kích hoạt có MỞ RA lựa chọn khác (dropdown, menu, mở rộng/thu gọn) thay
+        vì thực thi hành động ngay không?
+      placement: "Sau nhãn — icon báo hiệu 'còn nữa', không phải kết thúc hành động"
+      counter_examples:
+        - "❌ Hành động lưu kèm mũi tên sang phải — lưu là thực thi ngay → ICTL-IC-01"
+
+    - id: ICTL-IC-04
+      icon: icon-only
+      test: "Xem ICTL-E-03-c: không nhãn chữ, trong toolbar/header, nghĩa hiển nhiên?"
+      requires:
+        - "Tên thay thế bắt buộc [A11Y-INV-01]"
+        - "emphasis = rank_lowest, trừ khi shape ngoại lệ áp dụng"
+        - "Sàn cảm ứng cao hơn [ICTL-Z-06]"
+
+  fallback:
+    action: "default = ICTL-IC-01 (none), escalate nếu nghi ngờ"
+    why_not_guess: >
+      Bịa icon mới tạo ra một quy ước KHÔNG nhất quán với phần còn lại của sản
+      phẩm — lỗi này khó phát hiện hơn sai intent/emphasis, vì icon "trông vẫn
+      hợp lý" khi nhìn một mình, chỉ lộ ra khi đặt cạnh các màn khác.
+
+# =============================================================================
+# INVARIANTS của loại
+# =============================================================================
+invariants:
+  - id: ICTL-INV-02
+    rule: "Không 2 điều khiển ở mức nhấn rank1 nằm liền kề nhau trong cùng container"
+    check: "no_adjacent(controls, emphasis == rank1)"
+    why: "Hai mức cao nhất cạnh nhau triệt tiêu lẫn nhau — không còn chỗ nào là chỗ mắt dừng."
+
+  - id: ICTL-INV-14
+    rule: "Trên con trỏ thô, mọi điều khiển phải đạt sàn cảm ứng"
+    check: >
+      pointer == 'coarse' implies
+        resolve_physical(size) >= (has_visible_label
+                                   ? profile.policy.touch.floor_px
+                                   : profile.policy.touch.floor_px_icon_only)
+    undisableable: true
+    depends_on: "profile.binding.size giá trị thật — thiếu thì báo lỗi cấu hình [AX-PHY-01]"
+    fails_loudly_if: "Thiếu giá trị thật → LỖI, KHÔNG bỏ qua kiểm tra"
+
+  - id: ICTL-INV-15
+    rule: "Trên con trỏ thô, một khu vực không nên chứa nhiều bước size khác nhau"
+    check: "pointer == 'coarse' implies distinct(region.controls.size).length <= 1"
+    severity: warning
+    why_warning_not_error: >
+      Đây là dấu hiệu gián tiếp của ICTL-Z-07, không phải bằng chứng. Có ca hợp
+      lệ (một khu vực chứa cả điều khiển có nhãn và điều khiển icon-only, 2 sàn
+      khác nhau). Cảnh báo để review, không chặn.

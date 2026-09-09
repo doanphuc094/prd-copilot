@@ -1,0 +1,48 @@
+{
+  "_comment": "Ví dụ minh hoạ hình dạng schema — thay giá trị bằng dữ liệu thật của tổ chức đang áp dụng. Xem organization/<ten-to-chuc>/design-system-components.md để lấy tên component thật.",
+  "spec_version": "1.0",
+  "feature": "{{feature-slug}}",
+  "global": {
+    "layout":  { "value": "grid-12", "semantic": "mô tả bố cục tổng thể bằng lời" },
+    "density": { "value": "compact", "semantic": "mô tả mật độ hiển thị, bối cảnh sử dụng" },
+    "usage_scenario": { "semantic": "ai dùng, dùng lúc nào, thao tác lặp lại hay một lần" },
+    "color": {
+      "Accent": { "value": "{{token-id-thuc}}", "semantic": "màu nhấn chính" }
+    }
+  },
+  "screens": {
+    "scr_ax": {
+      "order": 1,
+      "name": "{{ten-man-hinh}}",
+      "template": "list-with-filter",
+      "sections": {
+        "sec_bk": {
+          "order": 1,
+          "type": "filter-bar",
+          "components": {
+            "cmp_c3": {
+              "order": 1,
+              "ds_component": "{{ten-component-that-trong-design-system}}",
+              "role": "mô tả vai trò",
+              "props": { "placeholder": "..." }
+            }
+          }
+        },
+        "sec_dt": {
+          "order": 2,
+          "type": "data-table",
+          "fields": [
+            {
+              "key": "{{ten_field_nghiep_vu}}",
+              "label": "{{Nhan hien thi}}",
+              "ds_component": "{{ten-component-that}}",
+              "type": "string",
+              "required": true,
+              "validation": null
+            }
+          ]
+        }
+      }
+    }
+  }
+}

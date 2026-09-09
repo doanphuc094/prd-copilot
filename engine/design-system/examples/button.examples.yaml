@@ -1,0 +1,257 @@
+# =============================================================================
+# button.examples.yaml — TRACE ĐÃ CHẠY ĐỦ PIPELINE
+#
+# Đây KHÔNG phải tài liệu. Đây là dữ liệu: mỗi mục là một cặp
+# (ngữ cảnh nghiệp vụ + điều khiển) → (giá trị đã resolve + rule_ids + bằng chứng).
+#
+# Hai công dụng:
+#   1. In-context — agent học cách áp luật từ ví dụ tốt hơn từ mô tả luật
+#   2. Hạt giống cho việc SINH TRACE về sau (sinh ứng viên → lọc bằng invariant
+#      → giữ cái đạt). Bộ luật làm generator + grader, không làm văn bản train.
+#
+# QUAN TRỌNG: mục cuối (escalate) là NHÃN DƯƠNG, không phải thất bại. Nếu tập
+# này về sau dùng làm dữ liệu huấn luyện mà thiếu ca escalate, model sẽ học
+# cách luôn có đáp án — tức là học đoán.
+# Xem _core.discipline.never_guess.escalate_is_a_correct_answer
+#
+# Phục hồi từ worked_examples của v0.2 (7 mục, bị mất khi tách lớp lần 1 —
+# verify lần đó chỉ kiểm rule id nên không bắt được). Rule id đã đổi sang tên
+# mới; bản đồ id cũ → mới ở manifest.yaml § rule_id_aliases.
+#
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  component: Button
+  kind: examples
+  version: 2.0-draft
+  created: "2026-09-08"
+  restored_from: "button.rules.yaml v0.2-draft § worked_examples"
+  count: 8
+
+examples:
+
+  # ---------------------------------------------------------------------------
+  - id: EX-BTN-01
+    context: "Màn tạo đơn hàng nặng — thanh hành động chân form"
+    label: "Tạo đơn"
+    trace:
+      intent:    {rule: ATRG-T-02, value: primary, why: "Hoàn thành mục đích màn hình"}
+      emphasis:  {rule: ICTL-E-01, value: Fill,    why: "Hành động khuyến khích nhất trong khu vực"}
+      shape:     {rule: AX-SHP-01, value: Round,   why: "Mặc định"}
+      size:      {rule: ICTL-Z-01, value: md,      why: "policy.size_by_position.footer_action_bar"}
+      state:     {rule: ICTL-ST-02, value: Disabled, why: "Tài liệu § luồng: chưa đủ trường bắt buộc"}
+      icon:      {rule: ICTL-IC-01, value: none,   why: "Không nằm trong bộ ý nghĩa icon phổ quát"}
+    resolved: {Style: "Fill Round", Type: "Primary", Size: "md", State: "Disable"}
+    also_satisfies: [CMP-FTR-01, A11Y-01]
+    a11y_note: "Disabled → phải nêu lý do qua tooltip [A11Y-01]"
+
+  # ---------------------------------------------------------------------------
+  - id: EX-BTN-02
+    context: "Cùng thanh hành động chân form với EX-BTN-01"
+    label: "Huỷ"
+    trace:
+      intent:    {rule: ATRG-T-04, value: no_path, why: "Không phải đường tới mục đích — chỉ thoát khỏi form"}
+      emphasis:  {rule: ICTL-E-02, value: Outline, why: "Đứng cạnh 1 rank1 trong cùng khu vực"}
+      shape:     {rule: AX-SHP-01, value: Round}
+      size:      {rule: ICTL-Z-01, value: md}
+      state:     {rule: ICTL-ST-01, value: Default}
+      icon:      {rule: ICTL-IC-01, value: none,   why: "policy.icon_policy.exits_have_no_icon"}
+    resolved: {Style: "Outline Round", Type: "Grey", Size: "md", State: "Default"}
+    node_id: "814:46471"
+    key_lesson: >
+      Nhãn "Huỷ" ở đây là LỐI RA (case_a), không phải hành động phá huỷ dữ liệu
+      (case_b). Phân biệt bằng cách đọc § luồng, không bằng nhãn chữ.
+
+  # ---------------------------------------------------------------------------
+  - id: EX-BTN-03
+    context: "Detail Header — điều khiển điều hướng về"
+    label: "Trở về"
+    trace:
+      intent:    {rule: ATRG-T-04, value: no_path, why: "Không dẫn tới mục đích màn hình, chỉ điều hướng"}
+      emphasis:  {rule: ICTL-E-02, value: Outline}
+      shape:     {rule: AX-SHP-02, value: Circle,  why: "Đúng ngữ cảnh policy.shape_exception — ngoại lệ duy nhất"}
+      size:      {rule: ICTL-Z-01, value: sm,      why: "policy.size_by_position.detail_header"}
+      state:     {rule: ICTL-ST-01, value: Default}
+      icon:      {rule: ICTL-IC-02, value: leading, why: "Mũi tên trái — ý nghĩa phổ quát cho 'quay lại'"}
+    resolved:
+      {Style: "Outline Circle", Type: "Grey", Size: "sm", State: "Default",
+       icon.leading: "arrow-left-long"}
+    node_id: "814:46667"
+    also_satisfies: [CMP-HDR-01, AX-SHP-INV-01]
+    touch_note: >
+      Trên con trỏ thô, sm(40) < sàn 44 → ICTL-Z-05 nâng lên md(44). Đây là ca
+      điển hình của việc sàn chỉ NÂNG chứ không hạ [AX-PHY-02].
+
+  # ---------------------------------------------------------------------------
+  - id: EX-BTN-04
+    context: "Màn tạo đơn — có 2 cách tạo, CÙNG dẫn tới mục đích 'tạo đơn'"
+    is_key_example: true
+    controls:
+      - label: "Tạo đơn bằng Excel"
+        trace:
+          intent:   {rule: ATRG-T-02, value: primary,
+                     why: "Đường tới mục đích, và là cách dùng nhiều nhất",
+                     evidence_tier: 1,
+                     evidence: "Tài liệu § người dùng: 'Phần lớn shop tạo đơn bằng file Excel, tạo thủ công chỉ dùng khi phát sinh lẻ'"}
+          emphasis: {rule: ICTL-E-01, value: Fill}
+        resolved: {Style: "Fill Round", Type: "Primary", Size: "md"}
+        node_id: "814:46117"
+      - label: "Tạo đơn thủ công"
+        trace:
+          intent:   {rule: ATRG-T-03, value: alternate,
+                     why: "Cùng dẫn tới mục đích 'tạo đơn', nhưng ít dùng hơn"}
+          emphasis: {rule: ICTL-E-02, value: Outline}
+        resolved: {Style: "Outline Round", Type: "Secondary", Size: "md"}
+        node_id: "814:46431"
+    key_lesson: >
+      Hai điều khiển này KHÔNG phải "nút chính và nút phụ". Cả hai đều là đường
+      hoàn thành mục đích, chỉ khác tần suất. Đây là chỗ phân biệt vai alternate
+      với vai no_path — no_path không dẫn tới mục đích nào.
+    evidence_lesson: >
+      Vai nào là primary KHÔNG suy được từ cấu trúc màn hình. Ở đây tài liệu nêu
+      tường minh (tier 1) nên trích được nguyên văn. Không có câu đó thì phải
+      tìm tiền lệ (tier 2), không có nữa thì escalate — xem EX-BTN-08.
+
+  # ---------------------------------------------------------------------------
+  - id: EX-BTN-05
+    context: >
+      Danh sách đơn — ô thao tác chuẩn của mỗi dòng, 2 hành động (Sửa, Xoá),
+      cả hai xuất hiện ở MỌI dòng → dưới ngưỡng 3, hiện thẳng, không gom
+    controls:
+      - label: "Sửa"
+        trace:
+          intent:   {rule: ATRG-T-04, value: no_path, why: "Không dẫn tới mục đích màn hình — chỉ mở form chỉnh sửa"}
+          emphasis: {rule: CMP-ROW-01, value: Outline, why: "Thuộc policy.standard_row_actions, xuất hiện ở mọi dòng"}
+          shape:    {rule: AX-SHP-01, value: Round}
+          size:     {rule: ICTL-Z-01, value: sm, why: "policy.size_by_position.table_row_action"}
+          state:    {rule: ICTL-ST-01, value: Default}
+          icon:     {rule: ICTL-IC-04, value: icon-only, why: "Ý nghĩa 'bút' → binding tên 'pen'"}
+        resolved: {Style: "Outline Round", Type: "Grey", Size: "sm", State: "Default"}
+        isStandardRowAction: true
+      - label: "Xoá"
+        trace:
+          intent:   {rule: ATRG-T-04, value: no_path,
+                     why: "Xoá 1 dòng trong bộ hành động chuẩn — thao tác THƯỜNG QUY, KHÔNG tự nâng lên phá huỷ [case_c]"}
+          emphasis: {rule: CMP-ROW-01, value: Outline}
+          shape:    {rule: AX-SHP-01, value: Round}
+          size:     {rule: ICTL-Z-01, value: sm}
+          state:    {rule: ICTL-ST-01, value: Default}
+          icon:     {rule: ICTL-IC-04, value: icon-only, why: "Ý nghĩa 'thùng rác' → binding tên 'trash'"}
+        resolved: {Style: "Outline Round", Type: "Grey", Size: "sm", State: "Default"}
+        isStandardRowAction: true
+        also_requires: >
+          Vẫn cần bước xác nhận trước khi xoá thật [CMP-DLG-01] — luật này áp
+          cho hành động XOÁ DỮ LIỆU nói chung, không phụ thuộc vai intent.
+    key_lesson: >
+      Vai no_path + mức nhấn giữa, KHÔNG phải vai phá huỷ. Nâng oan lên vai phá
+      huỷ sẽ kéo theo dialog xác nhận cho mỗi lần xoá một dòng trong công việc
+      hằng ngày — làm hỏng luồng vận hành bằng một luật an toàn đặt sai chỗ.
+    touch_note: "Trên con trỏ thô: icon-only → sàn 48 [ICTL-Z-06] → nâng sm(40) lên lg(48)"
+
+  # ---------------------------------------------------------------------------
+  - id: EX-BTN-06
+    context: >
+      Cùng bảng EX-BTN-05 — dòng của MỘT đơn bị lỗi gửi thông báo, có thêm
+      hành động 'Gửi lại thông báo' KHÔNG xuất hiện ở các dòng khác
+    label: "Gửi lại thông báo"
+    was_lost_in_v1_split: true
+    trace:
+      intent:   {rule: ATRG-T-04, value: no_path,
+                 why: "Mức ưu tiên thấp — không dẫn tới mục đích màn hình, chỉ là tiện ích khắc phục lỗi gửi"}
+      emphasis: {rule: CMP-ROW-02, value: Outline,
+                 why: >
+                   Ưu tiên thấp → không xứng đáng rank1. Không có rank1 nào khác
+                   trong ô thao tác để nhường chỗ → dùng fallback mức giữa
+                   (ICTL-E-02.fallback). KHÔNG phải mức thấp nhất theo mặc định
+                   như luật cũ đã bỏ.}
+      shape:    {rule: AX-SHP-01, value: Round}
+      size:     {rule: ICTL-Z-01, value: sm}
+      state:    {rule: ICTL-ST-01, value: Default}
+    resolved: {Style: "Outline Round", Type: "Grey", Size: "sm", State: "Default"}
+    isStandardRowAction: false
+    key_lesson: >
+      So với Sửa/Xoá ở EX-BTN-05: cùng nằm trong dòng bảng, nhưng Sửa/Xoá thuộc
+      bộ chuẩn → mức giữa CỐ ĐỊNH (CMP-ROW-01). 'Gửi lại thông báo' KHÔNG thuộc
+      bộ chuẩn nên phải đánh giá mức ưu tiên qua ATRG-T-* + ICTL-E-* (CMP-ROW-02)
+      — ở đây ưu tiên thấp nên KẾT QUẢ cũng ra mức giữa, nhưng đó là kết quả
+      đánh giá, không phải vì "nằm trong dòng bảng".
+
+  # ---------------------------------------------------------------------------
+  - id: EX-BTN-07
+    context: >
+      Danh sách chi phí phát sinh đang chờ duyệt — dòng của MỘT khoản ở trạng
+      thái "Chờ duyệt", có hành động 'Phê duyệt' CHỈ hiện ở những dòng chờ duyệt
+    label: "Phê duyệt"
+    is_key_example: true
+    applied_to_real_spec: true
+    trace:
+      intent:   {rule: ATRG-T-02, value: primary,
+                 why: >
+                   Mức ưu tiên CAO — đây là hành động CHÍNH mà người dùng cần làm
+                   với dòng đang chờ duyệt, dẫn thẳng tới mục đích màn hình
+                   (xử lý các khoản chờ duyệt).
+                 evidence_tier: 1,
+                 evidence: "spec-v1-06 § context_6dim.how: 'Duyệt/Từ chối từng dòng qua nút Phê duyệt + chevron'"}
+      emphasis: {rule: CMP-ROW-02, value: Fill,
+                 why: >
+                   Mức ưu tiên cao nhất trong ô thao tác của dòng này — không có
+                   hành động nào khác trong CÙNG ô thao tác cạnh tranh. Ô thao tác
+                   của từng dòng là khu vực RIÊNG (interactive_control § region.critical)
+                   nên ICTL-E-01 "tối đa 1 rank1 mỗi khu vực" không bị vi phạm.}
+      shape:    {rule: AX-SHP-01, value: Round}
+      size:     {rule: ICTL-Z-01, value: sm}
+      state:    {rule: ICTL-ST-01, value: Default}
+    resolved: {Style: "Fill Round", Type: "Primary", Size: "sm", State: "Default"}
+    isStandardRowAction: false
+    verified_by_render:
+      date: "2026-09-07"
+      how: >
+        Đã sửa compiler thật, biên dịch lại, validate 0 lỗi (27 component
+        instance, khớp baseline), render vào file test, đọc lại property THẬT
+        của cả 3 instance → đúng Fill Round / Primary; chụp ảnh xác nhận trực quan.
+      note: >
+        Nút này bị HARDCODE trong compiler (buildTableCard), không đọc role từ
+        row_actions của spec-v1 — nên phải sửa ở compiler, không sửa spec JSON.
+    key_lesson: >
+      Đối lập trực tiếp với EX-BTN-06: cùng là hành động ngoài bộ chuẩn trong ô
+      thao tác dòng bảng, nhưng mức ưu tiên khác nhau → dạng khác nhau hẳn.
+      Ưu tiên thấp → mức giữa + no_path. Ưu tiên cao → rank1 + primary.
+      Đây chính xác là điều luật cũ (ép mức thấp nhất) không cho phép xảy ra.
+
+  # ---------------------------------------------------------------------------
+  - id: EX-BTN-08
+    context: >
+      Màn có 2 đường tương đương tới cùng mục đích, nhưng tài liệu KHÔNG nêu
+      đường nào phổ biến hơn, và không tìm được tiền lệ ở màn cùng loại nghiệp vụ
+    is_escalate_example: true
+    why_this_example_exists: >
+      Escalate là ĐÁP ÁN ĐÚNG, không phải thất bại. Ví dụ này tồn tại để tập
+      trace có nhãn dương cho hành vi escalate — thiếu nó thì model (người hoặc
+      máy) học được rằng luôn phải có đáp án, tức là học đoán.
+    controls:
+      - label: "<đường A>"
+        trace:
+          intent:   {rule: ATRG-T-02, value: "CHƯA QUYẾT",
+                     evidence_tier: 3,
+                     why: "Là đường tới mục đích, nhưng KHÔNG xác định được có phải đường dùng nhiều nhất"}
+          emphasis: {rule: ICTL-E-02, value: Outline, why: "Fallback trung tính — KHÔNG tự phong lên rank1"}
+      - label: "<đường B>"
+        trace:
+          intent:   {rule: ATRG-T-02, value: "CHƯA QUYẾT", evidence_tier: 3}
+          emphasis: {rule: ICTL-E-02, value: Outline}
+    resolved_behavior: >
+      Vẫn dựng được màn hình. CẢ HAI đường để mức giữa, KHÔNG có nút nào ở
+      rank1. Gắn nhãn cần-quyết-định, ghi vào openQuestions.
+    escalate_message: >
+      Màn '{screen}' có 2 đường tương đương tới mục đích: {A}, {B}. Tài liệu
+      không nêu đường nào phổ biến hơn, không tìm thấy tiền lệ. Cần PO hoặc
+      designer chỉ định đường nào là primary.
+    why_not_guess: >
+      Nút ở mức nhấn cao nhất là thứ người dùng bấm theo phản xạ. Phong nhầm
+      đường ít dùng thành đường chính sẽ đẩy người dùng đi sai luồng mỗi ngày —
+      lỗi này lặng lẽ và lặp lại hằng ngày, tệ hơn một lần escalate.
+    feeds_back: >
+      Ca này là lỗ hổng tài liệu phòng trước được → bổ sung vào rubric đánh giá
+      tài liệu: "tính năng có >= 2 cách hoàn thành cùng mục đích thì phải nêu
+      cách nào phổ biến hơn".

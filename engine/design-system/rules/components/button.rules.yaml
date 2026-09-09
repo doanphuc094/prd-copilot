@@ -1,0 +1,92 @@
+# =============================================================================
+# button.rules.yaml — LUẬT RIÊNG CỦA BUTTON
+#
+# KẾT QUẢ PHÉP THỬ MÔ HÌNH (08/09): file này gần như RỖNG, và đó là kết quả
+# ĐÚNG — không phải thiếu sót.
+#
+# Phân loại 40 nhóm luật của bản v0.2 theo tầng sở hữu đúng nhất:
+#
+#   _core (kiểu trục / a11y phổ quát) ............  6 nhóm
+#   kinds/interactive_control ....................  7 nhóm
+#   kinds/action_trigger .........................  2 nhóm
+#   _composition (liên component) ................  6 nhóm
+#   CHỈ RIÊNG Button .............................  0 nhóm luật
+#
+# Hai thứ từng bị coi là "riêng Button" nhưng không phải luật:
+#   - quirk property Style gộp mức nhấn × hình dạng → là DỮ KIỆN DS,
+#     đã nằm ở profile.ghn/ds/button.binding.yaml § quirks.merged_style
+#   - luật cũ ép hành động ngoài bộ chuẩn xuống mức thấp nhất → ĐÃ BỎ,
+#     chỉ còn giá trị lịch sử ở profile.ghn/decisions.md
+#
+# Ý nghĩa: Button không có suy luận nào độc quyền. Mọi thứ nó cần đều đến từ
+# 2 loại nó khai + lớp core + luật liên component. Đây chính là lý do "một file
+# rule cho mỗi component" là sai đơn vị — làm thế sẽ nhân bản ~21 nhóm luật
+# sang mọi component, và nhân bản không đồng bộ thì thành drift.
+#
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  component: Button
+  layer: component
+  version: 2.0-draft
+  kinds: [interactive_control, action_trigger]
+  requires: [_core.rules.yaml, kinds/interactive_control.rules.yaml, kinds/action_trigger.rules.yaml]
+  binding: profile.ghn/ds/button.binding.yaml
+  examples: examples/button.examples.yaml
+
+# Không có luật nào ở đây. Giữ mảng rỗng tường minh thay vì bỏ trường —
+# để compiler phân biệt được "không có luật" với "quên khai".
+rules: []
+invariants: []
+
+# -----------------------------------------------------------------------------
+# BẢN ĐỒ: luật của Button hiện nằm ở đâu
+# Đây là thứ duy nhất file này cần chứa — chỉ đường, không định nghĩa lại.
+# -----------------------------------------------------------------------------
+rules_live_at:
+  intent:
+    where: kinds/action_trigger.rules.yaml
+    ids: [ATRG-T-01, ATRG-T-02, ATRG-T-03, ATRG-T-04, ATRG-INV-01]
+  emphasis:
+    where: kinds/interactive_control.rules.yaml
+    ids: [ICTL-E-01, ICTL-E-02, ICTL-E-03, ICTL-E-03-c, ICTL-INV-02]
+  shape:
+    where: "_core.rules.yaml § axis_kinds.default_plus_exception"
+    ids: [AX-SHP-01, AX-SHP-02, AX-SHP-INV-01]
+    note: >
+      Ngữ cảnh cụ thể của ngoại lệ là CHÍNH SÁCH, khai ở
+      profile.<công ty>/policy.yaml § shape_exception — không khai ở lớp luật.
+  size:
+    where: kinds/interactive_control.rules.yaml
+    ids: [ICTL-Z-01, ICTL-Z-02, ICTL-Z-05, ICTL-Z-06, ICTL-Z-07, ICTL-Z-08, ICTL-INV-14, ICTL-INV-15]
+  state:
+    where: kinds/interactive_control.rules.yaml
+    ids: [ICTL-ST-01, ICTL-ST-02]
+  icon:
+    where: kinds/interactive_control.rules.yaml
+    ids: [ICTL-IC-01, ICTL-IC-02, ICTL-IC-03, ICTL-IC-04]
+    meaning_table: "kinds/action_trigger.rules.yaml § icon_meaning_vocabulary"
+    names: "profile.ghn/ds/_shared.binding.yaml § icon_names"
+  cross_component:
+    where: _composition.rules.yaml
+    ids: [CMP-DLG-01, CMP-FTR-01, CMP-FTR-02, CMP-FTR-03, CMP-HDR-01,
+          CMP-ROW-01, CMP-ROW-02, CMP-ROW-03, CMP-ROW-INV-01, CMP-ROW-INV-02,
+          CMP-CNT-01]
+  universal:
+    where: "_core.rules.yaml § universal_a11y + § axis_invariants"
+    ids: [A11Y-INV-01, A11Y-01, A11Y-02, AX-INV-01, AX-INV-02, AX-INV-03, AX-ICN-INV-01]
+
+# -----------------------------------------------------------------------------
+# NẾU SAU NÀY FILE NÀY PHÌNH LÊN
+# -----------------------------------------------------------------------------
+growth_warning:
+  guardrail: "manifest.yaml § guardrails.component_file_stays_small (> 5 rule → cảnh báo)"
+  what_it_means: >
+    File này phình lên KHÔNG có nghĩa Button phức tạp hơn dự kiến. Nó có nghĩa
+    một `kind` đang thiếu hoặc sai. Cách sửa là bốc luật lên đúng kind (hoặc
+    tạo kind mới nếu đủ >= 3 thành viên thật), KHÔNG phải nuôi file này.
+  test_before_adding: >
+    Trước khi thêm một luật vào đây, trả lời: "Chip / Switch / MenuItem có cần
+    luật này không?" Nếu CÓ dù chỉ một cái → nó thuộc kind, không thuộc đây.
+    Nếu nó cần biết về component khác → nó thuộc _composition.
