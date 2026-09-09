@@ -150,20 +150,84 @@ cross_component_traps:
       property THẬT sau khi render [_core.discipline.validator_is_not_proof].
 
 # -----------------------------------------------------------------------------
-# CHỖ DÀNH CHO NỘI DUNG semantic.json — BƯỚC 3, CHƯA LÀM
+# BADGE — màu + ý nghĩa
+# Migrate từ claude/agentic-ds-drafts/semantic.json 09/09 — xem decisions.md 09/09-B.
+# button.* của semantic.json KHÔNG migrate (đã thay bằng ds/button.binding.yaml
+# + policy + rules); role name "cancel" KHÔNG migrate (bỏ theo decisions.md 08/09-B).
 # -----------------------------------------------------------------------------
-_pending_migration:
-  from: "claude/agentic-ds-drafts/semantic.json"
-  status: "CHƯA DI CHUYỂN — chờ Williams chốt ở bước 3"
-  why_it_belongs_here: >
-    Nội dung trong semantic.json (badge color, surface.table_header,
-    text_style.diff_view, spacing.density) phần lớn là DỮ KIỆN DS DÙNG CHUNG —
-    đúng đích của file này.
-  risk_if_not_done: >
-    Để nguyên thì tồn tại 2 chỗ chứa cùng loại dữ liệu, với 2 cấu trúc khác
-    nhau. Đây đúng vấn đề đã xảy ra một lần: câu trả lời phân biệt vai
-    alternate/no_path đã chốt trong bộ luật nhưng semantic.json vẫn ghi là TODO.
-  items_to_move: [badge, surface, text_style, spacing.density]
-  items_to_drop:
-    - "button.* — đã được thay bằng ds/button.binding.yaml + policy + rules"
-    - "role name 'cancel' — Williams chốt 08/09 dùng từ vựng Type, xem decisions.md 08/09-B"
+badge:
+  note: >
+    Cả 3 màu đều render dạng PILL có nền — không có màu nào là text trần.
+    Property thật trên component Badge tên là 'Color'.
+  colors:
+    grey:
+      ds_property_value: Grey
+      render_style: pill_filled
+      when_to_use: "Trung tính / chưa xử lý (vd 'Chờ duyệt')"
+      warning: "KHÔNG render thành text thường không nền — đã từng làm sai."
+    green:
+      ds_property_value: Success
+      render_style: pill_filled
+      when_to_use: "Đã xử lý tích cực (vd 'Đã duyệt')"
+    red:
+      ds_property_value: Error
+      render_style: pill_filled
+      when_to_use: "Chỉ khi thực sự quan trọng / cần chú ý (vd 'Từ chối')"
+      warning: >
+        KHÔNG dùng giá trị 'Destructive' cho property Color — component Badge
+        không có variant này, setProperties() sẽ thất bại toàn bộ (all-or-
+        nothing) và badge rơi về label mặc định 'Label'. Alias đúng là 'Error'.
+  no_color_borrowing_rule: >
+    Khi 1 màn có NHIỀU badge/chip cạnh nhau nhưng khác ý nghĩa, mỗi cái lấy
+    màu theo ĐÚNG ý nghĩa riêng — KHÔNG mượn màu của badge/chip khác gần đó.
+
+# -----------------------------------------------------------------------------
+# SURFACE — bề mặt/khung. Chỉ 1 mục có bằng chứng render thật, phần còn lại
+# CHƯA khảo sát — không tự bịa.
+# -----------------------------------------------------------------------------
+surface:
+  table_header:
+    background: "#fafafa"
+    border: "có viền dọc (stroke) phân chia cột — cả header lẫn dòng dữ liệu bên dưới"
+    when_to_use: "CỐ ĐỊNH cho mọi table_card, không tuỳ biến theo màn"
+    confirmed_source: "schema-v1-draft.md Mục 3a, field header_style"
+  not_yet_surveyed:
+    [card_background, modal_overlay_background, sidebar_background,
+     "input field border/background theo state (default/focus/error/disabled)"]
+
+# -----------------------------------------------------------------------------
+# TEXT STYLE theo ngữ cảnh. Chỉ 2 mục có bằng chứng thật.
+# -----------------------------------------------------------------------------
+text_style:
+  table_header_label:
+    weight: semibold
+    size: 14px
+    color: text-muted
+    confirmed_source: "schema-v1-draft.md Mục 3a, field header_style"
+  diff_view_old_value:
+    style: strikethrough
+    when_to_use: "Giá trị CŨ trong modal đối chiếu — PHẢI có gạch ngang, không dùng style thường"
+    confirmed_source: "schema-v1-draft.md Mục 4, field diff_view"
+  diff_view_new_value:
+    style: "emphasized (nổi bật, không gạch)"
+    when_to_use: "Giá trị MỚI trong modal đối chiếu — đối lập trực quan với giá trị cũ"
+    confirmed_source: "schema-v1-draft.md Mục 4, field diff_view"
+  not_yet_surveyed:
+    ["mã màu thật của 'text-muted' (hiện chỉ là tên semantic)", "heading H1/H2/H3",
+     "body text mặc định", "error/helper text dưới input"]
+
+# -----------------------------------------------------------------------------
+# SPACING — chỉ density đã migrate (có value thật ở dạng enum). Base scale px
+# và grid_units_per_row CHƯA migrate vì CHƯA có số thật, không phải bị bỏ sót
+# — cần đọc ghn-spacing-tokens.json gốc trước.
+# -----------------------------------------------------------------------------
+spacing:
+  density:
+    enum: [compact, comfortable]
+    note: >
+      Chỉ là nhãn ngữ nghĩa (compact = vận hành nội bộ, nhiều dòng/màn) — CHƯA
+      có mapping ra padding/row-height thật.
+    confirmed_source: "schema-v1-draft.md Mục 1"
+  not_yet_surveyed: >
+    grid_units_per_row (khái niệm cấu trúc "N-unit/hàng", chưa rõ 1 unit = bao
+    nhiêu px thật) và base spacing scale (4px/8px grid hay gì).

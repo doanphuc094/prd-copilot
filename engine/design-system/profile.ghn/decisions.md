@@ -354,3 +354,28 @@ nào tạo ra 3 con số này, phải tra lại đúng 2 file Figma trên, khôn
 
 **Guardrail**: `ICTL-Z-06` giữ nguyên cờ `undisableable: true` — thang 3 bậc
 vẫn là sàn a11y bắt buộc, không phải gợi ý.
+
+## 09/09-B — Migrate semantic.json (badge/surface/text_style/spacing.density) vào _shared.binding.yaml
+
+**by**: Williams ("Migrate đi")
+**affects**: `profile.ghn/ds/_shared.binding.yaml`, `claude/agentic-ds-drafts/semantic.json` (Claude Project, đánh dấu superseded)
+
+**Đã di chuyển** (theo đúng `_pending_migration.items_to_move` đã ghi sẵn từ 08/09):
+badge (3 màu + no_color_borrowing_rule), surface.table_header, text_style
+(table_header_label, diff_view_old_value, diff_view_new_value), spacing.density.
+Giữ nguyên `confirmed_source` gốc của từng mục để không mất truy vết.
+
+**KHÔNG di chuyển** (đúng theo `items_to_drop` đã quyết từ trước):
+- `button.*` của semantic.json — đã thay hoàn toàn bằng
+  `ds/button.binding.yaml` + `policy.yaml` + `rules/`.
+- Role name `"cancel"` — bỏ theo decisions.md 08/09-B, dùng từ vựng Type
+  (Grey) thay vì đặt tên semantic riêng.
+- `spacing.grid_units_per_row`, base spacing scale px, `typography.*` — CHƯA
+  migrate vì CHƯA có số liệu thật (vẫn là TODO trong semantic.json gốc), migrate
+  giờ sẽ tạo cảm giác "đã xong" cho dữ liệu thật ra chưa tồn tại.
+
+**semantic.json ở Claude Project**: đánh dấu `_superseded` ở đầu file, KHÔNG
+xoá nội dung (nguyên tắc provenance: giữ lại, không xoá — xem
+`_core.rules.yaml § provenance.never_delete`) — các mục `_todo`/`TODO_chua_lam`
+còn lại trong đó vẫn là việc thật cần làm, chỉ là không còn là nơi CHỨA giá
+trị đã chốt nữa.
