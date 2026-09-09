@@ -60,8 +60,8 @@
     {
       "id": "ICTL-INV-14",
       "layer": "kind:interactive_control",
-      "rule": "Trên con trỏ thô, mọi điều khiển phải đạt sàn cảm ứng",
-      "check": "pointer == 'coarse' implies\n  resolve_physical(size) >= (has_visible_label\n                             ? profile.policy.touch.floor_px\n                             : profile.policy.touch.floor_px_icon_only)\n",
+      "rule": "Trên con trỏ thô, mọi điều khiển phải đạt sàn cảm ứng theo đúng bậc ICTL-Z-05/ICTL-Z-06",
+      "check": "pointer == 'coarse' implies resolve_physical(size) >= required_floor(node) — required_floor lấy từ ICTL-Z-05 khi có nhãn chữ, hoặc ICTL-Z-06 khi icon-only (3 bậc theo emphasis: rank1 / đứng riêng lẻ đạt spacing exception / còn lại — xem ICTL-Z-06 để biết công thức đầy đủ, không lặp lại ở đây để tránh 2 nguồn dễ lệch nhau).\n",
       "severity": "error",
       "undisableable": true
     },

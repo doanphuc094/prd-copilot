@@ -156,6 +156,26 @@ size:
       md = 16+16+16 = 48 rộng × 44 cao  → pass TOUCH-44
     Đây là căn cứ số cho việc ICTL-Z-06 đặt sàn icon-only cao hơn.
 
+  icon_only_default:
+    source: "[XÁC NHẬN — Williams 09/09]"
+    quote: >
+      "Tao thường dùng nút icon grey button có viền đối với web khi là button
+      icon-only tao xài icon là 16 button viền ngoài là 40"
+    convention:
+      intent: no_path       # → Type=Grey
+      emphasis: Outline      # → Style=Outline ...
+      size: sm                # → height_px=40, icon_box_px=16 (khớp đúng số Williams cho)
+    meaning: >
+      Đây là mặc định khi KHÔNG có lý do khác để chọn intent/emphasis/size
+      khác đi — vẫn đi qua đầy đủ các trục đã có (ICTL-E-*, ATRG-T-*,
+      ICTL-Z-01...), KHÔNG phải 1 luật riêng, chỉ là giá trị khởi điểm hợp lý
+      khi agent cần escalate ít câu hỏi nhất cho 1 icon-only chưa rõ ngữ cảnh.
+    touch_tier: >
+      Trên cảm ứng, đây là bậc GIỮA của ICTL-Z-06 (không phải rank1, không
+      đứng riêng lẻ đủ điều kiện spacing exception) — floor tương ứng
+      profile.policy.touch.floor_px_icon_only_default = 40, TRÙNG với default
+      này, nên trường hợp phổ biến nhất không cần escalate lên bước lớn hơn.
+
 # -----------------------------------------------------------------------------
 # QUIRK RIÊNG CỦA BUTTON TRONG DS NÀY
 # -----------------------------------------------------------------------------

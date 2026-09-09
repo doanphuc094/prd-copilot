@@ -295,3 +295,62 @@ build/button.resolved.yaml       ← AGENT ĐỌC ĐÚNG FILE NÀY
 Lần tách lớp đầu (08/09-A) làm **mất 7 `worked_examples`** mà verify không bắt được, vì verify chỉ kiểm rule id — tức là kiểm sai thứ. Đã phục hồi vào `examples/button.examples.yaml` và thêm mục thứ 8: một ca **escalate** làm nhãn dương, vì nếu tập trace này về sau dùng làm dữ liệu huấn luyện mà thiếu ca escalate thì model sẽ học cách luôn có đáp án — tức là học đoán.
 
 - **Affects:** toàn bộ cấu trúc; `manifest.yaml`, `compile.js` (mới); `AGENTS.md` (chờ cập nhật); `semantic.json` (chờ di chuyển)
+
+## 09/09-A — Sàn cảm ứng cho icon-only: từ 1 sàn cứng sang thang 3 bậc theo emphasis
+
+**by**: Williams, xác nhận qua chat với Claude
+**affects**: `rules/kinds/interactive_control.rules.yaml` (ICTL-Z-06, ICTL-INV-14, ICTL-INV-15), `profile.ghn/policy.yaml` (touch.floor_px, touch.floor_px_icon_only, touch.floor_px_icon_only_default, touch.dense_table_below_breakpoint), `profile.ghn/ds/button.binding.yaml` (icon_only_default)
+
+**Bối cảnh**: Đang chốt `policy.yaml § shared.touch` (3 mục `[ĐỀ XUẤT]` từ 08/09).
+Trả lời câu hỏi `floor_px_icon_only`, Williams cho số thật đang dùng ("icon 16,
+nút viền ngoài 40, grey/outline") rồi mô tả thực tế "size icon button dao động
+từ 24-48px tuỳ mức ưu tiên và kích thước frame" — lộ ra đề xuất ban đầu của
+Claude (1 sàn cứng 48 cho MỌI icon-only) không khớp thực tế.
+
+**Bằng chứng** — Claude đọc trực tiếp 2 file Figma app mobile thật theo yêu cầu
+Williams (screenshot + metadata, không suy đoán):
+- `App Truck` (fileKey 7urnQBIkHJX7AmiWWpMDnl), màn "Bên trong cabin xe"
+  (node 1:11366): nút chụp ảnh (rank1, hành động duy nhất màn hình) ≈ 64px;
+  nút bật/tắt flash (tiện ích phụ, đứng riêng lẻ) = 40px (đo từ metadata,
+  instance "Flash icon" 40×40).
+- Cùng file, header mọi màn (vd node 1:12263 "Chi tiết phiếu"): icon back/home
+  = 24px (metadata "24px/Previous"), đứng riêng 1 mình ở góc header, xa các
+  phần tử khác.
+- Màn "Bottom sheet xem/ xoá ảnh" (node 1:12046): thay vì nhiều icon-only nhỏ
+  cạnh nhau cho Xem/Xoá, DS dồn vào 1 icon "..." overflow, mở bottom sheet có
+  nhãn chữ đầy đủ — xác nhận thêm quyết định `dense_table_below_breakpoint`
+  bên dưới.
+- Chưa đào file `App B2B-DRIVER` (2RLeRDt6tLCZrfCFqyMZUi) — đủ bằng chứng từ
+  App Truck để quyết, để dành đối chiếu sau nếu cần.
+
+**Quyết định**:
+1. `touch.floor_px` = 44 — giữ nguyên đề xuất 08/09, xác nhận.
+2. `touch.floor_px_icon_only` = 48 — GIỮ giá trị, nhưng đổi phạm vi áp dụng:
+   chỉ áp cho icon-only ở bậc **emphasis.rank1**, không phải mọi icon-only.
+3. `touch.floor_px_icon_only_default` = 40 — MỚI, áp cho icon-only không phải
+   rank1 và không đứng riêng lẻ đủ điều kiện spacing exception. Khớp đúng
+   default Williams đang dùng (icon 16/nút 40).
+4. Icon-only không phải rank1 NHƯNG đứng riêng lẻ, đạt điều kiện spacing
+   exception của TOUCH-24 (đã viết sẵn ở `_core.rules.yaml` từ 08/09 nhưng
+   CHƯA từng được dùng tới cho tới quyết định này) → được phép xuống 24px.
+   Đây chính là cách header back/home 24px hợp lệ mà không cần ngoại lệ mới.
+5. Nút chụp ảnh 64px KHÔNG đưa vào thang size Button (thang hiện tại dừng ở
+   xl=52) — ghi nhận là bằng chứng cho tier rank1, không model thành 1 bước
+   Button mới. Đây có thể là 1 component/pattern khác (FAB) — để dành quyết
+   khi thật sự cần, KHÔNG tự thêm bước size mới cho Button hôm nay.
+6. `touch.dense_table_below_breakpoint` = **card_list** (không phải
+   `bottom_sheet` như Claude đề xuất ban đầu). Quote Williams: "Trên mobile
+   không sử dụng bảng table dạng dữ liệu" — rộng hơn phạm vi ICTL-Z-08 (đổi cả
+   layout màn hình, không chỉ đổi cách hiển thị hành động trong ô thao tác).
+
+**Lưu ý provenance**: bằng chứng mục 64px/40px/24px đến từ 1 app mobile
+NATIVE riêng (App Truck), có thể dùng library component khác với "Button /
+Button organism" (web GHN DS) mà `button.binding.yaml` đang mô tả — không
+cùng 1 component set. Dùng làm bằng chứng cho QUY LUẬT chung (sàn cảm ứng theo
+mức ưu tiên) là hợp lý vì đây là hành vi vật lý/UX phổ quát, không phải giá
+trị riêng của 1 component — nhưng nếu sau này cần biết CHÍNH XÁC component
+nào tạo ra 3 con số này, phải tra lại đúng 2 file Figma trên, không suy từ
+`button.binding.yaml`.
+
+**Guardrail**: `ICTL-Z-06` giữ nguyên cờ `undisableable: true` — thang 3 bậc
+vẫn là sàn a11y bắt buộc, không phải gợi ý.

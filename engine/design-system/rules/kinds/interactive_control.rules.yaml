@@ -149,15 +149,41 @@ size:
         phải quyết 2 lần.
 
     - id: ICTL-Z-06
-      name: "Sàn cảm ứng cho điều khiển KHÔNG có nhãn chữ — cao hơn"
+      name: "Sàn cảm ứng cho điều khiển KHÔNG có nhãn chữ — theo mức ưu tiên"
       undisableable: true
       when: "Con trỏ thô VÀ không có nhãn chữ (icon-only)"
-      rule: "Giá trị thật >= profile.policy.touch.floor_px_icon_only"
-      why_higher: >
+      rule: >
+        Chọn sàn theo emphasis đã resolve — KHÔNG dùng 1 sàn cứng cho mọi
+        icon-only:
+          - emphasis.rank1 (hành động quan trọng nhất khu vực) → giá trị thật
+            >= profile.policy.touch.floor_px_icon_only
+          - KHÔNG phải rank1, VÀ đứng riêng lẻ đạt điều kiện spacing exception
+            của TOUCH-24 (_core.touch_input.thresholds[TOUCH-24].exception:
+            vòng tròn 24px quanh nó không chồng lên mục tiêu khác) → được
+            phép xuống tới TOUCH-24 (24px)
+          - Còn lại (không phải rank1, không đạt spacing exception) → giá trị
+            thật >= profile.policy.touch.floor_px_icon_only_default
+      why_tiered: >
+        1 sàn cứng cho mọi icon-only ép cả nút ưu tiên thấp phải to bằng nút
+        ưu tiên cao — không khớp bằng chứng thật (xem decisions.md 09/09-A,
+        đo từ app mobile thật: nút chụp ảnh rank1 ~64px, icon tiện ích phụ
+        40px, icon điều hướng header đứng riêng lẻ 24px). rank1 vẫn cần sàn
+        cao nhất vì đó là hành động màn hình được thiết kế để người dùng tìm
+        thấy trước tiên.
+      escalate_when: >
+        Không xác định được có đạt điều kiện spacing exception hay không →
+        escalate, KHÔNG tự cho qua ở mức 24px.
+      why_higher_than_labeled: >
         Chuẩn đo cả 2 chiều. Điều khiển có nhãn chữ thường thừa chiều rộng nên
         chỉ cần lo chiều cao; điều khiển chỉ có icon gần vuông nên chiều rộng
-        vỡ cùng lúc với chiều cao.
+        vỡ cùng lúc với chiều cao — đây là lý do NGAY CẢ bậc giữa/thấp của
+        icon-only vẫn cần px cụ thể riêng, không dùng chung floor_px của nút
+        có nhãn.
       cross_check: "Đồng thời phải thoả A11Y-INV-01 (tên thay thế)"
+      out_of_scope: >
+        FAB / nút hành động nổi kiểu chụp ảnh (~64px, vượt cả bước lớn nhất xl
+        của thang size Button) KHÔNG thuộc phạm vi Button — xem decisions.md
+        09/09-A. Không model ở đây, chỉ ghi nhận làm bằng chứng cho tier rank1.
 
     - id: ICTL-Z-07
       name: "Trên cảm ứng, size KHÔNG mang thứ bậc"
@@ -267,12 +293,13 @@ invariants:
     why: "Hai mức cao nhất cạnh nhau triệt tiêu lẫn nhau — không còn chỗ nào là chỗ mắt dừng."
 
   - id: ICTL-INV-14
-    rule: "Trên con trỏ thô, mọi điều khiển phải đạt sàn cảm ứng"
+    rule: "Trên con trỏ thô, mọi điều khiển phải đạt sàn cảm ứng theo đúng bậc ICTL-Z-05/ICTL-Z-06"
     check: >
-      pointer == 'coarse' implies
-        resolve_physical(size) >= (has_visible_label
-                                   ? profile.policy.touch.floor_px
-                                   : profile.policy.touch.floor_px_icon_only)
+      pointer == 'coarse' implies resolve_physical(size) >= required_floor(node)
+      — required_floor lấy từ ICTL-Z-05 khi có nhãn chữ, hoặc ICTL-Z-06 khi
+      icon-only (3 bậc theo emphasis: rank1 / đứng riêng lẻ đạt spacing
+      exception / còn lại — xem ICTL-Z-06 để biết công thức đầy đủ, không lặp
+      lại ở đây để tránh 2 nguồn dễ lệch nhau).
     undisableable: true
     depends_on: "profile.binding.size giá trị thật — thiếu thì báo lỗi cấu hình [AX-PHY-01]"
     fails_loudly_if: "Thiếu giá trị thật → LỖI, KHÔNG bỏ qua kiểm tra"
@@ -284,4 +311,6 @@ invariants:
     why_warning_not_error: >
       Đây là dấu hiệu gián tiếp của ICTL-Z-07, không phải bằng chứng. Có ca hợp
       lệ (một khu vực chứa cả điều khiển có nhãn và điều khiển icon-only, 2 sàn
-      khác nhau). Cảnh báo để review, không chặn.
+      khác nhau — HOẶC nhiều icon-only ở các bậc emphasis khác nhau trong cùng
+      khu vực theo đúng ICTL-Z-06, ví dụ 1 icon rank1 cạnh vài icon phụ nhỏ
+      hơn). Cảnh báo để review, không chặn.

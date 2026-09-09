@@ -35,7 +35,7 @@ shared:
   # ---------------------------------------------------------------------------
   touch:
     target_context: web_responsive
-    source: "[ĐỀ XUẤT — 08/09, chờ Williams xác nhận]"
+    source: "[XÁC NHẬN — Williams 09/09, xem decisions.md 09/09-A]"
 
     floor_px:
       value: 44
@@ -43,6 +43,7 @@ shared:
       rationale: >
         WCAG 2.5.5 AAA + Apple HIG. Chọn 44 (không phải 48) vì đây là web
         responsive, không phải sản phẩm Android-first.
+      source: "[XÁC NHẬN — Williams 09/09]"
       used_by: [ICTL-Z-05, ICTL-INV-14]
 
     floor_px_icon_only:
@@ -51,6 +52,18 @@ shared:
       rationale: >
         Mục tiêu chỉ có icon gần vuông → chuẩn đo cả 2 chiều nên chiều rộng vỡ
         cùng lúc với chiều cao. Nâng lên ngưỡng Material 48 để có biên an toàn.
+        Áp cho bậc emphasis.rank1 của icon-only — xem ICTL-Z-06 (thang 3 bậc).
+      source: "[XÁC NHẬN — Williams 09/09, đo từ nút chụp ảnh app mobile thật ~64px, làm tròn về bước Material 48]"
+      used_by: [ICTL-Z-06, ICTL-INV-14]
+
+    floor_px_icon_only_default:
+      value: 40
+      rationale: >
+        Bậc GIỮA của icon-only (không phải rank1, không đứng riêng lẻ đủ điều
+        kiện spacing exception) — khớp đúng số Williams đang dùng làm mặc
+        định icon-only (icon 16, nút 40, xem button.binding.yaml §
+        icon_only_default) và khớp bước "sm" sẵn có trong thang size Button.
+      source: "[XÁC NHẬN — Williams 09/09]"
       used_by: [ICTL-Z-06, ICTL-INV-14]
 
     pointer_proxy_breakpoint:
@@ -70,29 +83,25 @@ shared:
       used_by: [ICTL-Z-05, ICTL-Z-06]
 
     dense_table_below_breakpoint:
-      value: null
-      status: "⚠️ CHƯA QUYẾT — CẦN WILLIAMS"
-      question: >
-        Dưới breakpoint proxy, bảng nhiều cột dày xử lý thế nào? ICTL-Z-08 nói
-        sàn không đạt được là lỗi layout, nhưng pattern thay thế thì công ty chọn.
-      options:
-        - id: card_list
-          desc: "Mỗi dòng thành 1 card, hành động nằm trong card"
-          tradeoff: "Mất khả năng so sánh giữa các dòng; tốn chiều dọc"
-        - id: bottom_sheet
-          desc: "Giữ bảng, hành động dòng dồn vào tấm trượt lên từ đáy"
-          tradeoff: "Thêm 1 lớp tương tác; GHN DS đã có component cho pattern này"
+      value: card_list
+      status: "[XÁC NHẬN — Williams 09/09]"
+      quote: "Trên mobile không sử dụng bảng table dạng dữ liệu"
+      meaning: >
+        Rộng hơn cả phạm vi ICTL-Z-08: dưới breakpoint proxy, màn hình có bảng
+        dữ liệu đổi hẳn sang dạng card_list (mỗi dòng 1 card) — không phải chỉ
+        đổi cách hiển thị hành động trong ô thao tác. Đã kiểm chứng bằng bằng
+        chứng thật (decisions.md 09/09-A): app mobile GHN dùng card-list, và
+        khi nhiều hành động dồn 1 chỗ thì gộp vào overflow + bottom sheet có
+        nhãn chữ đầy đủ (không dùng nhiều icon nhỏ cạnh nhau).
+      rejected_options:
+        - id: bottom_sheet_keep_table
+          desc: "Giữ bảng, chỉ dồn hành động dòng vào tấm trượt lên từ đáy"
+          why_rejected: "Williams xác nhận mobile không giữ bảng dữ liệu, không chỉ đổi mỗi phần hành động"
         - id: horizontal_scroll
           desc: "Giữ nguyên bảng, cho trượt ngang"
-          tradeoff: >
-            Cột thao tác bị trượt khỏi tầm nhìn — đây đúng là vấn đề đã gặp
-            thật khi render màn #06 (bảng 11 cột tổng 1700px bị ép về 1380px,
-            cột "Thao tác" bị cắt). Chọn cái này là chấp nhận lại đúng lỗi đó.
-      recommendation: >
-        [ĐỀ XUẤT] bottom_sheet — DS đã có component, và giữ được khả năng so
-        sánh giữa các dòng (thứ mà bảng tồn tại để làm) trong khi vẫn cho hành
-        động đủ lớn.
-      blocking: "ICTL-Z-08 sẽ escalate mỗi lần gặp ca này cho tới khi mục này được quyết."
+          why_rejected: >
+            Đây đúng là vấn đề đã gặp thật khi render màn #06 (bảng 11 cột
+            tổng 1700px bị ép về 1380px, cột "Thao tác" bị cắt).
       used_by: [ICTL-Z-08]
 
 # =============================================================================
