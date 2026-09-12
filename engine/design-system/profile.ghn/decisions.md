@@ -866,3 +866,32 @@ KHÁC NHAU — không được tự động map 1-1 mà không verify property t
 ra 2 lần ở đúng khu vực Dialog footer/Alert (Grey-as-emphasis ở `12/09-H`,
 Secondary-vs-Primary ở đây) — cần chủ động kiểm bằng screenshot/metadata
 TRƯỚC khi viết rule liên quan tới tên Type, không chỉ dựa vào tên nhãn anatomy.
+
+---
+
+## 12/09-M — Alert 3-nút: đưa vào backlog, chờ use case cụ thể
+
+**by**: Williams (xác nhận qua chat)
+**affects**: `rules/components/alert.rules.yaml` (§ content_pattern.known_recipes.action_row.not_applicable_when, § _pending_confirmation)
+
+Trả lời câu hỏi còn mở cuối cùng của round `12/09-L` (Alert cần 3 nút xử lý
+thế nào — atom `action_row` chỉ định nghĩa cho 2 nút). Williams:
+
+**Quote**: *"Hiện tại tao chưa define trường hợp đó nhưng sẽ có usecase 1
+dialog cần xử lý maximum 3 thao tác khác nhau nên đặt nó vào backlog đến khi
+có usecase cụ thể"*
+
+**Quyết định**: CHỦ ĐỘNG hoãn — không phải bỏ quên. Xác nhận: sẽ có use case
+thật cần tới (tối đa 3 thao tác khác nhau trên 1 overlay), nhưng CHƯA định
+nghĩa chi tiết quy ước 3-nút riêng cho Alert tới khi có 1 màn hình/PRD cụ thể
+cần dùng. Đưa vào backlog theo đúng khuôn đã dùng cho các mục backlog khác
+của dự án (7 Type Toast desktop, `dense_table_below_breakpoint`...) — không
+tự suy ra theo mẫu 3-nút đã có của Dialog (`OVL-B-03`: Fill/Outline/
+Grey-Outline) cho Alert khi chưa có xác nhận riêng.
+
+**Ghi chú**: đây là lần thứ 2 Williams nhắc tới "tối đa 3 thao tác" trong bối
+cảnh 1 overlay/dialog (Dialog footer 3-nút cũng dừng ở 3) — có thể là 1 ngưỡng
+nghiệp vụ chung ("không quá 3 hành động trong 1 khối quyết định"), tương tự
+ngưỡng đã có ở Button cho hành động dòng bảng (`policy.row_action_inline_max`
+= 3, xem decisions.md mục 07/09). CHƯA đủ bằng chứng để khái quát hoá thành 1
+rule dùng chung — chỉ ghi nhận làm quan sát, không tự áp dụng.

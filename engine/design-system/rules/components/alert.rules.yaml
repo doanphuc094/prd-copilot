@@ -69,10 +69,11 @@ content_pattern:
         Fill). Xem rules/kinds/overlay.rules.yaml § OVL-B-03.correction_of_vocab
         cho chi tiết đầy đủ (sửa chung cho cả Dialog và Alert).
       not_applicable_when: >
-        Alert cần 3 nút — atom này KHÔNG áp dụng, và CHƯA có quy ước riêng
-        nào được xác nhận cho trường hợp đó (xem _pending_confirmation, mục
-        cuối). KHÔNG tự suy ra theo mẫu 3-nút của Dialog (Fill/Outline/
-        Grey-Outline) cho Alert khi chưa có xác nhận riêng.
+        Alert cần 3 nút — atom này KHÔNG áp dụng. ĐÃ ĐƯA VÀO BACKLOG (12/09,
+        xem _pending_confirmation, mục cuối) — Williams dự kiến sẽ có use
+        case thật (tối đa 3 thao tác) nhưng chủ động hoãn định nghĩa tới khi
+        có màn hình/PRD cụ thể. KHÔNG tự suy ra theo mẫu 3-nút của Dialog
+        (Fill/Outline/Grey-Outline) cho Alert khi chưa có xác nhận riêng.
       status: "[XÁC NHẬN — Williams 12/09] Recipe thật, dùng khi Alert cần hiện hành động (2 nút)"
   status: "[XÁC NHẬN — 1 recipe (action_row) đã xác nhận, xem known_recipes]"
   not_in_table:
@@ -133,8 +134,12 @@ _pending_confirmation:
       ước với footer 2-nút mặc định của Dialog. Ghi thành recipe `action_row`
       ở § content_pattern phía trên.
     still_open: >
-      Trường hợp Alert cần 3 nút — atom `action_row` KHÔNG áp dụng, và CHƯA
-      có quy ước riêng nào được xác nhận cho trường hợp đó. KHÔNG tự suy ra
-      theo mẫu 3-nút của Dialog (Fill/Outline/Grey-Outline) cho Alert khi
-      chưa có xác nhận riêng — hỏi lại Williams nếu gặp màn hình thật cần 3
-      nút trên Alert.
+      ĐÃ CHUYỂN SANG BACKLOG (12/09). Trường hợp Alert cần 3 nút — atom
+      `action_row` KHÔNG áp dụng, và CHƯA có quy ước riêng nào được xác nhận
+      cho trường hợp đó. Quote Williams: "Hiện tại tao chưa define trường hợp
+      đó nhưng sẽ có usecase 1 dialog cần xử lý maximum 3 thao tác khác nhau
+      nên đặt nó vào backlog đến khi có usecase cụ thể" — nghĩa là CÓ dự kiến
+      cần tới (tối đa 3 thao tác), nhưng CHỦ ĐỘNG hoãn định nghĩa chi tiết cho
+      tới khi có 1 màn hình/PRD thật cần dùng. KHÔNG tự suy ra theo mẫu 3-nút
+      của Dialog (Fill/Outline/Grey-Outline) cho Alert khi chưa có xác nhận
+      riêng — hỏi lại Williams khi gặp use case thật.
