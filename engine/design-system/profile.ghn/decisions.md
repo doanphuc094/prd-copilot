@@ -404,3 +404,209 @@ icon tầng Free của FA6, không có icon riêng của Pro (GHN dùng FA6 Pro,
 liệu Free KHÔNG tự động sai — có thể là icon Pro thật, chỉ là nguồn này không
 xác nhận được. Trường hợp `filter-list` bị loại vì không khớp bất kỳ biến thể
 nào hợp lý trong họ "filter", không phải chỉ vì "không có trong Free".
+
+---
+
+## 12/09-B — Kind split Toast/Alert/Dialog: viết `rules/kinds/feedback_transient.rules.yaml` + `rules/kinds/overlay.rules.yaml`
+
+**by**: Williams (xác nhận nhiều điểm qua chat) + Claude (đọc trực tiếp Figma qua connector `mcp__Figma__*`)
+**affects**: `manifest.yaml` (`component_kinds.overlay`, `component_kinds.feedback_transient`), `rules/kinds/feedback_transient.rules.yaml` (MỚI), `rules/kinds/overlay.rules.yaml` (MỚI)
+
+**Bối cảnh**: Williams paste 1 draft "FEEDBACK GROUP — Toast/Dialog/Alert" gộp
+cả 3 component vào chung 1 cấu trúc phẳng (FB-01/02/03). Đối chiếu với
+`manifest.yaml` đã có sẵn từ 08/09: Toast+Alert thuộc `feedback_transient`,
+Dialog thuộc `overlay` — 2 kind TÁCH BIỆT, không gộp. `_composition.rules.yaml
+§ CMP-DLG-01` (`involves: [action_trigger, overlay]`) cũng ngầm xác nhận Dialog
+đã ở `overlay` từ trước. Quyết định giữ đúng kiến trúc gốc, không theo draft
+gộp — draft được dùng làm NGUỒN NỘI DUNG (content_patterns, invariants), không
+làm nguồn CẤU TRÚC.
+
+**Phát hiện qua Figma (đọc trực tiếp, fileKey `zECOR8UK45lmZcpMG9aOR7`)**:
+- Toast desktop (node `1023:5898`, symbol `Type=Primary` = `1023:5881`) có sẵn
+  header + 2 Button organism + 1 icon dismiss trong 1 frame — **xác nhận là
+  demo "kitchen sink"** (Williams 12/09: "đúng là demo chưa có UI trên 1
+  context thực nào cả"), KHÔNG phải pattern thật.
+- Toast MOBILE (app tài xế, node `3569:33454` "Toast Message (Mobile App)")
+  có định nghĩa CHÍNH THỨC bằng chữ trong docs: *"Toast message là thành phần
+  UI dùng để thông báo tạm thời đến người dùng về một hành động vừa xảy ra...
+  toast không can thiệp vào trải nghiệm chính và sẽ tự biến mất sau một
+  khoảng thời gian ngắn (3s đối với các hành động đơn giản)"* — và hướng dẫn
+  UX writing: *"Nếu có hành động (button): ghi rõ hành động như 'Thử lại',
+  'Hoàn tác'"* (số ít → pattern action thật là 1 nút, không phải 2).
+- Toast mobile dùng trục `Status` riêng, chỉ 4 giá trị: Success/Failed/
+  Info/Warning — sạch hơn hẳn `Type` 9 giá trị của Toast desktop.
+- `search_design_system` (lọc `libraryName == "GHN DS"`) xác nhận
+  `Dialog / Dialog oragism` (componentKey
+  `8b04f4f411eda928c14075725b148bb6a9e5590b`) là component THẬT, tách biệt
+  khỏi `Alert / Alert organism` — không phải cùng 1 thứ bị đặt 2 tên.
+- Node `112:11396` (Williams trỏ tới khi nói "alert modal") có tên CANVAS là
+  "⚫ Alert Dialog" nhưng bên trong chỉ chứa instance `Alert / Alert organism`
+  (12 biến thể Type×Style) đặt trong mockup docs — không có layer
+  backdrop/overlay riêng nào tách biệt.
+
+**Quyết định (Williams xác nhận từng phần qua chat 12/09)**:
+1. Toast có 2 content pattern: `status` (icon+tiêu đề, tự biến mất ~3s,
+   KHÔNG dismiss) và `action` (icon+tiêu đề+1 nút+dismiss — dismiss chỉ xuất
+   hiện cùng action). Quote: *"dismiss icon chỉ thuộc pattern nào có action
+   -> đúng"*.
+2. 7/9 giá trị Type của Toast desktop (Warning, Info, Primary, Secondary,
+   Grey, White, Disable) đưa vào backlog, chưa có giá trị thực — cùng cách xử
+   lý với Info/Success/Warning bị loại khỏi Type của Button (07/09). Quote:
+   *"Hiện tại chưa có giá trị thực cho 7 giá trị đó của toast đưa vào backlog
+   giống button"*.
+3. Banner "Có 2 điểm giao không thể xếp tuyến" (ảnh Williams gửi) là component
+   **Alert** (không phải Toast) — Alert là banner tĩnh, KHÔNG tự biến mất theo
+   thời gian. Quote: *"Okay tách nó thành alert đi"*.
+4. **AlertDialog** định nghĩa lại theo NGHIỆP VỤ, không theo cấu trúc Figma:
+   modal LUÔN chặn nền, dùng cho thao tác CRITICAL — không thể khôi phục, HOẶC
+   khôi phục được nhưng hậu quả rất nghiêm trọng. Ví dụ thật Williams cho:
+   *"kích hoạt bảng giá, tại thời điểm kích hoạt bảng giá các đơn hàng sẽ theo
+   bảng giá mới. Nếu bảng giá mới kích hoạt bị sai việc tính doanh thu cũng bị
+   sai ảnh hưởng đến toàn hệ thống"*. Williams chủ động bỏ hướng "Alert thuộc
+   cả 2 kind tuỳ cách dùng" vì use case Alert-không-chặn-nền "rất ít" — không
+   cần mô hình hoá phức tạp thêm.
+
+**⚠️ Việc còn mở (chưa tự quyết, ghi trong `_pending_confirmation` của từng
+file)**:
+- Ví dụ "bảng giá" KHÔNG khớp định nghĩa `intent.destructive` hiện tại của
+  `ATRG-T-01` (không mất dữ liệu, có thể khôi phục) — nhưng vẫn cần chặn nền
+  như CMP-DLG-01. Cần Williams quyết: mở rộng CMP-DLG-01 hay thêm rule
+  composition mới song song (CMP-DLG-01 đang `undisableable`, dùng chung cho
+  cả Button — KHÔNG tự sửa khi chưa xác nhận).
+- Node-id thật của Dialog (generic, không phải AlertDialog) — vẫn thiếu, chưa
+  đọc được anatomy.
+- Recipe "form" của Dialog — chưa có bằng chứng Figma.
+- Ý nghĩa nghiệp vụ 7 giá trị Type backlog của Toast desktop — mở lại khi có
+  màn hình thật cần dùng.
+
+---
+
+## 12/09-C — Toast + Alert đăng ký thành component thật; vòng xác nhận thứ 2
+
+**by**: Williams (xác nhận qua chat) + Claude (viết binding từ Figma đã đọc)
+**affects**: `manifest.yaml` (§ components.Toast, components.Alert), `rules/components/toast.rules.yaml`, `rules/components/alert.rules.yaml` (MỚI), `profile.ghn/ds/toast.binding.yaml`, `profile.ghn/ds/alert.binding.yaml`, `profile.ghn/ds/toast-mobile.binding.yaml` (MỚI), `rules/kinds/overlay.rules.yaml`
+
+**Quyết định kiến trúc mới — binding theo platform**: Toast có 2 bản thật sự
+khác nhau trong Figma (desktop: trục `Type` 9 giá trị, 850×76px; mobile app
+tài xế: trục `Status` 4 giá trị, 361×48px, tên chuỗi status khác — `Failed`
+thay vì `Error`). Quote Williams: *"làm một bản riêng đánh dấu chỉ xài ở
+mobile only"*. Giải pháp: `manifest.yaml § components.Toast` giữ `binding`
+mặc định (web/desktop) + thêm `binding_by_platform.mobile` trỏ tới
+`toast-mobile.binding.yaml` — đây là component/binding platform-scoped ĐẦU
+TIÊN của hệ thống, đặt tiền lệ cho các component sau này có nhiều nền tảng.
+
+**Các xác nhận khác (12/09, vòng 2)**:
+- Toast pattern `action` KHÔNG tự đóng — chờ người dùng tự thao tác. Quote:
+  *"nếu có pattern action thì không tự đóng"*.
+- `OVL-INV-01` (Dialog phải có lối thoát tường minh) áp cho **MỌI** Dialog,
+  không riêng recipe nào. Quote: *"Áp cho mọi dialog"*.
+- Alert có nút đóng thủ công (dismiss) thật — Williams gửi link file Figma
+  làm bằng chứng nhưng KHÔNG kèm node-id (`?node-id=` thiếu trong URL), nên
+  chưa đọc được cấu trúc chi tiết của nút đó.
+- 7 giá trị Type backlog của Toast desktop và ý nghĩa Default/Disable/Info/
+  Warning của Alert — tái xác nhận giữ nguyên trạng thái backlog.
+
+**⚠️ Việc còn mở SAU vòng 2 (chưa tự sửa file, chờ Williams trả lời rõ hơn)**:
+- `content_pattern: inline_link` của Alert — Williams nói *"do cái này tao tự
+  chế nên remove không cần ghi vào"*, nhưng CHƯA RÕ nghĩa: ảnh ví dụ "Có 2
+  điểm giao không thể xếp tuyến" là do Williams tự dựng minh hoạ (không phải
+  chụp từ màn hình GHN thật) hay ý khác. Nếu là vế đầu, `inline_link` phải rút
+  khỏi danh sách đã xác nhận. Đang hỏi lại, CHƯA sửa `alert.rules.yaml`.
+- Style Fill/Outline của Alert — Williams hỏi lại "là button hay cái gì", đã
+  giải thích đây là trục Style riêng của Alert (không liên quan Button),
+  đang chờ câu trả lời khi nào dùng Fill/Outline.
+- `Alert button container (Base)` (atom Figma) — Williams chưa hiểu, đã giải
+  thích lại là khung chứa nút bên trong Alert, đang chờ xác nhận có use case
+  thật nào cần tới không.
+- Link Dialog Williams gửi (`?m=dev`, không có `?node-id=`) chưa dùng đọc được
+  — cần link trỏ đúng 1 frame cụ thể (copy link to selection trong Figma).
+- Recipe "form" của Dialog — Williams hỏi "là cái gì", đã giải thích đây là
+  Dialog chứa 1 form nhập liệu ngắn (từ draft Williams tự paste 08/09, không
+  phải Claude bịa) — đang chờ xác nhận có ví dụ thật hay bỏ khỏi known_recipes.
+
+---
+
+## 12/09-D — Vòng xác nhận thứ 3: 4 câu trả lời batch của Williams
+
+**by**: Williams (xác nhận qua chat)
+**affects**: `manifest.yaml` (§ component_kinds.feedback_transient.about), `rules/components/toast.rules.yaml`, `rules/components/alert.rules.yaml`, `profile.ghn/ds/alert.binding.yaml`, `rules/kinds/overlay.rules.yaml`
+
+**1. `about` của kind `feedback_transient` — ĐÃ SỬA.** Williams: *"Okay tao ủng
+hộ"* (chấp nhận đề xuất từ vòng 2). `manifest.yaml § component_kinds.
+feedback_transient.about` đổi từ "Xuất hiện rồi tự biến mất" thành "Phản hồi
+không chiếm quyền tương tác — không backdrop, không chặn nền, không bẫy
+focus". `about_note` (đề xuất) đã rút, thay bằng `about_source` (đã áp dụng).
+
+**2. Toast pattern `action` — bằng chứng gián tiếp, ĐÃ ĐÓNG dạng backlog.**
+Williams: *"Tạm chưa có đưa vào backlog keep track nếu có context dùng thì
+đề xuất cho tao"* — pattern `action` (suy từ hướng dẫn UX writing, chưa có
+node Figma vẽ trực tiếp 1-button) giữ nguyên như đang mô tả, không chặn tiến
+độ. Claude có trách nhiệm chủ động đề xuất lại khi gặp context/màn hình thật.
+
+**3. `content_pattern: inline_link` của Alert — ĐÃ XOÁ.** Williams: *"Do
+trong design system không có mẫu template này, nó không thuộc phạm vi
+template của design system, nên tao muốn remove để bám sát theo template mẫu
+của design system"* — nghĩa là ảnh minh hoạ "Có 2 điểm giao không thể xếp
+tuyến" KHÔNG phải 1 template thật trong GHN DS. `rules/components/
+alert.rules.yaml § content_pattern.values` nay RỖNG — chờ 1 template thật
+trước khi ghi lại giá trị nào. `alert.binding.yaml § sub_parts.button_
+container.note` cũng cập nhật theo (câu hỏi "Alert có cần button không" nay
+lại hoàn toàn mở, vì cơ sở cũ "content_pattern xác nhận là inline_link/text
+link" không còn đúng).
+
+**4. Style Fill/Outline của Alert — CÂU TRẢ LỜI KHÔNG KHỚP CÂU HỎI, CHƯA ÁP
+DỤNG.** Williams trả lời chi tiết: *"Dùng fill cho các tác vụ chính quan
+trọng... Đối với outline tao muốn sử dụng trong trường hợp có 3 nút... còn
+trong trường hợp 2 nút... mày auto chuyển nút outline về grey giúp tao"* —
+nội dung này mô tả rõ ràng cấu hình NÚT CỦA DIALOG FOOTER (3-nút/2-nút), chứ
+không rõ có phải trả lời cho background Style (Fill/Outline) của chính
+component Alert hay không. Claude KHÔNG tự áp câu trả lời này vào
+`alert.binding.yaml § style.meaning` (vẫn `[cần verify]`) — thay vào đó ghi
+tạm thành dự thảo ở `rules/kinds/overlay.rules.yaml § dialog_footer_emphasis_
+draft`, đánh dấu CHƯA XÁC NHẬN PHẠM VI, chờ Williams trả lời rõ: đây có đúng
+là rule cho Dialog footer không, và Alert Style Fill/Outline có còn là câu
+hỏi riêng, tách biệt không.
+
+**⚠️ Việc còn mở sau vòng 3**:
+- Xác nhận phạm vi câu trả lời Fill/Outline/Grey (Dialog footer hay Alert
+  Style — xem mục 4 ở trên).
+- Nếu là Dialog footer: chuyển `dialog_footer_emphasis_draft` thành invariant/
+  behavioural_limit chính thức của `overlay.rules.yaml`.
+- Nếu Alert Style vẫn là câu hỏi riêng: hỏi lại Williams, tách biệt rõ khỏi
+  câu hỏi Dialog.
+- Node-id thật của Dialog (generic), recipe "form", và "Alert button
+  container (Base)" — vẫn mở, chưa có câu trả lời mới.
+
+---
+
+## 12/09-E — Dialog footer emphasis chốt phạm vi; Alert Style chốt (Outline only)
+
+**by**: Williams (xác nhận qua chat)
+**affects**: `rules/kinds/overlay.rules.yaml` (§ behavioural_limits, invariants), `rules/components/alert.rules.yaml` (§ invariants, MỚI), `profile.ghn/ds/alert.binding.yaml` (§ style), `profile.ghn/policy.yaml` (§ alert.excluded, MỚI)
+
+**Dialog footer Fill/Outline/Grey — xác nhận đúng là rule cho NÚT (Dialog),
+không phải Alert Style.** Williams: *"Cái đó là tao nói button đúng"*. Nội
+dung dự thảo ở `12/09-D` (mục 4) nay chính thức hoá thành:
+- `OVL-B-03` — Fill = tác vụ chính; Outline chỉ hợp lệ khi footer có ĐÚNG 3
+  nút (vai trò gần Fill, ưu tiên thấp hơn); Grey = ưu tiên thấp nhất. Tham
+  khảo rule emphasis của Button theo đúng ý Williams.
+- `OVL-INV-02` — footer 2 nút: nút vốn Outline TỰ ĐỘNG chuyển Grey (tăng
+  contrast về phía nút Fill/primary).
+
+**Alert Style (Fill/Outline) — câu hỏi RIÊNG, trả lời gọn ngay sau đó.**
+Quote nguyên văn: *"Còn alert dialog tất cả dùng dạng outline không dùng
+fill"* — Alert LUÔN render Outline, KHÔNG BAO GIỜ Fill, dù Figma có đủ 12
+biến thể Type×Style (6 cái Fill). Ghi thành:
+- `alert.rules.yaml § ALERT-INV-01` (style == Outline luôn luôn)
+- `alert.binding.yaml § style` (`active_value: Outline`, `excluded: [Fill]`)
+- `policy.yaml § alert.excluded.style` (Fill loại khỏi Alert — cùng khuôn với
+  Button loại Info/Success/Warning khỏi intent ở `12/09` gốc)
+
+**Bài học ghi nhận**: batch câu hỏi trước đó (`12/09-D`) đã gộp 2 câu hỏi
+KHÁC NHAU (Alert Style vs Dialog footer button) mà không tách rõ, khiến câu
+trả lời đầu tiên của Williams trông như trả lời nhầm câu. Từ giờ khi 2 câu
+hỏi có thể dễ nhầm lẫn (cùng nói "Fill/Outline"), nên hỏi tách riêng từng
+component thay vì gộp chung 1 batch.
+
+**⚠️ Việc còn mở**: Node-id thật của Dialog (generic), recipe "form" của
+Dialog, "Alert button container (Base)" — vẫn chưa có câu trả lời mới.

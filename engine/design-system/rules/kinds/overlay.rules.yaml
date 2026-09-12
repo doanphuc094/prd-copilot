@@ -49,6 +49,24 @@ behavioural_limits:
     check: "role == intent.destructive trong CMP-DLG-01 implies count(overlay.exit_actions) >= 2"
     relation_to_composition_rule: "Cụ thể hoá CMP-DLG-01 ở cấp kind — CMP-DLG-01 nói CÓ bước xác nhận, luật này nói bước đó phải cho thoát được."
 
+  - id: OVL-B-03
+    rule: >
+      Mức độ ưu tiên (emphasis) của các nút trong footer Dialog theo SỐ LƯỢNG
+      nút: Fill = tác vụ chính/quan trọng nhất, hoàn thành mục đích chính của
+      người dùng. Outline CHỈ hợp lệ khi footer có ĐÚNG 3 nút — vai trò tương
+      đương/gần với Fill nhưng ưu tiên thấp hơn. Grey = ưu tiên thấp nhất.
+    references: "Tham khảo rule emphasis đã có của Button — rules/kinds/interactive_control.rules.yaml, profile.ghn/ds/button.binding.yaml"
+    source: >
+      [XÁC NHẬN — Williams 12/09] "Dùng fill cho các tác vụ chính quan trọng,
+      giúp hoàn thành mục đích của người dùng. Đối với outline tao muốn sử
+      dụng trong trường hợp có 3 nút và nút outline là thao tác tương đương
+      gần với fill nhưng mức độ ưu tiên thấp hơn sau đó mức độ ưu tiên thấp
+      nhất là grey (Mày có thể tham khảo rule của button)." Xác nhận lại
+      12/09 (vòng sau): "Cái đó là tao nói button đúng" — trả lời cho cấu
+      hình NÚT của Dialog footer, KHÔNG liên quan tới trục Style (Fill/
+      Outline) của chính component Alert (xem rules/components/alert.rules.yaml
+      cho câu hỏi đó, trả lời riêng: Alert luôn dùng Outline).
+
 # =============================================================================
 # ALERTDIALOG — tiêu chí kích hoạt (NGHIỆP VỤ, không phải theo component Figma)
 #
@@ -116,17 +134,43 @@ content_pattern:
 invariants:
   - id: OVL-INV-01
     rule: "Overlay PHẢI có ít nhất 1 hành động thoát ra tường minh (đóng / huỷ / hoàn thành)."
-    status: "[cần verify phạm vi áp dụng — draft gốc gọi là FB-INV-4, Williams chưa xác nhận áp cho MỌI Dialog hay chỉ recipe đã catalogue]"
+    check: "count(overlay.exit_actions) >= 1"
+    scope: "Áp cho MỌI Dialog, không riêng recipe nào"
+    source: "[XÁC NHẬN — Williams 12/09] 'Áp cho mọi dialog' — draft gốc gọi luật này là FB-INV-4"
+
+  - id: OVL-INV-02
+    rule: "footer.button_count == 2 implies mọi nút vốn sẽ là Outline (theo OVL-B-03) TỰ ĐỘNG chuyển thành Grey."
+    check: "count(dialog.footer.buttons) == 2 implies (button.emphasis == outline → auto_convert(grey))"
+    why: "Tăng tỉ lệ tương phản (contrast) hướng về nút Fill/primary khi footer chỉ có 2 nút — không cần Outline làm bậc trung gian nữa."
+    relation: "Cụ thể hoá OVL-B-03 khi footer có đúng 2 nút — 3 nút thì Outline vẫn hợp lệ như bậc giữa."
+    source: "[XÁC NHẬN — Williams 12/09] 'trong trường hợp 2 nút, do tao muốn điều chỉnh tỉ lệ contrast vào nút primary nhiều hơn nên khi dialog chỉ có 2 nút, mày auto chuyển nút outline về grey giúp tao'"
 
 # =============================================================================
 # _pending_confirmation — CHƯA CHỐT
 # =============================================================================
 _pending_confirmation:
+  - item: "ĐÃ ĐÓNG — Dialog footer Fill/Outline/Grey có đúng phạm vi Dialog (không phải Alert Style) không"
+    resolved: >
+      [XÁC NHẬN — Williams 12/09] "Cái đó là tao nói button đúng" — xác nhận
+      câu trả lời Fill/Outline/Grey là cho NÚT của Dialog footer, không liên
+      quan Alert Style. Đã chuyển thành OVL-B-03 (mức ưu tiên) + OVL-INV-02
+      (auto-downgrade 2 nút) ở trên, không còn là dự thảo.
   - item: "Node-id thật của 'Dialog / Dialog oragism' trong Figma — chỉ có componentKey, chưa đọc được cấu trúc bên trong"
-    why: "Cần link Figma trực tiếp từ Williams (get_metadata/search không tự tìm ra node-id từ componentKey)"
-  - item: "OVL-INV-01 (dismiss bắt buộc) áp dụng cho MỌI Dialog hay chỉ 2 recipe đã catalogue (confirmation, form)?"
-    origin: "Draft Williams 08/09 gọi là FB-INV-4"
+    why: >
+      Williams gửi link file (https://www.figma.com/design/zECOR8UK45lmZcpMG9aOR7/GHN-DS?m=dev)
+      nhưng KHÔNG có node-id trong URL (không có tham số ?node-id=...) — link
+      này chỉ trỏ tới file, không trỏ tới 1 frame/node cụ thể, nên chưa đọc
+      được. Cần Williams mở đúng frame Dialog trong Figma rồi copy link (Right
+      click → Copy link to selection), link đó sẽ tự có ?node-id=.
+  - item: "ĐÃ ĐÓNG — OVL-INV-01 áp dụng phạm vi nào"
+    resolved: "[XÁC NHẬN — Williams 12/09] Áp cho MỌI Dialog"
   - item: "Xác nhận recipe 'form' bằng 1 node Figma thật, hoặc bỏ khỏi known_recipes nếu chưa có màn nào dùng"
+    clarification_asked: >
+      Williams hỏi lại 'form là cái gì' — recipe này đến từ draft Williams tự
+      paste ngày 08/09 (không phải Claude bịa): Dialog dạng chứa 1 form nhập
+      liệu ngắn bên trong (ví dụ 1 dialog có vài field để nhập thay vì cả 1
+      trang riêng). Cần Williams xác nhận: có ví dụ thật nào trong GHN DS
+      dùng Dialog kiểu này không, hay bỏ khỏi known_recipes vì chưa từng dùng.
   - item: "ĐÃ ĐÓNG (1 phần) — 'AlertDialog' là gì"
     resolved: >
       [XÁC NHẬN — Williams 12/09] AlertDialog định nghĩa theo NGHIỆP VỤ: modal

@@ -1,0 +1,119 @@
+# =============================================================================
+# alert.binding.yaml — GIÁ TRỊ DS RIÊNG CỦA ALERT (lớp C)
+#
+# Chỉ chứa thứ RIÊNG của Alert. Thứ dùng chung nằm ở ds/_shared.binding.yaml.
+# File này đổi khi DS ra bản mới — kể cả khi KHÔNG đổi công ty.
+#
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  component: Alert
+  layer: ds-binding-component
+  version: 2.0-draft
+  created: "2026-09-12"
+  shared: profile.ghn/ds/_shared.binding.yaml
+  status: "[ĐỀ XUẤT — 12/09, xem _pending_confirmation]"
+
+component:
+  name: "Alert / Alert organism"
+  component_set_id: "112:11396"
+  component_key: "9a67f8e39bb0061e07324bdc95613f2b285a9f6c"
+  library_key: "lk-250e103acf2b45b04608ee560ea1a546cd58015985b5b548800febe7e720fb83abfcf9e680931bb089ee0468c5b18d7a350dafbcc8d16f038ef58c80ab5cce1c"
+  total_variants: 12
+  source: "[FIGMA] search_design_system + get_metadata, đọc 12/09"
+  note: >
+    component_set_id ghi ở đây là node CANVAS/trang docs (tên thật trong Figma:
+    "⚫ Alert Dialog") — nơi 12 symbol variant thật sự nằm là node con
+    770:7986 "Alert / Alert organism" bên trong trang đó.
+
+# -----------------------------------------------------------------------------
+# TÊN PROPERTY THẬT TRONG DS
+# -----------------------------------------------------------------------------
+figma_properties:
+  status: Type
+  style: Style
+  source: "[FIGMA]"
+
+# -----------------------------------------------------------------------------
+# BINDING: STATUS → CHUỖI DS
+# -----------------------------------------------------------------------------
+status:
+  axis_kind: closed_role_set
+  bind:
+    success: "Success"
+    error: "Error"
+  backlog:
+    values: [Default, Disable, Info, Warning]
+    status: "[cần verify] Chỉ có tên node Figma, chưa có ảnh/nguồn thật xác nhận ý nghĩa nghiệp vụ"
+  source: "[FIGMA]"
+
+# -----------------------------------------------------------------------------
+# BINDING: STYLE
+# -----------------------------------------------------------------------------
+style:
+  axis_kind: closed_role_set
+  values: [Fill, Outline]
+  active_value: Outline
+  meaning: "[XÁC NHẬN — Williams 12/09] 'Alert dialog tất cả dùng dạng outline không dùng fill' — Alert LUÔN render Outline, không bao giờ Fill."
+  excluded:
+    value: [Fill]
+    reason: "[XÁC NHẬN — Williams 12/09] Không dùng cho Alert trong thực tế, dù Figma có đủ 6 symbol Fill (1 trên mỗi Type). Xem profile.ghn/policy.yaml § alert.excluded.style (cùng khuôn với Button loại Info/Success/Warning khỏi intent)."
+  source: "[FIGMA] + [XÁC NHẬN — Williams 12/09]"
+
+# -----------------------------------------------------------------------------
+# SIZE
+# -----------------------------------------------------------------------------
+size:
+  axis_kind: scalar_physical
+  unit: px
+  outer_container:
+    width: 451
+    height: 180
+  measured_variant_filter: "Đồng nhất qua cả 12 symbol Type×Style"
+  measured_on: "2026-09-12"
+
+# -----------------------------------------------------------------------------
+# NODE ID THEO TỪNG BIẾN THỂ (Type × Style)
+# -----------------------------------------------------------------------------
+node_ids_by_variant:
+  "Default,Outline": "87:34727"
+  "Default,Fill": "773:7318"
+  "Disable,Fill": "773:7414"
+  "Disable,Outline": "772:11676"
+  "Info,Outline": "772:11412"
+  "Info,Fill": "772:11813"
+  "Success,Fill": "773:4273"
+  "Success,Outline": "772:11432"
+  "Warning,Fill": "773:7244"
+  "Warning,Outline": "772:11580"
+  "Error,Fill": "773:7268"
+  "Error,Outline": "772:11628"
+  source: "[FIGMA] node 112:11396 § Component (770:7986), đọc 12/09"
+
+# -----------------------------------------------------------------------------
+# THÀNH PHẦN CON (atoms) — dùng khi cần dựng lại cấu trúc chi tiết
+# -----------------------------------------------------------------------------
+sub_parts:
+  header: "Alert / Alert header (Base)"
+  paragraph: "Alert / Alert paragraph (Base)"
+  header_container: "Alert / Alert header container (Base)"
+  button_container: "Alert / Alert button container (Base)"
+  source: "[FIGMA] node 112:11396 § Atoms, đọc 12/09"
+  note: >
+    button_container tồn tại trong atoms nhưng chưa có bằng chứng use case
+    nào của Alert thật sự dùng tới nút. [CẬP NHẬT 12/09] content_pattern
+    `inline_link` (text link) đã bị Williams yêu cầu XOÁ khỏi
+    rules/components/alert.rules.yaml vì không phải template thật của design
+    system — content_pattern của Alert hiện KHÔNG có giá trị nào xác nhận,
+    nên câu hỏi "Alert cần button hay chỉ cần link" vẫn hoàn toàn mở.
+
+# -----------------------------------------------------------------------------
+# _pending_confirmation
+# -----------------------------------------------------------------------------
+_pending_confirmation:
+  - item: "Ý nghĩa nghiệp vụ Default/Disable/Info/Warning — chỉ Success/Error có ảnh thật (xem status.backlog)"
+  - item: "ĐÃ ĐÓNG — Style Fill vs Outline"
+    resolved: "[XÁC NHẬN — Williams 12/09] Alert luôn Outline, không dùng Fill — xem § style phía trên."
+  - item: "Alert có dismiss thủ công không (xem rules/components/alert.rules.yaml)"
+  - item: "'Alert button container (Base)' tồn tại trong atoms — có use case nào Alert thật sự cần nút không, hay atoms này chỉ để dành, chưa dùng?"

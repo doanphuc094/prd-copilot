@@ -1,0 +1,106 @@
+# =============================================================================
+# alert.rules.yaml — LUẬT RIÊNG CỦA ALERT
+#
+# Trục status DÙNG CHUNG với Toast — xem kinds/feedback_transient.rules.yaml.
+# File này chỉ giữ thứ riêng của Alert: content_pattern (banner tĩnh, cấu trúc
+# khác hẳn Toast) và hành vi không-tự-biến-mất của nó.
+#
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  component: Alert
+  layer: component
+  version: 2.0-draft
+  kinds: [feedback_transient]
+  requires: [_core.rules.yaml, kinds/feedback_transient.rules.yaml]
+  binding: profile.ghn/ds/alert.binding.yaml
+  status: "[ĐỀ XUẤT — Williams xác nhận 1 phần qua chat 12/09, xem _pending_confirmation]"
+
+# =============================================================================
+# HÀNH VI — khác biệt cốt lõi với Toast
+# =============================================================================
+behaviour:
+  auto_dismiss: false
+  source: "[XÁC NHẬN — Williams 12/09] ảnh 'Có 2 điểm giao không thể xếp tuyến' — banner nằm CỐ ĐỊNH trong layout, không nổi đè, không tự biến mất"
+  manual_dismiss: true
+  manual_dismiss_source: "[XÁC NHẬN — Williams 12/09] 'có nút đóng thủ công (đây là template alert)' — link file Figma cho, chưa có node-id cụ thể (xem _pending_confirmation)"
+
+# =============================================================================
+# CONTENT_PATTERN — trục riêng của Alert
+#
+# [XÁC NHẬN — Williams 12/09] Giá trị `inline_link` (đã có ở bản trước, dựng
+# từ ảnh minh hoạ "Có 2 điểm giao không thể xếp tuyến") ĐÃ BỊ XOÁ khỏi bảng
+# này. Quote nguyên văn: "Do trong design system không có mẫu template này,
+# nó không thuộc phạm vi template của design system, nên tao muốn remove để
+# bám sát theo template mẫu của design system" — nghĩa là ảnh ví dụ đó KHÔNG
+# phải 1 template thật tồn tại trong GHN DS, nên không được đưa vào bảng
+# catalogue dù trông hợp lý. Trục content_pattern hiện CHƯA có giá trị nào
+# đã xác nhận — chỉ ghi lại khi có 1 node/template THẬT trong design system.
+# =============================================================================
+content_pattern:
+  decides: content_pattern
+  axis_kind: enum
+  ask: "Nội dung Alert này khớp catalogued recipe nào?"
+  values: []
+  status: "[TRỐNG — chưa có recipe nào được xác nhận bám theo template thật của design system, xem _pending_confirmation]"
+  not_in_table:
+    rule: "Bảng đang RỖNG — mọi cấu trúc nội dung Alert gặp phải đều phải escalate cho Williams, KHÔNG tự suy ra là hợp lệ, KHÔNG tự phục hồi lại inline_link."
+
+# =============================================================================
+# STYLE — trục Fill/Outline riêng của Alert
+# =============================================================================
+invariants:
+  - id: ALERT-INV-01
+    rule: "style == Outline luôn luôn — Alert KHÔNG dùng Fill trong thực tế."
+    check: "alert.style == 'Outline'"
+    source: "[XÁC NHẬN — Williams 12/09] 'Còn alert dialog tất cả dùng dạng outline không dùng fill'"
+    note: >
+      Figma vẫn có đủ 12 biến thể Type×Style (bao gồm Fill) — xem
+      profile.ghn/ds/alert.binding.yaml § style — nhưng Fill KHÔNG có use
+      case thật nào, đưa vào excluded (giống cách Button loại Info/Success/
+      Warning khỏi intent — xem profile.ghn/policy.yaml § alert.excluded).
+
+# =============================================================================
+# rules_live_at — chỉ đường tới luật KHÔNG nằm ở đây
+# =============================================================================
+rules_live_at:
+  status:
+    where: kinds/feedback_transient.rules.yaml
+    note: "Trục status (success/error xác nhận, phần còn lại chưa xác nhận) dùng chung với Toast"
+  behavioural_limits:
+    where: kinds/feedback_transient.rules.yaml
+    ids: [FBTR-B-01, FBTR-B-02]
+
+# =============================================================================
+# _pending_confirmation
+# =============================================================================
+_pending_confirmation:
+  - item: "ĐÃ ĐÓNG — Alert có dismiss thủ công không"
+    resolved: "[XÁC NHẬN — Williams 12/09] Có nút đóng thủ công. Cần node-id cụ thể của template để đọc chính xác vị trí/icon nút đóng — Williams mới gửi link file, chưa có node-id (xem cách lấy link đúng ở overlay.rules.yaml § _pending_confirmation, mục Dialog)"
+  - item: "ĐÃ ĐÓNG — content_pattern = inline_link có nên xoá không"
+    resolved: >
+      [XÁC NHẬN — Williams 12/09] "Do trong design system không có mẫu
+      template này, nó không thuộc phạm vi template của design system, nên
+      tao muốn remove để bám sát theo template mẫu của design system" — ĐÃ
+      XOÁ `inline_link` khỏi content_pattern.values (xem § content_pattern
+      phía trên). Trục này hiện rỗng cho tới khi có 1 template thật.
+  - item: "ĐÃ ĐÓNG — Style Fill vs Outline của Alert"
+    resolved: >
+      [XÁC NHẬN — Williams 12/09] Câu trả lời dài trước đó (fill/outline/grey
+      theo số nút) là cho DIALOG FOOTER, không phải Alert — Williams tự xác
+      nhận "Cái đó là tao nói button đúng" (xem rules/kinds/overlay.rules.yaml
+      § OVL-B-03/OVL-INV-02). Câu hỏi Style của CHÍNH Alert trả lời riêng, gọn:
+      "Còn alert dialog tất cả dùng dạng outline không dùng fill" — Alert LUÔN
+      Outline, không dùng Fill. Xem § invariants (ALERT-INV-01) phía trên và
+      profile.ghn/ds/alert.binding.yaml § style.
+  - item: "'Alert button container (Base)' trong atoms Figma — Williams nói 'chưa hiểu mày giải thích rõ hơn được không'"
+    clarification: >
+      Đây là 1 block con (sub-part) nằm trong nhóm 'Atoms' của trang docs Alert
+      trên Figma — cùng nhóm với 'Alert header (Base)' và 'Alert paragraph
+      (Base)'. Nó là 1 KHUNG CHỨA dành riêng cho việc đặt (các) nút bên trong
+      Alert, tách biệt khỏi phần tiêu đề/nội dung chữ. Sự tồn tại của khung
+      này gợi ý component Alert CÓ THỂ được thiết kế để chứa nút thật (không
+      chỉ text link) — nhưng tao chưa thấy màn hình nào thật sự dùng tới nó.
+      Câu hỏi cho Williams: có use case nào Alert cần hiện nút (không phải chỉ
+      link) không, hay khung này chỉ để dành cho tương lai, chưa từng dùng?

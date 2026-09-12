@@ -222,6 +222,30 @@ button:
         "Tạo đơn bằng Excel" — đọc nhầm, đó là 2 hành động khác nhau hoàn toàn.
 
 # =============================================================================
+# SCOPE: TOAST
+#
+# CHƯA có quyết định chính sách nào cần khai ở đây — mọi thứ đã biết về Toast
+# hiện nằm ở rules/components/toast.rules.yaml (portable) và
+# profile.ghn/ds/toast.binding.yaml (giá trị DS). Giữ scope rỗng tường minh
+# thay vì bỏ hẳn, để nhất quán với cách policy_scope của mọi component đều có
+# 1 mục trong file này, kể cả khi rỗng.
+# =============================================================================
+toast: {}
+
+# =============================================================================
+# SCOPE: ALERT
+# =============================================================================
+alert:
+  excluded:
+    style:
+      - value: [Fill]
+        reason: "[XÁC NHẬN — Williams 12/09] Không dùng cho Alert. 'Alert dialog tất cả dùng dạng outline không dùng fill'."
+        reopen_condition: "Nếu gặp màn hình thật dùng Alert nền Fill, mở lại và xác nhận lại với Williams trước khi dùng."
+    renderer_note: >
+      Giá trị Fill vẫn tồn tại trong Figma (6 symbol, 1 trên mỗi Type) và
+      renderer có thể gặp ở file cũ — tầng spec KHÔNG sinh ra Fill cho Alert.
+
+# =============================================================================
 # BẬT / TẮT LUẬT
 # Chỉ tắt được luật mô tả cơ chế phụ thuộc DS. Luật có cờ undisableable thì
 # compiler từ chối tắt (báo lỗi).
