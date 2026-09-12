@@ -1,0 +1,93 @@
+# =============================================================================
+# form_input.rules.yaml — LOẠI: NHẬN DỮ LIỆU NGƯỜI DÙNG NHẬP
+#
+# Thành viên:
+#   đang dùng:  (chưa — viết trước khi có binding, giống cách overlay.rules.yaml
+#                từng bắt đầu)
+#   dự kiến:    Input, Textarea, Select, Combobox, Datepicker
+#
+# TRẠNG THÁI FILE NÀY: [MỚI 12/09] File trước đó ghi "CHƯA VIẾT" ở
+# manifest.yaml § component_kinds.form_input — nay có rule đầu tiên, phát
+# sinh từ phiên kiểm chứng UI (render thử Dialog/form dùng Input organism
+# thật), Williams tự chủ động sửa cách agent gán icon cho Input.
+#
+# Đọc _core.rules.yaml trước.
+# version: 1.0-draft
+# =============================================================================
+
+meta:
+  kind: form_input
+  layer: kind
+  portable: true
+  version: 1.0-draft
+  requires: [_core.rules.yaml]
+  requires_axes: [icon_slots]
+  status: "[XÁC NHẬN — Williams 12/09] Rule icon đầu tiên của kind này đã chốt qua chat — xem behavioural_limits"
+
+undisableable: []
+
+# =============================================================================
+# GIỚI HẠN HÀNH VI CỦA LOẠI
+# =============================================================================
+behavioural_limits:
+  - id: FRMIN-B-01
+    rule: >
+      Icon TRÁI (leading icon): LUÔN dùng để diễn giải/bổ sung Ý NGHĨA NGỮ
+      CẢNH của field đó — vd field số tiền → icon tiền (money-bill), field
+      diễn giải/mô tả tự do → icon văn bản (align-left). Đây là icon MANG
+      NGHĨA, chọn theo ngữ cảnh nghiệp vụ của field cụ thể — KHÔNG phải 1
+      icon trang trí cố định giống nhau cho mọi field, và KHÔNG phải icon
+      demo/leftover copy từ ví dụ khác (vd icon phong bì của field "Email"
+      mẫu gốc không được giữ lại khi field thật là "Số tiền"/"Diễn giải").
+    source: >
+      [XÁC NHẬN — Williams 12/09] "Đối với icon quy luật (thêm diễn giải ý
+      nghĩa bên trái...)"
+    icon_source_discipline: >
+      Chọn icon TRÁI qua tra cứu thật (gói FA6 đã cài, hoặc trang Icons
+      Figma nếu cần FA6 Pro) — không đoán tên icon từ trí nhớ. Icon MỚI
+      (chưa từng dùng trong `_shared.binding.yaml § icon_names`) vẫn cần
+      1 người xác nhận qua đúng plugin FA6 Pro trước khi coi là chuẩn cuối
+      cùng, cùng kỷ luật đã áp cho icon Button (xem decisions.md 07/09 §
+      "Tìm ra trang Icons thật trong file GHN DS").
+
+  - id: FRMIN-B-02
+    rule: >
+      Icon PHẢI (trailing icon): CHỈ được là ĐÚNG 1 trong 3 giá trị sau,
+      LOẠI TRỪ LẪN NHAU — không có icon phải nào khác ngoài 3 case này, và
+      khi field không rơi vào case nào thì KHÔNG hiện icon phải:
+        1. "clear" (dấu X) — CHỈ hiện khi field đang ở state "pressed".
+        2. "chevron-down" — khi field là loại dropdown (Select/Combobox)
+           VÀ dropdown đang ở trạng thái ĐÓNG.
+        3. "chevron-up" — khi field là loại dropdown VÀ dropdown đang ở
+           trạng thái MỞ.
+    source: >
+      [XÁC NHẬN — Williams 12/09] "đối với icon bên phải chỉ có thể là
+      clear khi ở trạng thái pressed hoặc chevron-down nếu nó là dropdown
+      đang đóng, chevron-up nếu nó là dropdown đang mở"
+    state_mapping: >
+      [XÁC NHẬN — Williams 12/09, hỏi lại qua AskUserQuestion] "Trạng thái
+      pressed" ánh xạ vào giá trị State=Filled của Input (KHÔNG phải
+      State=Focused) — nghĩa là icon "clear" hiện khi field ĐANG CÓ GIÁ TRỊ,
+      không cần đang được focus/thao tác trực tiếp.
+    verified_against_render: >
+      Áp thử vào 2 field demo "Số tiền"/"Diễn giải" (không phải dropdown,
+      State=Filled sẵn từ ví dụ gốc) — khớp đúng rule: hiện "clear" (X), ẩn
+      chevron. Không cần sửa gì thêm ở 2 field đó khi rule này được viết lại.
+
+# =============================================================================
+# _pending_confirmation — CHƯA CHỐT
+# =============================================================================
+_pending_confirmation:
+  - item: >
+      Field ở State=Default (chưa nhập gì, không phải dropdown) — icon phải
+      là gì? Suy luận theo FRMIN-B-02: không khớp cả 3 case → không icon
+      phải nào. CHƯA hỏi lại Williams để xác nhận tường minh, chỉ là suy
+      luận hợp lý từ rule đã có.
+  - item: >
+      Field State=Disabled — icon phải xử lý thế nào (giữ nguyên theo state
+      trước khi disable, hay luôn ẩn)? Chưa hỏi.
+  - item: >
+      Field vừa là dropdown vừa đang Filled (có giá trị đã chọn) — ưu tiên
+      chevron hay clear? FRMIN-B-02 liệt kê 3 case như loại trừ nhau nhưng
+      chưa rõ thứ tự ưu tiên khi 2 điều kiện cùng đúng lúc (dropdown + có
+      giá trị). Chưa hỏi.

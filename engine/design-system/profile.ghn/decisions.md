@@ -895,3 +895,62 @@ nghiệp vụ chung ("không quá 3 hành động trong 1 khối quyết định
 ngưỡng đã có ở Button cho hành động dòng bảng (`policy.row_action_inline_max`
 = 3, xem decisions.md mục 07/09). CHƯA đủ bằng chứng để khái quát hoá thành 1
 rule dùng chung — chỉ ghi nhận làm quan sát, không tự áp dụng.
+
+---
+
+## 12/09-N — form_input kind: luật icon trái/phải cho Input, phát sinh từ phiên kiểm chứng UI render thật
+
+**by**: Williams (sửa lỗi + xác nhận qua chat, sau khi Claude render thử Dialog/form dùng Input organism thật vào Figma)
+**affects**: `manifest.yaml` (§ component_kinds.form_input — status đổi từ "CHƯA VIẾT"), `rules/kinds/form_input.rules.yaml` (MỚI — FRMIN-B-01, FRMIN-B-02)
+
+**Bối cảnh**: Trong phiên kiểm chứng UI (Williams yêu cầu render 1 demo Table+
+Button/Dialog+form/Toast trực tiếp vào Figma để đánh giá mức độ tuân thủ rule
+đã có), Claude dựng 2 field Input ("Số tiền"/"Diễn giải") nhưng giữ nguyên icon
+leftover từ ví dụ gốc "Edit profile" (icon phong bì + chevron) — không khớp
+ngữ cảnh field thật. Phản hồi đầu tiên của Williams: *"Tao thấy mày xử lý chưa
+tốt phần icon nhỉ"*.
+
+**Correction quan trọng**: phản ứng đầu tiên của Claude là ẨN 2 icon sai đó.
+Williams sửa ngay: *"Không phải tao kêu mày ẩn nhưng mà mày đã có npm của FA6
+rồi mày không thể dự đoán được context với icon như thế nào để matching sao?"*
+— nghĩa là hướng đúng là TRA CỨU + THAY icon context-matched bằng catalog FA6
+đã cài (không phải xoá/ẩn). Claude sửa lại bằng cách tra `icon-families.json`
+(gói `@fortawesome/fontawesome-free` đã cài từ trước) và áp `money-bill` (Số
+tiền) / `align-left` (Diễn giải) — khớp đúng yêu cầu.
+
+**Rule mới Williams dictate ngay sau đó**:
+
+**Quote**: *"Đối với icon cho vùng input quy luật (thêm diễn giải ý nghĩa bên
+trái / đối với icon bên phải chỉ có thể là clear khi ở trạng thái pressed hoặc
+chevron-down nếu nó là dropdown đang đóng, chevron-up nếu nó là dropdown đang
+mở) hiểu chưa"* — xác nhận hiểu đúng qua `AskUserQuestion`: **"Đúng"**.
+
+Hỏi thêm để làm rõ ánh xạ "trạng thái pressed" sang State thật của Input
+component (Default/Filled/Focused/Disabled) — Williams chọn: **"Filled"**
+(không phải Focused) — nghĩa là icon "clear" hiện khi field ĐANG CÓ GIÁ TRỊ,
+không cần đang thao tác trực tiếp.
+
+**Quyết định — 2 behavioural_limit mới, ghi ở `rules/kinds/form_input.rules.yaml`**:
+- `FRMIN-B-01` — Icon TRÁI luôn mang nghĩa ngữ cảnh nghiệp vụ của field cụ thể
+  (không phải icon trang trí cố định, không phải leftover từ ví dụ khác). Kỷ
+  luật tra cứu icon mới giống hệt Button (decisions.md 07/09 § "Tìm ra trang
+  Icons thật") — dùng FA6 catalog thật, không đoán tên từ trí nhớ, icon MỚI vẫn
+  cần người xác nhận qua plugin FA6 Pro.
+- `FRMIN-B-02` — Icon PHẢI CHỈ 1 trong 3 giá trị loại trừ lẫn nhau: "clear"
+  (State=Filled) / "chevron-down" (dropdown đóng) / "chevron-up" (dropdown mở)
+  — ngoài 3 case này thì KHÔNG icon phải.
+
+**Còn mở, CHƯA hỏi Williams (ghi trong `_pending_confirmation` của file mới,
+không tự suy đoán)**:
+- Icon phải ở State=Default (chưa nhập, không phải dropdown) — suy luận hợp lý
+  theo FRMIN-B-02 là "không icon", nhưng chưa xác nhận tường minh.
+- Icon phải ở State=Disabled — chưa hỏi.
+- Field vừa là dropdown vừa Filled (có giá trị đã chọn) — ưu tiên chevron hay
+  clear khi 2 điều kiện cùng đúng — chưa rõ thứ tự ưu tiên, chưa hỏi.
+
+**Ghi chú kiến trúc**: đây là rule ĐẦU TIÊN của kind `form_input` (trước đó
+`manifest.yaml § component_kinds.form_input.status` ghi "CHƯA VIẾT") — kind
+này hiện có 0 `members_active` (Input chưa đăng ký thành `components:` chính
+thức, chỉ nằm trong `members_planned`) — việc có nên đăng ký `Input` thành
+component đầy đủ (binding riêng, axes riêng) hay chưa vẫn là câu hỏi kiến trúc
+mở, chưa hỏi Williams.

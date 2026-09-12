@@ -99,7 +99,8 @@ component_kinds:
     about: "Nhận dữ liệu người dùng nhập"
     members_active: []
     members_planned: [Input, Textarea, Select, Combobox, Datepicker]
-    status: "CHƯA VIẾT"
+    requires_axes: [icon_slots]
+    status: "[XÁC NHẬN — Williams 12/09] Rule icon đầu tiên (FRMIN-B-01, FRMIN-B-02) đã chốt qua chat, xem rules/kinds/form_input.rules.yaml + decisions.md § 12/09-N. Kind vẫn 0 members_active — Input chưa đăng ký thành components: chính thức, chỉ ở members_planned."
 
 # -----------------------------------------------------------------------------
 # COMPONENT
