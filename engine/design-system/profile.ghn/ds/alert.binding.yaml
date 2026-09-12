@@ -101,17 +101,20 @@ sub_parts:
   button_container: "Alert / Alert button container (Base)"
   source: "[FIGMA] node 112:11396 § Atoms → node 773:7518, đọc 12/09"
   note: >
-    button_container tồn tại trong atoms nhưng chưa có bằng chứng use case
-    nào của Alert thật sự dùng tới nút. [CẬP NHẬT 12/09] content_pattern
-    `inline_link` (text link) đã bị Williams yêu cầu XOÁ khỏi
-    rules/components/alert.rules.yaml vì không phải template thật của design
-    system — content_pattern của Alert hiện KHÔNG có giá trị nào xác nhận,
-    nên câu hỏi "Alert cần button hay chỉ cần link" vẫn hoàn toàn mở.
-    [CẬP NHẬT 12/09, ảnh thật node 773:7518] Atom này hiện ra là 1 hàng 2 nút
-    Outline + Fill cạnh nhau — giống hệt khối footer 2-nút của Dialog (xem
-    rules/kinds/overlay.rules.yaml § anatomy.footer) — xem
-    rules/components/alert.rules.yaml § _pending_confirmation cho câu hỏi còn
-    mở về use case thật.
+    [XÁC NHẬN — Williams 12/09] "Thì đó giống với nút tao define cho alert
+    xuyên suốt mà chỉ không dùng khi có case 3 nút" — button_container LÀ use
+    case thật, dùng XUYÊN SUỐT (nhất quán) cho Alert: hàng 2 nút, cả 2 đều
+    Type=Primary — nút trái (vị trí "Secondary CTA") = Primary+Outline, nút
+    phải (vị trí "Primary CTA") = Primary+Fill (KHÔNG phải Type=Secondary —
+    xác nhận qua ảnh thật node 773:7518, cả 2 nút đều màu cam, không có nút
+    xanh; xem rules/kinds/overlay.rules.yaml § OVL-B-03.correction_of_vocab).
+    Giống hệt quy ước footer 2-nút mặc định của Dialog (xem
+    rules/kinds/overlay.rules.yaml § anatomy.footer.default_2_button_style) —
+    cùng 1 quy ước dùng chung giữa Alert và Dialog, đúng tinh thần "đồng bộ
+    cho consistency" đã chốt ở decisions.md § 12/09-J. Atom KHÔNG áp dụng khi
+    Alert cần 3 nút — trường hợp đó CHƯA có quy ước riêng, xem
+    rules/components/alert.rules.yaml § content_pattern.known_recipes.action_row
+    và § _pending_confirmation.
 
 # -----------------------------------------------------------------------------
 # _pending_confirmation
@@ -121,4 +124,15 @@ _pending_confirmation:
   - item: "ĐÃ ĐÓNG — Style Fill vs Outline"
     resolved: "[XÁC NHẬN — Williams 12/09] Alert luôn Outline, không dùng Fill — xem § style phía trên."
   - item: "Alert có dismiss thủ công không (xem rules/components/alert.rules.yaml)"
-  - item: "'Alert button container (Base)' tồn tại trong atoms — có use case nào Alert thật sự cần nút không, hay atoms này chỉ để dành, chưa dùng?"
+  - item: "ĐÃ ĐÓNG — 'Alert button container (Base)' tồn tại trong atoms — có use case nào Alert thật sự cần nút không, hay atoms này chỉ để dành, chưa dùng?"
+    resolved: >
+      [XÁC NHẬN — Williams 12/09] "Thì đó giống với nút tao define cho alert
+      xuyên suốt mà chỉ không dùng khi có case 3 nút" — có use case thật, dùng
+      xuyên suốt, cùng quy ước 2-nút Outline+Fill của Dialog footer. Xem §
+      sub_parts.button_container.note phía trên và
+      rules/components/alert.rules.yaml § content_pattern.known_recipes.action_row.
+    still_open: >
+      Trường hợp Alert cần 3 nút — chưa có quy ước riêng, chưa có bằng chứng/
+      ví dụ thật nào. Không tự suy ra theo mẫu 3-nút của Dialog (Fill/Outline/
+      Grey-Outline) cho tới khi Williams xác nhận đây có áp dụng cho Alert hay
+      không.

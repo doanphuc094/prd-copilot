@@ -52,21 +52,36 @@ behavioural_limits:
 
   - id: OVL-B-03
     rule: >
-      Mức độ ưu tiên của các nút trong footer Dialog. Fill (intent primary,
+      Mức độ ưu tiên của các nút trong footer Dialog. Fill (intent Primary,
       emphasis Fill) = tác vụ chính/quan trọng nhất, hoàn thành mục đích chính
-      của người dùng. Outline (emphasis Outline, MÀU BÌNH THƯỜNG — không phải
-      Grey) = mức mặc định cho nút phụ (Secondary CTA), dùng được ở CẢ footer
-      2 nút LẪN làm bậc giữa khi footer có 3 nút. Grey (intent no_path,
-      emphasis vẫn Outline — "Grey/Outline") = mức ưu tiên THẤP NHẤT, CHỈ xuất
-      hiện khi footer có ĐÚNG 3 nút (nút thứ 3, thấp hơn cả Outline) — KHÔNG
-      áp dụng cho footer 2 nút (xem OVL-INV-02, đã RÚT LẠI phần auto-downgrade).
+      của người dùng. Outline (intent VẪN LÀ Primary — KHÔNG PHẢI Secondary,
+      emphasis Outline) = mức mặc định cho vị trí "Secondary CTA" (tên VỊ TRÍ
+      trong bảng anatomy Figma, không phải Type), dùng được ở CẢ footer 2 nút
+      LẪN làm bậc giữa khi footer có 3 nút. Grey (intent no_path, emphasis vẫn
+      Outline — "Grey/Outline") = mức ưu tiên THẤP NHẤT, CHỈ xuất hiện khi
+      footer có ĐÚNG 3 nút (nút thứ 3, thấp hơn cả Outline) — KHÔNG áp dụng
+      cho footer 2 nút (xem OVL-INV-02, đã RÚT LẠI phần auto-downgrade).
+    correction_of_vocab: >
+      [XÁC NHẬN — Williams 12/09] Bản trước gọi nút Outline này là "Secondary"
+      (Type) — SAI, do Claude lấy nhãn VỊ TRÍ "Secondary CTA" trong bảng
+      anatomy Figma rồi tự suy sang Type=Secondary của Button mà KHÔNG kiểm
+      property Type thật. Williams sửa: *"Mày gọi nút đó là secondary
+      (outline) do mày đang quy ước hay như thế nào? vì tao check định dạng
+      nút đó là primary (outline) mà. Secondary (outline) là nút màu xanh"*.
+      Claude đọc lại trực tiếp ảnh thật node 773:7518 (Alert, cùng quy ước) —
+      cả 2 nút đều màu CAM (không phải xanh), xác nhận đúng: cả nút Fill lẫn
+      nút Outline trong pattern 2-nút này đều Type=Primary, chỉ khác Style.
+      Type=Secondary (màu xanh) KHÔNG dùng trong pattern này. Xem lỗi cùng
+      dạng đã gặp ở 12/09-H (Grey-as-emphasis) — lấy nhãn Figma rồi tự map
+      sang Type mà không verify là lỗi lặp lại, cần cẩn thận hơn về sau.
     evidence_2_button: >
       [FIGMA/PRODUCT — Williams gửi ảnh thật 12/09] Màn "Chưa lưu thay đổi":
-      footer 2 nút "Huỷ lưu" (Outline, MÀU cam — không phải Grey) + "Tiếp tục
-      chỉnh sửa" (Fill cam). Đây là bằng chứng thật cho thấy footer 2 nút MẶC
-      ĐỊNH Secondary=Outline màu, không tự động chuyển Grey — khớp lại với
-      bảng anatomy Figma gốc (§ anatomy.footer), phủ quyết rule auto-downgrade
-      đã ghi trước đó.
+      footer 2 nút "Huỷ lưu" (Outline, MÀU cam) + "Tiếp tục chỉnh sửa" (Fill
+      cam) — cùng 1 họ màu (cam), khớp với Type=Primary cho cả 2 nút, không
+      phải Type=Secondary (xanh). Đây là bằng chứng thật cho thấy footer 2 nút
+      MẶC ĐỊNH vị trí "Secondary CTA" = Primary+Outline, không tự động chuyển
+      Grey — khớp lại với bảng anatomy Figma gốc (§ anatomy.footer), phủ
+      quyết rule auto-downgrade đã ghi trước đó.
     references: "Tham khảo rule emphasis + quirk merged_style đã có của Button — rules/kinds/interactive_control.rules.yaml, profile.ghn/ds/button.binding.yaml"
     source: >
       [XÁC NHẬN — Williams 12/09] "Dùng fill cho các tác vụ chính quan trọng,
@@ -178,28 +193,43 @@ anatomy:
     parts:
       - {id: 1, name: "Secondary CTA", instruction: "Trigger"}
       - {id: 2, name: "Primary CTA", instruction: "Trigger"}
+    naming_trap: >
+      [XÁC NHẬN — Williams 12/09] "Secondary CTA"/"Primary CTA" là tên VỊ TRÍ
+      thật trong bảng anatomy Figma (chỉ nói "đây là ô CTA thứ 2/thứ 1"),
+      KHÔNG PHẢI tên Type của Button. Bản trước map nhầm "Secondary CTA" sang
+      Type=Secondary — SAI. Type thật dùng ở vị trí "Secondary CTA" là
+      Primary+Outline (xem OVL-B-03 § correction_of_vocab). Đọc "Secondary
+      CTA" = vị trí, không phải Type — giống hệt bẫy "Disabled/Disable" của
+      Button (button.binding.yaml § state.naming_trap): nhãn Figma và giá trị
+      DS lệch nhau, lớp binding/rule phải tự ghi rõ, không được lẫn.
     note: >
-      "Secondary CTA" ↔ nút thứ 2, "Primary CTA" ↔ Fill. ⚠️ Ảnh atom docs gốc
-      (node 957:16887/16900) thật ra vẽ Secondary bằng Grey/Fill (nút nền xám
+      "Secondary CTA" ↔ nút thứ 2 (Type=Primary+Outline), "Primary CTA" ↔ nút
+      thứ 1 (Type=Primary+Fill). ⚠️ Ảnh atom docs gốc (node 957:16887/16900)
+      thật ra vẽ nút ở vị trí "Secondary CTA" bằng Grey/Fill (nút nền xám
       nhạt, KHÔNG viền) — đây là ví dụ CŨ/KHÔNG nhất quán, KHÔNG dùng làm chuẩn
       — xem outdated_docs_example bên dưới.
     default_2_button_style: >
-      [XÁC NHẬN — Williams 12/09, sau 2 vòng thử-sai] Footer 2-nút mặc định
-      của Dialog = Secondary (emphasis Outline, MÀU bình thường — không phải
-      Grey) + Primary (emphasis Fill). Ban đầu ghi nhầm là auto-downgrade
-      Secondary sang Grey/Outline — Williams gửi ảnh thật màn "Chưa lưu thay
-      đổi" (Outline vẫn màu cam ở footer 2 nút) và yêu cầu bỏ hẳn rule đó, xem
-      OVL-INV-02 (đã RÚT LẠI) và OVL-B-03 (đã cập nhật) để biết chi tiết + lịch
-      sử. Grey/Outline CHỈ xuất hiện khi footer có ĐÚNG 3 nút (bậc thấp nhất).
+      [XÁC NHẬN — Williams 12/09, sau 3 vòng thử-sai] Footer 2-nút mặc định
+      của Dialog = vị trí "Secondary CTA" render Type=Primary + emphasis
+      Outline (MÀU cam bình thường — KHÔNG phải Type=Secondary/xanh, KHÔNG
+      phải Type=Grey) + vị trí "Primary CTA" render Type=Primary + emphasis
+      Fill. Ban đầu ghi nhầm 2 lần: (1) auto-downgrade sang Grey/Outline —
+      Williams gửi ảnh thật màn "Chưa lưu thay đổi" và yêu cầu bỏ hẳn rule đó
+      (xem OVL-INV-02, đã RÚT LẠI); (2) gọi nút Outline là Type=Secondary —
+      Williams sửa lại là Type=Primary (xem OVL-B-03 § correction_of_vocab).
+      Grey/Outline CHỈ xuất hiện khi footer có ĐÚNG 3 nút (bậc thấp nhất).
     outdated_docs_example: >
       [XÁC NHẬN — Williams 12/09] "Footer button đang được định dạng khác so
       với dạng button của alert dialog. Tao muốn đồng bộ cái này giống rule
-      của alert dialog cho consistency" — nút Secondary trong ảnh atom docs
-      gốc (Grey/Fill, nền xám nhạt không viền) là ví dụ CŨ, KHÔNG khớp với quy
-      ước AlertDialog thật (Outline màu, xem "Chưa lưu thay đổi"). Williams
-      xác nhận: bỏ qua ảnh atom docs gốc này, dùng THỐNG NHẤT 1 rule cho MỌI
-      Dialog (kể cả AlertDialog) theo default_2_button_style ở trên — không
-      có 2 quy ước riêng cho "Dialog thường" và "AlertDialog".
+      của alert dialog cho consistency" — nút ở vị trí "Secondary CTA" trong
+      ảnh atom docs gốc (Grey/Fill, nền xám nhạt không viền) là ví dụ CŨ,
+      KHÔNG khớp với quy ước AlertDialog thật (Primary+Outline màu, xem "Chưa
+      lưu thay đổi"). Ví dụ "Edit profile" (node 966:17457, dùng cho recipe
+      `form`) cũng vẽ theo kiểu Grey/Fill cũ này — kiểm tra lại bằng screenshot
+      12/09 xác nhận đúng là ví dụ cũ, không dùng làm chuẩn cho Type/Style.
+      Williams xác nhận: bỏ qua các ảnh atom docs gốc này, dùng THỐNG NHẤT 1
+      rule cho MỌI Dialog (kể cả AlertDialog) theo default_2_button_style ở
+      trên — không có 2 quy ước riêng cho "Dialog thường" và "AlertDialog".
 
 # =============================================================================
 # CONTENT PATTERN — cách LẤP SLOT body (xem § anatomy.body.definition: body là
@@ -223,9 +253,14 @@ content_pattern:
         957:16612, có cả bản Light/Dark; bản đơn ở 957:16584): Header (icon +
         tiêu đề "Edit profile" + nút đóng X) + Content (mô tả "Make changes to
         your profile here. Click save when you're done.") + 2 field "Email"
-        (Input organism thật) + Footer (Secondary: emphasis Outline, màu bình
-        thường; Primary: emphasis Fill — theo default_2_button_style ở §
-        anatomy.footer, đã cập nhật sau khi rút lại rule auto-downgrade Grey).
+        (Input organism thật) + Footer (vị trí "Secondary CTA": Type=Primary,
+        emphasis Outline; vị trí "Primary CTA": Type=Primary, emphasis Fill —
+        theo default_2_button_style ở § anatomy.footer). ⚠️ Lưu ý: ảnh ví dụ
+        "Edit profile" THẬT trong docs (node 966:17457) lại vẽ nút vị trí
+        "Secondary CTA" theo kiểu Grey/Fill CŨ, không khớp default_2_button_style
+        đã chốt — xem § anatomy.footer.outdated_docs_example. Recipe này áp
+        dụng cấu trúc (Header/Content/2 field Input/Footer), KHÔNG áp dụng
+        màu nút của chính ảnh ví dụ đó.
       validation: "Lỗi input hiển thị qua state riêng của Input (Destructive=on → Helper message/icon) — xem § anatomy.body.validation_pattern. KHÔNG có pattern cảnh báo lỗi riêng ở cấp Dialog."
       status: "[XÁC NHẬN — Williams 12/09] Recipe thật, dùng khi PRD/designer chọn lấp slot body bằng 1..N field Input"
   not_in_table:

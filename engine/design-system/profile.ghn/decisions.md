@@ -787,3 +787,82 @@ chủ đề (footer button styling), và cách hiểu ở trên rút ra từ 1 c
 free-text sau 2 vòng hỏi không trúng — CẦN gửi lại tóm tắt cho Williams xác
 nhận rõ ràng "đúng ý chưa" trước khi coi đây là chốt cuối cùng, thay vì tự tin
 xác nhận `[XÁC NHẬN]` như các mục trước.
+
+---
+
+## 12/09-K — "Alert button container (Base)" có use case thật: dùng chung quy ước 2-nút với Dialog footer
+
+**by**: Williams (xác nhận qua chat)
+**affects**: `profile.ghn/ds/alert.binding.yaml` (§ sub_parts.button_container, § _pending_confirmation), `rules/components/alert.rules.yaml` (§ content_pattern, thêm recipe MỚI `action_row`; § _pending_confirmation; § meta.status)
+
+Câu hỏi mở lâu nhất của Alert (treo từ `12/09-C`, nhắc lại nhiều vòng): atom
+"Alert button container (Base)" (node 773:7518, 1 hàng 2 nút Outline+Fill) có
+use case thật nào không, hay chỉ là atom để dành trong thư viện, chưa từng
+dùng? Williams đưa link node, Williams trả lời gọn:
+
+**Quote**: *"Thì đó giống với nút tao define cho alert xuyên suốt mà chỉ
+không dùng khi có case 3 nút"*
+
+**Quyết định**: CÓ use case thật. Alert dùng hàng 2 nút này XUYÊN SUỐT (nhất
+quán) — Secondary (Outline, màu bình thường) + Primary (Fill) — đúng CÙNG 1
+quy ước với footer 2-nút mặc định của Dialog (`OVL-B-03` /
+`anatomy.footer.default_2_button_style`, đã chốt ở `12/09-I`/`12/09-J`). Ghi
+thành recipe mới `action_row` ở `alert.rules.yaml § content_pattern`, đóng
+luôn mục `_pending_confirmation` cuối cùng còn treo của Alert.
+
+**Còn mở**: trường hợp Alert cần 3 nút — atom `action_row` KHÔNG áp dụng, và
+CHƯA có quy ước riêng nào được xác nhận cho case đó. KHÔNG tự suy ra theo mẫu
+3-nút của Dialog (Fill/Outline/Grey-Outline) cho Alert — để dành hỏi Williams
+khi có màn hình thật cần tới.
+
+**Ghi chú kiến trúc**: đây là ví dụ thứ 2 (sau Dialog↔AlertDialog ở `12/09-J`)
+về 1 quy ước visual (2-nút Outline+Fill) được TÁI SỬ DỤNG nguyên vẹn giữa 2
+component khác kind (`overlay` và `feedback_transient`) — củng cố thêm lý do
+nên cân nhắc rút quy ước "2-nút mặc định = Secondary Outline + Primary Fill"
+lên thành 1 rule dùng chung (vd `_composition.rules.yaml` hoặc 1 kind mới) nếu
+sau này còn gặp thêm component thứ 3 lặp lại đúng mẫu này — hiện tại (2 lần)
+CHƯA đủ ngưỡng để tách (xem 08/09-D § "5 lằn ranh chống lạm dụng", mục 1: cần
+>= 3 thành viên thật).
+
+---
+
+## 12/09-L — Sửa lỗi vocab: nút Outline trong footer 2-nút là Type=Primary, không phải Type=Secondary
+
+**by**: Williams (phát hiện qua chat) + Claude (verify trực tiếp bằng Figma metadata/screenshot)
+**affects**: `rules/kinds/overlay.rules.yaml` (§ OVL-B-03, § anatomy.footer — thêm `naming_trap`, sửa `note`/`default_2_button_style`/`outdated_docs_example`, § content_pattern.known_recipes.form), `rules/components/alert.rules.yaml` (§ content_pattern.known_recipes.action_row), `profile.ghn/ds/alert.binding.yaml` (§ sub_parts.button_container.note)
+
+Ngay sau `12/09-K`, Williams hỏi lại: *"Mày gọi nút đó là secondary (outline)
+do mày đang quy ước hay như thế nào? vì tao check định dạng nút đó là primary
+(outline) mà. Secondary (outline) là nút màu xanh"*.
+
+**Truy nguồn gốc lỗi (Claude tự nhận, không đổ cho Figma)**: Bảng anatomy
+Footer của Dialog trong docs Figma đặt tên 2 vị trí là "Secondary CTA"/
+"Primary CTA" — đây LÀ tên thật từ Figma, nhưng chỉ là tên VỊ TRÍ (layout).
+Claude đã tự suy nhãn vị trí này sang Type=Secondary của Button mà KHÔNG mở
+property Type thật lên kiểm — đúng dạng lỗi đã gặp ở `12/09-H` (Grey-as-
+emphasis): lấy nhãn Figma rồi tự map sang giá trị DS mà không verify.
+
+**Verify trực tiếp (không hỏi thêm Williams, tự kiểm bằng Figma MCP)**:
+- Screenshot thật node `773:7518` (Alert button container): cả 2 nút đều màu
+  **CAM** — 1 Outline viền cam + 1 Fill đặc cam. Không có nút xanh nào.
+- Screenshot node `966:17457` ("Edit profile", ví dụ Dialog cho recipe
+  `form`): nút vị trí "Secondary CTA" ở ĐÂY lại vẽ Grey/Fill (xám nhạt,
+  không viền) — xác nhận thêm đây đúng là ví dụ CŨ (đã đánh dấu
+  `outdated_docs_example` từ `12/09-J`), không dùng để xác định Type được.
+- Bằng chứng "Chưa lưu thay đổi" (từ `12/09-I`, Williams gửi): Outline cam +
+  Fill cam — cùng tông màu cam, khớp Type=Primary cho cả 2 nút.
+
+**Quyết định**: Trong pattern 2-nút (Dialog footer VÀ Alert action_row), CẢ
+2 nút đều Type=Primary — chỉ khác Style/emphasis (Outline vs Fill). Tên vị
+trí "Secondary CTA"/"Primary CTA" GIỮ NGUYÊN (đúng tên Figma), nhưng KHÔNG
+còn map sang Type=Secondary — Type=Secondary (màu xanh) không dùng trong
+pattern này. Áp dụng sửa cho CẢ Dialog lẫn Alert vì cả 2 dùng chung 1 quy ước
+(đã chốt ở `12/09-J`/`12/09-K`).
+
+**Bài học ghi nhận (lặp lại lần 2 trong cùng khu vực)**: nhãn vị trí/layout
+trong bảng anatomy Figma (vd "Secondary CTA") và giá trị Type/Style thật của
+component (Primary/Secondary/Grey × Fill/Outline/Ghost) là 2 tầng THÔNG TIN
+KHÁC NHAU — không được tự động map 1-1 mà không verify property thật. Đã xảy
+ra 2 lần ở đúng khu vực Dialog footer/Alert (Grey-as-emphasis ở `12/09-H`,
+Secondary-vs-Primary ở đây) — cần chủ động kiểm bằng screenshot/metadata
+TRƯỚC khi viết rule liên quan tới tên Type, không chỉ dựa vào tên nhãn anatomy.

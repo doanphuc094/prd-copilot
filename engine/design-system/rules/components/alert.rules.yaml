@@ -15,7 +15,7 @@ meta:
   kinds: [feedback_transient]
   requires: [_core.rules.yaml, kinds/feedback_transient.rules.yaml]
   binding: profile.ghn/ds/alert.binding.yaml
-  status: "[ĐỀ XUẤT — Williams xác nhận 1 phần qua chat 12/09, xem _pending_confirmation]"
+  status: "[XÁC NHẬN — Williams đã xác nhận toàn bộ mục pending qua chat 12/09, xem decisions.md § 12/09-K]"
 
 # =============================================================================
 # HÀNH VI — khác biệt cốt lõi với Toast
@@ -35,17 +35,48 @@ behaviour:
 # nó không thuộc phạm vi template của design system, nên tao muốn remove để
 # bám sát theo template mẫu của design system" — nghĩa là ảnh ví dụ đó KHÔNG
 # phải 1 template thật tồn tại trong GHN DS, nên không được đưa vào bảng
-# catalogue dù trông hợp lý. Trục content_pattern hiện CHƯA có giá trị nào
-# đã xác nhận — chỉ ghi lại khi có 1 node/template THẬT trong design system.
+# catalogue dù trông hợp lý.
+#
+# [CẬP NHẬT 12/09] recipe `action_row` được thêm sau khi Williams xác nhận
+# atom "Alert button container (Base)" (node 773:7518) LÀ use case thật, dùng
+# xuyên suốt — xem values/known_recipes bên dưới.
 # =============================================================================
 content_pattern:
   decides: content_pattern
   axis_kind: enum
   ask: "Nội dung Alert này khớp catalogued recipe nào?"
-  values: []
-  status: "[TRỐNG — chưa có recipe nào được xác nhận bám theo template thật của design system, xem _pending_confirmation]"
+  values: [action_row]
+  known_recipes:
+    - id: action_row
+      about: "Alert kèm 1 hàng 2 nút hành động — Secondary (Outline, màu bình thường) + Primary (Fill)"
+      evidence: "[FIGMA] node 773:7518 'Alert button container (Base)', đọc 12/09 — screenshot thật: 1 hàng ngang 2 nút Outline + Fill cạnh nhau"
+      buttons: "Cả 2 nút đều Type=Primary — nút trái (vị trí 'Secondary CTA') = Primary+Outline, nút phải (vị trí 'Primary CTA') = Primary+Fill. KHÔNG dùng Type=Secondary (màu xanh) — xem correction_of_vocab bên dưới."
+      source: >
+        [XÁC NHẬN — Williams 12/09] "Thì đó giống với nút tao define cho
+        alert xuyên suốt mà chỉ không dùng khi có case 3 nút" — quy ước 2-nút
+        này dùng XUYÊN SUỐT cho Alert, giống hệt quy ước footer 2-nút mặc
+        định của Dialog (xem rules/kinds/overlay.rules.yaml §
+        anatomy.footer.default_2_button_style / OVL-B-03) — cùng 1 rule dùng
+        chung giữa 2 component, đúng hướng "đồng bộ cho consistency" đã chốt
+        ở decisions.md § 12/09-J.
+      correction_of_vocab: >
+        [XÁC NHẬN — Williams 12/09] Bản đầu ghi nút Outline là "Secondary" —
+        SAI. Williams: "Mày gọi nút đó là secondary (outline) do mày đang quy
+        ước hay như thế nào? vì tao check định dạng nút đó là primary
+        (outline) mà. Secondary (outline) là nút màu xanh". Claude đọc lại
+        ảnh thật node 773:7518 — cả 2 nút đều màu CAM, không có nút xanh —
+        xác nhận đúng: cả 2 nút đều Type=Primary, chỉ khác Style (Outline vs
+        Fill). Xem rules/kinds/overlay.rules.yaml § OVL-B-03.correction_of_vocab
+        cho chi tiết đầy đủ (sửa chung cho cả Dialog và Alert).
+      not_applicable_when: >
+        Alert cần 3 nút — atom này KHÔNG áp dụng, và CHƯA có quy ước riêng
+        nào được xác nhận cho trường hợp đó (xem _pending_confirmation, mục
+        cuối). KHÔNG tự suy ra theo mẫu 3-nút của Dialog (Fill/Outline/
+        Grey-Outline) cho Alert khi chưa có xác nhận riêng.
+      status: "[XÁC NHẬN — Williams 12/09] Recipe thật, dùng khi Alert cần hiện hành động (2 nút)"
+  status: "[XÁC NHẬN — 1 recipe (action_row) đã xác nhận, xem known_recipes]"
   not_in_table:
-    rule: "Bảng đang RỖNG — mọi cấu trúc nội dung Alert gặp phải đều phải escalate cho Williams, KHÔNG tự suy ra là hợp lệ, KHÔNG tự phục hồi lại inline_link."
+    rule: "Cấu trúc nội dung Alert không khớp action_row (vd Alert cần 3 nút, hoặc pattern khác hẳn) phải escalate cho Williams, KHÔNG tự suy ra là hợp lệ, KHÔNG tự phục hồi lại inline_link."
 
 # =============================================================================
 # STYLE — trục Fill/Outline riêng của Alert
@@ -94,16 +125,16 @@ _pending_confirmation:
       "Còn alert dialog tất cả dùng dạng outline không dùng fill" — Alert LUÔN
       Outline, không dùng Fill. Xem § invariants (ALERT-INV-01) phía trên và
       profile.ghn/ds/alert.binding.yaml § style.
-  - item: "'Alert button container (Base)' trong atoms Figma — ĐÃ XEM ẢNH THẬT (12/09), vẫn cần Williams xác nhận use case"
-    what_it_looks_like: >
-      [FIGMA — node 773:7518, đọc 12/09] Screenshot thật: 1 hàng NGANG gồm
-      ĐÚNG 2 nút cạnh nhau — 1 nút Outline (nhãn "Button") + 1 nút Fill (nhãn
-      "Button", màu cam). Về mặt hình ảnh giống HỆT khối footer 2-nút của
-      Dialog (xem rules/kinds/overlay.rules.yaml § anatomy.footer: Secondary
-      CTA = Outline, Primary CTA = Fill) — atom này nhiều khả năng là 1 khối
-      dùng chung/demo cho "hàng nút", KHÔNG phải cấu trúc riêng của Alert.
+  - item: "ĐÃ ĐÓNG — 'Alert button container (Base)' trong atoms Figma — có use case thật nào Alert thật sự cần nút không"
+    resolved: >
+      [XÁC NHẬN — Williams 12/09] "Thì đó giống với nút tao define cho alert
+      xuyên suốt mà chỉ không dùng khi có case 3 nút" — CÓ use case thật, dùng
+      XUYÊN SUỐT: hàng 2 nút Secondary (Outline) + Primary (Fill), cùng quy
+      ước với footer 2-nút mặc định của Dialog. Ghi thành recipe `action_row`
+      ở § content_pattern phía trên.
     still_open: >
-      Đây vẫn chỉ là ảnh demo atom (không gắn với 1 màn hình Alert thật nào đã
-      thấy) — câu hỏi cho Williams vẫn còn nguyên: có use case thật nào Alert
-      cần hiện nút (Outline+Fill như atom này) không, hay atom này chỉ tồn tại
-      trong thư viện để dành, Alert thật ngoài sản phẩm GHN chưa từng dùng tới?
+      Trường hợp Alert cần 3 nút — atom `action_row` KHÔNG áp dụng, và CHƯA
+      có quy ước riêng nào được xác nhận cho trường hợp đó. KHÔNG tự suy ra
+      theo mẫu 3-nút của Dialog (Fill/Outline/Grey-Outline) cho Alert khi
+      chưa có xác nhận riêng — hỏi lại Williams nếu gặp màn hình thật cần 3
+      nút trên Alert.
