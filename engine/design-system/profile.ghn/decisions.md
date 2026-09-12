@@ -713,3 +713,77 @@ không bao giờ đứng một mình như 1 emphasis riêng.
 **Sửa lại đúng**: Footer Dialog 2 nút → Secondary CTA đổi INTENT thành
 no_path (Type=Grey), emphasis GIỮ NGUYÊN Outline — không đổi mức nhấn, chỉ
 đổi màu. Đã sửa `OVL-B-03`, `OVL-INV-02`, và `anatomy.footer` cho khớp.
+
+---
+
+## 12/09-I — RÚT LẠI rule auto-downgrade Grey cho footer 2 nút (bằng chứng thật mâu thuẫn)
+
+**by**: Williams (gửi bằng chứng thật + quyết định qua chat)
+**affects**: `rules/kinds/overlay.rules.yaml` (§ OVL-B-03 sửa lại, § OVL-INV-02 RÚT LẠI, § anatomy.footer sửa lại, § content_pattern.known_recipes.form sửa lại)
+
+Ngay sau khi `12/09-H` sửa xong cách GỌI TÊN rule Grey/Outline, Williams gửi
+ảnh thật 1 màn hình "Chưa lưu thay đổi": footer 2 nút — "Huỷ lưu" (Outline,
+**MÀU CAM**, không phải Grey) + "Tiếp tục chỉnh sửa" (Fill cam) — và nói:
+*"Thôi cho tao sửa lại rule dùng đúng system đưa ra đi"*. Ảnh này MÂU THUẪN
+trực tiếp với `OVL-INV-02` (đã xác nhận 2 lần trước đó: footer 2 nút → auto
+chuyển Secondary sang Grey).
+
+Được hỏi lại nên sửa theo hướng nào (Grey chỉ áp AlertDialog / bỏ hẳn rule /
+đây là ngoại lệ riêng), Williams chọn: **bỏ hẳn rule auto-downgrade Grey**.
+
+**Kết quả áp dụng**:
+- `OVL-INV-02` — đánh dấu RÚT LẠI (không xoá, giữ nguyên bản gốc + lý do rút
+  lại, đúng nguyên tắc provenance của dự án).
+- `OVL-B-03` — sửa lại: Outline (màu bình thường) là mức mặc định cho Secondary
+  CTA ở CẢ footer 2 nút LẪN bậc giữa của footer 3 nút. Grey (intent no_path,
+  vẫn kèm emphasis Outline) CHỈ còn áp dụng cho bậc THẤP NHẤT của footer 3 nút
+  — không còn áp dụng cho trường hợp 2 nút.
+- `anatomy.footer.default_2_button_style` và recipe `form` (ví dụ Edit
+  profile) — sửa lại khớp: Secondary=Outline màu, không phải Grey.
+
+**Bài học ghi nhận**: 1 rule được Williams xác nhận bằng lời tới 2 lần vẫn có
+thể bị bằng chứng ảnh thật sau đó phủ quyết — ưu tiên bằng chứng cụ thể
+(screenshot màn hình thật) hơn mô tả bằng lời khi có mâu thuẫn, và LUÔN hỏi
+lại rõ ràng thay vì tự chọn hướng sửa khi 2 nguồn xung đột.
+
+---
+
+## 12/09-J — Ảnh atom docs gốc của Footer (Grey/Fill) là ví dụ CŨ; thống nhất 1 rule cho MỌI Dialog theo AlertDialog
+
+**by**: Williams (gửi ảnh thật + quyết định qua chat, sau 2 vòng `AskUserQuestion` để làm rõ)
+**affects**: `rules/kinds/overlay.rules.yaml` (§ anatomy.footer.note, § anatomy.footer.outdated_docs_example MỚI)
+
+Ngay sau `12/09-I` (rút rule auto-downgrade Grey), Williams gửi tiếp một correction
+nữa, ban đầu khó xác định phạm vi — tự sửa lại chính lời mình giữa chừng
+("nút secondary/outline" → "nút primary/outline"). Mất 2 vòng `AskUserQuestion`
+mới xác định đúng ý, cả 2 lần Williams đều trả lời bằng free-text (chọn
+"Khác") thay vì chọn option Claude đưa ra. Câu trả lời làm rõ cuối cùng:
+
+**Quote (làm rõ cuối cùng)**: *"Đây là hình ảnh của dialog generic trong design
+system nè. Footer button đang được định dạng khác so với dạng button của
+alert dialog. Tao muốn đồng bộ cái này giống rule của alert dialog cho
+consistency"*
+
+**Cách hiểu đã áp dụng**: Williams đang nói về chính ảnh atom docs GỐC (node
+957:16887/957:16900, đã đọc ở `12/09-F`) — ảnh đó vẽ Secondary CTA bằng
+**Grey/Fill** (nền xám nhạt, KHÔNG viền), khác hẳn quy ước AlertDialog thật đã
+xác nhận bằng ảnh "Chưa lưu thay đổi" ở `12/09-I` (Outline, MÀU cam). Williams
+muốn ảnh atom docs gốc này được coi là **ví dụ CŨ/lỗi thời**, không dùng làm
+chuẩn, và **THỐNG NHẤT chỉ 1 rule cho MỌI Dialog** (kể cả AlertDialog) theo
+đúng quy ước đã chốt ở `default_2_button_style` (`12/09-I`) — không tồn tại 2
+quy ước riêng biệt cho "Dialog thường" và "AlertDialog".
+
+**Đã áp dụng vào file**: `anatomy.footer.note` cập nhật thêm cảnh báo về ảnh
+atom docs gốc; thêm trường mới `anatomy.footer.outdated_docs_example` ghi lại
+đầy đủ quote + cách hiểu ở trên. KHÔNG có invariant/behavioural_limit nào bị
+đổi nội dung — `OVL-B-03` và `default_2_button_style` (đã chốt ở `12/09-I`)
+vẫn giữ nguyên, vì bản thân 2 mục đó ĐÃ thống nhất theo đúng quy ước
+AlertDialog rồi. Thay đổi ở đây chỉ là: đánh dấu rõ ảnh atom docs gốc không
+còn là nguồn tham chiếu, để tránh agent sau này đọc nhầm ảnh đó thành quy ước
+đang dùng.
+
+**⚠️ Chưa re-confirm với Williams**: đây là lần sửa thứ 4 liên tiếp về cùng 1
+chủ đề (footer button styling), và cách hiểu ở trên rút ra từ 1 câu trả lời
+free-text sau 2 vòng hỏi không trúng — CẦN gửi lại tóm tắt cho Williams xác
+nhận rõ ràng "đúng ý chưa" trước khi coi đây là chốt cuối cùng, thay vì tự tin
+xác nhận `[XÁC NHẬN]` như các mục trước.

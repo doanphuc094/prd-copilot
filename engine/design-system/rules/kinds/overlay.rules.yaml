@@ -13,7 +13,8 @@
 # (957:16562 — trang "Documentation" của Dialog generic), yêu cầu "nghiên cứu
 # kĩ và đề xuất", rồi DUYỆT đề xuất của Claude. Kết quả: Header (4 phần) +
 # Body (dynamic SLOT, không phải anatomy cố định — PRD/designer quyết định
-# nội dung) + Footer (2 CTA, mặc định Secondary=Grey/Primary=Fill) — xem §
+# nội dung) + Footer (2 CTA, mặc định Secondary=Outline màu/Primary=Fill —
+# rule auto-downgrade Grey cho 2-nút đã bị RÚT LẠI, xem OVL-INV-02) — xem §
 # anatomy. Recipe "form" đã XÁC NHẬN thật. Xem _pending_confirmation.
 #
 # AlertDialog: tiêu chí kích hoạt đã XÁC NHẬN (12/09, xem § alert_dialog_trigger)
@@ -51,23 +52,21 @@ behavioural_limits:
 
   - id: OVL-B-03
     rule: >
-      Mức độ ưu tiên của các nút trong footer Dialog theo SỐ LƯỢNG nút. Fill
-      (intent primary, emphasis Fill) = tác vụ chính/quan trọng nhất, hoàn
-      thành mục đích chính của người dùng. Outline (emphasis Outline, intent
-      alternate) CHỈ hợp lệ khi footer có ĐÚNG 3 nút — vai trò tương đương/gần
-      với Fill nhưng ưu tiên thấp hơn. Mức thấp nhất KHÔNG phải 1 emphasis thứ
-      3 riêng biệt — nó là intent=no_path (Type=Grey trong DS) trong khi
-      emphasis VẪN LÀ Outline (Style=Outline), đúng khuôn "Grey/Outline" Button
-      đã dùng sẵn (xem button.binding.yaml § icon_only_default: "nút icon grey
-      button có viền" — Grey luôn đi kèm Outline, không phải Fill).
-    correction: >
-      [XÁC NHẬN — Williams 12/09] "Không phải secondary grey mà nó là
-      grey/outline" — sửa lại cách gọi ban đầu (nhầm Grey thành 1 mức emphasis
-      độc lập ngang hàng Fill/Outline). Đúng theo model Button thật: Type
-      (màu/intent, gồm cả Grey=no_path) và Style (emphasis×shape, gồm
-      Fill/Outline/Ghost) là 2 property TÁCH BIỆT — "Grey" luôn là giá trị
-      Type, ghép với emphasis Outline, không bao giờ đứng một mình như 1 bậc
-      emphasis riêng.
+      Mức độ ưu tiên của các nút trong footer Dialog. Fill (intent primary,
+      emphasis Fill) = tác vụ chính/quan trọng nhất, hoàn thành mục đích chính
+      của người dùng. Outline (emphasis Outline, MÀU BÌNH THƯỜNG — không phải
+      Grey) = mức mặc định cho nút phụ (Secondary CTA), dùng được ở CẢ footer
+      2 nút LẪN làm bậc giữa khi footer có 3 nút. Grey (intent no_path,
+      emphasis vẫn Outline — "Grey/Outline") = mức ưu tiên THẤP NHẤT, CHỈ xuất
+      hiện khi footer có ĐÚNG 3 nút (nút thứ 3, thấp hơn cả Outline) — KHÔNG
+      áp dụng cho footer 2 nút (xem OVL-INV-02, đã RÚT LẠI phần auto-downgrade).
+    evidence_2_button: >
+      [FIGMA/PRODUCT — Williams gửi ảnh thật 12/09] Màn "Chưa lưu thay đổi":
+      footer 2 nút "Huỷ lưu" (Outline, MÀU cam — không phải Grey) + "Tiếp tục
+      chỉnh sửa" (Fill cam). Đây là bằng chứng thật cho thấy footer 2 nút MẶC
+      ĐỊNH Secondary=Outline màu, không tự động chuyển Grey — khớp lại với
+      bảng anatomy Figma gốc (§ anatomy.footer), phủ quyết rule auto-downgrade
+      đã ghi trước đó.
     references: "Tham khảo rule emphasis + quirk merged_style đã có của Button — rules/kinds/interactive_control.rules.yaml, profile.ghn/ds/button.binding.yaml"
     source: >
       [XÁC NHẬN — Williams 12/09] "Dùng fill cho các tác vụ chính quan trọng,
@@ -180,20 +179,27 @@ anatomy:
       - {id: 1, name: "Secondary CTA", instruction: "Trigger"}
       - {id: 2, name: "Primary CTA", instruction: "Trigger"}
     note: >
-      "Secondary CTA" ↔ nút thứ 2, "Primary CTA" ↔ Fill. Bảng docs gốc vẽ
-      Secondary bằng Outline (Type mặc định, chưa áp OVL-INV-02) — đó chỉ là
-      hình minh hoạ atom. ÁP DỤNG THẬT theo OVL-INV-02: footer đúng 2 nút →
-      Secondary CTA = intent no_path (Type=Grey), emphasis VẪN Outline
-      (Style=Outline) — gọi tắt "Grey/Outline", KHÔNG phải đổi sang 1 emphasis
-      "Grey" tách biệt.
+      "Secondary CTA" ↔ nút thứ 2, "Primary CTA" ↔ Fill. ⚠️ Ảnh atom docs gốc
+      (node 957:16887/16900) thật ra vẽ Secondary bằng Grey/Fill (nút nền xám
+      nhạt, KHÔNG viền) — đây là ví dụ CŨ/KHÔNG nhất quán, KHÔNG dùng làm chuẩn
+      — xem outdated_docs_example bên dưới.
     default_2_button_style: >
-      [XÁC NHẬN — Williams 12/09] "Nút secondary CTA chuyển thành nút grey cho
-      đồng bộ với alert dialog", sửa lại sau đó: "Không phải secondary grey mà
-      nó là grey/outline". Footer 2-nút mặc định của Dialog = Secondary
-      (intent no_path/Type=Grey, emphasis Outline) + Primary (intent primary,
-      emphasis Fill). Outline với intent alternate (còn giữ màu riêng, chưa
-      chuyển no_path) CHỈ xuất hiện khi footer có ĐÚNG 3 nút (bậc giữa, theo
-      OVL-B-03).
+      [XÁC NHẬN — Williams 12/09, sau 2 vòng thử-sai] Footer 2-nút mặc định
+      của Dialog = Secondary (emphasis Outline, MÀU bình thường — không phải
+      Grey) + Primary (emphasis Fill). Ban đầu ghi nhầm là auto-downgrade
+      Secondary sang Grey/Outline — Williams gửi ảnh thật màn "Chưa lưu thay
+      đổi" (Outline vẫn màu cam ở footer 2 nút) và yêu cầu bỏ hẳn rule đó, xem
+      OVL-INV-02 (đã RÚT LẠI) và OVL-B-03 (đã cập nhật) để biết chi tiết + lịch
+      sử. Grey/Outline CHỈ xuất hiện khi footer có ĐÚNG 3 nút (bậc thấp nhất).
+    outdated_docs_example: >
+      [XÁC NHẬN — Williams 12/09] "Footer button đang được định dạng khác so
+      với dạng button của alert dialog. Tao muốn đồng bộ cái này giống rule
+      của alert dialog cho consistency" — nút Secondary trong ảnh atom docs
+      gốc (Grey/Fill, nền xám nhạt không viền) là ví dụ CŨ, KHÔNG khớp với quy
+      ước AlertDialog thật (Outline màu, xem "Chưa lưu thay đổi"). Williams
+      xác nhận: bỏ qua ảnh atom docs gốc này, dùng THỐNG NHẤT 1 rule cho MỌI
+      Dialog (kể cả AlertDialog) theo default_2_button_style ở trên — không
+      có 2 quy ước riêng cho "Dialog thường" và "AlertDialog".
 
 # =============================================================================
 # CONTENT PATTERN — cách LẤP SLOT body (xem § anatomy.body.definition: body là
@@ -217,9 +223,9 @@ content_pattern:
         957:16612, có cả bản Light/Dark; bản đơn ở 957:16584): Header (icon +
         tiêu đề "Edit profile" + nút đóng X) + Content (mô tả "Make changes to
         your profile here. Click save when you're done.") + 2 field "Email"
-        (Input organism thật) + Footer (Secondary: intent no_path/Type=Grey,
-        emphasis Outline; Primary: emphasis Fill — theo default_2_button_style
-        ở § anatomy.footer).
+        (Input organism thật) + Footer (Secondary: emphasis Outline, màu bình
+        thường; Primary: emphasis Fill — theo default_2_button_style ở §
+        anatomy.footer, đã cập nhật sau khi rút lại rule auto-downgrade Grey).
       validation: "Lỗi input hiển thị qua state riêng của Input (Destructive=on → Helper message/icon) — xem § anatomy.body.validation_pattern. KHÔNG có pattern cảnh báo lỗi riêng ở cấp Dialog."
       status: "[XÁC NHẬN — Williams 12/09] Recipe thật, dùng khi PRD/designer chọn lấp slot body bằng 1..N field Input"
   not_in_table:
@@ -242,18 +248,23 @@ invariants:
     source: "[XÁC NHẬN — Williams 12/09] 'Áp cho mọi dialog' — draft gốc gọi luật này là FB-INV-4"
 
   - id: OVL-INV-02
-    rule: >
-      footer.button_count == 2 implies nút Secondary CTA đổi intent thành
-      no_path (Type=Grey trong DS) — emphasis GIỮ NGUYÊN Outline (Style=
-      Outline), KHÔNG đổi sang 1 emphasis khác. "Chuyển thành Grey" nghĩa là
-      đổi MÀU/INTENT, không phải đổi mức nhấn.
-    check: >
-      count(dialog.footer.buttons) == 2 implies (secondary.intent == no_path
-      AND secondary.emphasis == Outline) — emphasis không đổi qua bước này.
-    why: "Tăng tỉ lệ tương phản (contrast) hướng về nút Fill/primary khi footer chỉ có 2 nút — đổi màu nút phụ về trung tính (Grey), không cần giữ màu 'alternate' có sắc độ riêng."
-    relation: "Cụ thể hoá OVL-B-03 khi footer có đúng 2 nút — 3 nút thì Outline (intent alternate, còn giữ màu riêng, CHƯA đổi về Grey) vẫn hợp lệ như bậc giữa."
-    correction: "[XÁC NHẬN — Williams 12/09] 'Không phải secondary grey mà nó là grey/outline' — sửa lại: đây là đổi Type (Grey), không phải đổi Style/emphasis. Xem OVL-B-03 § correction."
-    source: "[XÁC NHẬN — Williams 12/09] 'trong trường hợp 2 nút, do tao muốn điều chỉnh tỉ lệ contrast vào nút primary nhiều hơn nên khi dialog chỉ có 2 nút, mày auto chuyển nút outline về grey giúp tao'"
+    status: "RÚT LẠI — xem retraction bên dưới. Giữ lại id + lịch sử để không mất provenance (never xoá, chỉ supersede)."
+    original_rule: >
+      (BẢN CŨ, không còn hiệu lực) "footer.button_count == 2 implies nút
+      Secondary CTA đổi intent thành no_path (Type=Grey), emphasis giữ
+      Outline" — dựa trên quote Williams 12/09: "trong trường hợp 2 nút, do
+      tao muốn điều chỉnh tỉ lệ contrast vào nút primary nhiều hơn nên khi
+      dialog chỉ có 2 nút, mày auto chuyển nút outline về grey giúp tao"
+      (xác nhận LẶP LẠI 2 lần trước khi rút).
+    retraction: >
+      [XÁC NHẬN — Williams 12/09] Williams gửi ảnh thật màn "Chưa lưu thay
+      đổi" (footer 2 nút: "Huỷ lưu" Outline MÀU cam + "Tiếp tục chỉnh sửa"
+      Fill cam — KHÔNG phải Grey), nói "Thôi cho tao sửa lại rule dùng đúng
+      system đưa ra đi", rồi chọn rõ hướng sửa: BỎ HẲN rule auto-downgrade
+      Grey cho footer 2 nút. Footer 2 nút giờ mặc định Secondary=Outline
+      (màu bình thường), khớp lại đúng bảng anatomy Figma gốc — xem OVL-B-03
+      (đã cập nhật) và § anatomy.footer.default_2_button_style (đã cập nhật).
+    why_kept_here: "Ghi lại để tránh lặp lại lỗi — nếu sau này gặp bằng chứng có vẻ ủng hộ auto-downgrade Grey cho 2 nút, ĐỪNG tự áp lại luật này, hỏi lại Williams trước."
 
 # =============================================================================
 # _pending_confirmation — CHƯA CHỐT
@@ -265,6 +276,14 @@ _pending_confirmation:
       câu trả lời Fill/Outline/Grey là cho NÚT của Dialog footer, không liên
       quan Alert Style. Đã chuyển thành OVL-B-03 (mức ưu tiên) + OVL-INV-02
       (auto-downgrade 2 nút) ở trên, không còn là dự thảo.
+  - item: "ĐÃ ĐÓNG — RÚT LẠI rule auto-downgrade Grey cho footer 2 nút"
+    resolved: >
+      [XÁC NHẬN — Williams 12/09] Williams gửi ảnh thật màn "Chưa lưu thay
+      đổi" (footer 2 nút, Secondary vẫn Outline MÀU cam, không phải Grey),
+      nói "Thôi cho tao sửa lại rule dùng đúng system đưa ra đi", và chọn: bỏ
+      hẳn rule auto-downgrade Grey. Xem OVL-INV-02 (đã RÚT LẠI, giữ lại lịch
+      sử) và OVL-B-03 (đã cập nhật) — footer 2 nút giờ mặc định Secondary=
+      Outline màu, Grey chỉ còn áp cho bậc thấp nhất của footer 3 nút.
   - item: "ĐÃ ĐÓNG — Node-id thật của 'Dialog / Dialog oragism' trong Figma"
     resolved: >
       [XÁC NHẬN — Williams 12/09] Gửi link kèm node-id 957:16562 (trang
