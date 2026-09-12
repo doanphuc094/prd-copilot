@@ -1010,3 +1010,85 @@ hay giả vờ chắc chắn.
 — 6 mục, trong đó đáng chú ý nhất là liệu 2 giá trị Type ("Leading dropdown"/
 "Trailing dropdown") có chính là điều kiện "field là dropdown" mà FRMIN-B-02
 nhắc tới hay không — CHƯA hỏi Williams, không tự map.
+
+---
+
+## 12/09-P — Tự audit lại demo Figma theo FRMIN-B-01/02: phát hiện 1 claim SAI của chính Claude, đã sửa
+
+**by**: Claude (tự phát hiện qua kiểm tra trực tiếp componentProperties bằng use_figma, không phải Williams báo)
+**affects**: file test Figma (`uFbbdvWYC1dg3AjdnHCgxk`, node `51:211`/`51:212` — 2 Input field "Số tiền"/"Diễn giải" trong Dialog demo), `rules/kinds/form_input.rules.yaml` (§ FRMIN-B-02, sửa `verified_against_render`, thêm `icon_literal_mapping`)
+
+**Bối cảnh**: Sau khi đăng ký Input thành component (`12/09-O`), Claude quay
+lại làm việc #2 Williams đã đồng ý ("Okay") — kiểm chứng lại demo Figma theo
+rubric 5 tiêu chí. Trong lúc soát lại, Claude tự đối chiếu `form_input.rules.
+yaml § FRMIN-B-02.verified_against_render` (claim viết lúc trước: "áp thử 2
+field demo Số tiền/Diễn giải... khớp đúng rule: hiện clear (X), ẩn chevron")
+với ẢNH THẬT của chính 2 field đó ngay lúc này — và với đọc trực tiếp
+`componentProperties` qua `use_figma` — thay vì tin lại claim cũ.
+
+**Phát hiện**: Claim cũ SAI. 2 field "Số tiền"/"Diễn giải" đang hiện icon
+"money-bill"/"align-left" ở PHÍA PHẢI (không phải icon "clear" như claim viết)
+— vì icon ngữ cảnh đó bị gán NHẦM vào slot `iconClear#489:0` (slot riêng, đặt
+tên đúng cho icon "clear", theo cấu trúc thật của nested component "Input /
+Input filed type (Base)": 3 boolean độc lập `iconLeft#705:0` / `iconRight#
+158:149` / `iconClear#489:0`), trong khi slot `iconLeft#705:0` (đúng chỗ cho
+icon mang nghĩa ngữ cảnh) đang TẮT. Vi phạm trực tiếp CẢ HAI rule vừa chốt
+(`12/09-N`): FRMIN-B-01 (chưa có icon trái mang nghĩa) và FRMIN-B-02 (icon
+phải không phải giá trị hợp lệ nào trong 3 case).
+
+**Nguồn gốc lỗi**: Khi sửa icon lúc trước (đợt Williams yêu cầu tra FA6 thay
+vì ẩn icon), Claude tìm đúng glyph ngữ cảnh (money-bill/align-left) nhưng gán
+nó vào slot ĐANG BẬT SẴN (`iconClear`, vì lúc đó đây là slot duy nhất hiển thị
+trên field) thay vì bật slot đúng vai trò (`iconLeft`) — tức là sửa ĐÚNG GLYPH
+nhưng SAI SLOT. Rồi khi viết `form_input.rules.yaml` (sau khi rule FRMIN-B-02
+mới được chốt), Claude ghi "verified_against_render" mà KHÔNG thật sự mở lại
+Figma đối chiếu — lặp đúng loại lỗi mà nguyên tắc dự án cấm ("luôn verify bằng
+chứng thật, không suy đoán/tự tin ghi đã xác nhận").
+
+**Đã sửa (Figma + rule file)**:
+- Node `51:211` ("Số tiền"): bật `iconLeft#705:0`, gán glyph `money-bill`; sửa
+  `iconClear#489:0` từ glyph `money-bill` (sai) → `xmark`; `iconRight#158:149`
+  giữ tắt (không phải dropdown).
+- Node `51:212` ("Diễn giải"): bật `iconLeft#705:0`, gán glyph `align-left`;
+  sửa `iconClear#489:0` từ `align-left` (sai) → `xmark`; `iconRight` giữ tắt.
+- Ảnh chụp lại sau sửa: cả 2 field đều đúng — icon trái mang nghĩa ngữ cảnh,
+  icon phải là dấu X (clear), đúng State=Filled.
+- `form_input.rules.yaml § FRMIN-B-02`: xoá claim sai, ghi lại đúng sự thật +
+  cách sửa; thêm mục mới `icon_literal_mapping` — "clear" là tên VAI, ligature
+  FA6 thật dùng là `xmark` (đối chiếu `icon-families.json`, cùng phương pháp
+  06/09-A dùng cho "Bộ lọc"→`filter`) — **[cần verify — chưa qua plugin FA6
+  Pro]**, chưa coi là chuẩn cuối cùng.
+
+**Ý nghĩa với rubric đánh giá (tiêu chí "Regression check")**: đây đúng là ví
+dụ thật của tiêu chí #5 trong rubric Claude đề xuất trước đó ("không âm thầm
+phục hồi lỗi đã sửa, không tự tin ghi đã xác nhận mà chưa đối chiếu lại") —
+khác với các lần trước lỗi do WILLIAMS phát hiện, lần này Claude tự bắt lỗi
+của chính mình trong lúc audit, đúng vai trò mà việc "kiểm chứng UI" ban đầu
+Williams yêu cầu hướng tới.
+
+---
+
+## 12/09-Q — Icon trái header Dialog vẫn là leftover "Edit profile", đổi sang icon khớp ngữ cảnh (ĐỀ XUẤT, chưa Williams xác nhận)
+
+**by**: Claude (tự phát hiện tiếp trong cùng đợt audit `12/09-P`) — **[ĐỀ XUẤT — CHƯA Williams xác nhận]**
+**affects**: file test Figma (node `51:209`, Dialog header của Card B)
+
+**Phát hiện**: Icon TRÁI của Dialog header (Card B "Thêm phiếu chi phí") vẫn
+là glyph mặc định để lại từ ví dụ gốc "Edit profile" — do dùng font "Font
+Awesome 6 Pro" (không có trên máy chủ render) nên hiện ra thành 1 glyph fallback
+trông như icon mặt cười, không phải icon nào có chủ đích. Đây là icon LEFTOVER
+chưa từng được thay, cùng loại lỗi Williams đã sửa cho 2 field Input trước đó
+("không dự đoán context với icon").
+
+**Đã sửa (tạm, chưa xác nhận)**: đổi thành `receipt` (đối chiếu có thật trong
+`icon-families.json` gói FA6 Free) — khớp ngữ cảnh "phiếu chi phí". Chưa có
+rule chính thức nào ở cấp Dialog/overlay quy định icon header chọn theo gì —
+đây chỉ là áp dụng lại tinh thần chung "tra FA6 theo ngữ cảnh, không để
+leftover demo" đã có ở Button (07/09) và Input (12/09-N), KHÔNG phải 1 rule
+mới được xác nhận.
+
+**Cần Williams xác nhận**: `receipt` có đúng ý muốn không, hay icon khác hợp
+hơn (vd `file-invoice-dollar`, `circle-plus`). Nếu xác nhận, cân nhắc có nên
+viết thành 1 rule chính thức ở `rules/kinds/overlay.rules.yaml` (icon header
+Dialog luôn phải khớp ngữ cảnh, không giữ leftover từ ví dụ docs) hay để mỗi
+lần escalate riêng — CHƯA tự quyết định phạm vi rule ở đây.

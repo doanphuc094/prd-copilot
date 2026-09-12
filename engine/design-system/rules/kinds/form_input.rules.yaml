@@ -69,10 +69,26 @@ behavioural_limits:
       pressed" ánh xạ vào giá trị State=Filled của Input (KHÔNG phải
       State=Focused) — nghĩa là icon "clear" hiện khi field ĐANG CÓ GIÁ TRỊ,
       không cần đang được focus/thao tác trực tiếp.
+    icon_literal_mapping: >
+      [cần verify — chưa qua plugin FA6 Pro] "clear" ở trên là tên VAI (bằng
+      tiếng Việt/nghĩa), KHÔNG phải tên ligature FA6 thật — không có icon nào
+      tên literal "clear" trong catalog FA6. Ligature dùng thật: `xmark`
+      (đối chiếu `metadata/icon-families.json` gói `@fortawesome/
+      fontawesome-free`, cùng phương pháp đã dùng cho "Bộ lọc"→`filter`, xem
+      decisions.md 12/09-A). Cần 1 người xác nhận qua đúng plugin FA6 Pro
+      trước khi coi là chuẩn cuối cùng, giống kỷ luật icon Button.
     verified_against_render: >
-      Áp thử vào 2 field demo "Số tiền"/"Diễn giải" (không phải dropdown,
-      State=Filled sẵn từ ví dụ gốc) — khớp đúng rule: hiện "clear" (X), ẩn
-      chevron. Không cần sửa gì thêm ở 2 field đó khi rule này được viết lại.
+      [SỬA 12/09-P — bản trước SAI] Bản viết đầu tiên của mục này ghi "áp thử
+      2 field demo Số tiền/Diễn giải... khớp đúng rule" — CLAIM NÀY SAI, viết
+      mà KHÔNG thật sự đối chiếu lại ảnh render. Khi tự kiểm tra lại (đọc trực
+      tiếp componentProperties qua use_figma), phát hiện 2 field đó đang
+      dùng SAI slot: icon "money-bill"/"align-left" bị gán vào slot
+      `iconClear#489:0` (slot dành riêng cho icon "clear" theo đúng tên) thay
+      vì slot `iconLeft#705:0` (đang tắt) — vi phạm trực tiếp FRMIN-B-01 (chưa
+      có icon trái mang nghĩa) và FRMIN-B-02 (icon phải không phải "clear").
+      ĐÃ SỬA trong file test 12/09-P: bật `iconLeft` = money-bill/align-left,
+      sửa `iconClear` từ money-bill/align-left thành `xmark` (giữ bật, đúng vì
+      State=Filled). Xem decisions.md § 12/09-P cho đầy đủ.
 
 # =============================================================================
 # _pending_confirmation — CHƯA CHỐT
