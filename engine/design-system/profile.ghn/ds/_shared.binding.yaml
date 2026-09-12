@@ -61,11 +61,32 @@ icon_set:
      arrow-left-long, arrow-right-long, arrow-up-long, arrow-down-long,
      chevron-left, chevron-right, chevron-up, chevron-down,
      arrow-right-from-bracket, arrow-progress, arrows-rotate, arrow-up-arrow-down,
-     clock, clock-rotate-left, filter-list, trash, pen, route, truck-fast,
+     clock, clock-rotate-left, filter, trash, pen, route, truck-fast,
      bullhorn, circle-info, grip-dots, grip-dots-vertical, file-arrow-up,
      money-check-dollar, magnifying-glass-dollar, hexagon-exclamation,
      screwdriver-wrench]
   source: "[FIGMA] đọc metadata trang 12:2 ngày 07/09"
+  correction_2026-09-12: >
+    Mục ghi ban đầu ở đây là "filter-list" (đọc từ trang 12:2 ngày 07/09) —
+    ĐÃ SỬA thành "filter" sau khi đối chiếu với dữ liệu chính thức Font Awesome
+    6 (gói npm @fortawesome/fontawesome-free@6.7.2, metadata/icon-families.json):
+    "filter-list" không tồn tại trong catalog FA6 (kể cả tầng Free lẫn đối
+    chiếu tên), chỉ có "filter" / "filter-circle-dollar" / "filter-circle-xmark".
+    Williams xác nhận dùng "filter". Xem verification_2026-09-12 bên dưới cho
+    cách đối chiếu 13 icon còn lại trong danh sách này — tất cả đều khớp thật.
+  verification_2026-09-12:
+    method: >
+      Cài gói npm chính thức @fortawesome/fontawesome-free@6.7.2 (KHÔNG scrape
+      website JS fontawesome.com/search — cách đó đã thử và thất bại trước
+      đây), đọc file metadata/icon-families.json đi kèm gói — đây là dữ liệu
+      tên/alias/search-term CHÍNH THỨC của Font Awesome, không phải suy đoán.
+    coverage_limit: >
+      Gói Free chỉ phủ ~1895 icon tầng Free, KHÔNG có icon riêng của Pro (GHN
+      dùng FA6 Pro ~3000+ icon). Icon không có trong danh sách Free KHÔNG có
+      nghĩa là sai — có thể là icon Pro thật, chỉ là không tự xác nhận được
+      qua nguồn này. "filter-list" bị loại vì hoàn toàn không khớp icon Pro
+      nào hợp lý trong họ "filter" (chỉ có 3 biến thể liệt kê ở trên).
+    result: "13/14 icon trong bảng icon_names bên dưới đã đối chiếu khớp thật."
 
 # Khoá = `action` trong kinds/action_trigger.rules.yaml § icon_meaning_vocabulary
 icon_names:
@@ -78,7 +99,7 @@ icon_names:
   "Tải lên / nhập file":             {name: file-arrow-up,        status: "[FIGMA]"}
   "In":                              {name: print,                status: "[XÁC NHẬN — Williams 07/09, chờ import]"}
   "Sao chép":                        {name: copy,                 status: "[XÁC NHẬN — Williams 07/09, chờ import]"}
-  "Bộ lọc":                          {name: filter-list,          status: "[FIGMA]"}
+  "Bộ lọc":                          {name: filter,               status: "[XÁC NHẬN — Williams 12/09, sửa từ filter-list — xem icon_set.correction_2026-09-12]"}
   "Làm mới danh sách":               {name: arrows-rotate,        status: "[FIGMA]"}
   "Gửi đi để XIN DUYỆT":             {name: stamp,                status: "[XÁC NHẬN — Williams 07/09]"}
   "Duyệt / chấp nhận":               {name: check,                status: "[XÁC NHẬN — Williams 07/09, chờ import]"}
@@ -92,14 +113,66 @@ icon_names:
 new_icon_process:
   marker: "[GIỚI HẠN THẬT]"
   rule: >
-    Hành động chưa có trong icon_names → agent đề xuất 1-3 tên, nhưng PHẢI có
-    người mở plugin bộ icon trong công cụ thiết kế xác nhận tên tồn tại +
-    import trước khi renderer dùng thật.
-  why: >
-    Đã thử tự động hoá và thất bại thật: fetch trang search của bộ icon không
-    được (web app JS); công cụ tra design system chỉ tìm được component/style
-    đã publish, không tìm được icon instance lẻ.
-  source: "[XÁC NHẬN — Williams 07/09]"
+    Hành động chưa có trong icon_names → chạy ĐỦ 2 bước theo thứ tự bên dưới.
+    KHÔNG được bỏ qua bước 1 rồi tự tin dùng luôn tên đề xuất — bước 1 chỉ lọc
+    được "tên bịa/sai chính tả", KHÔNG thay thế bước 2 (bước 2 vẫn bắt buộc).
+
+  step_1_offline_name_check:
+    what: >
+      Trước khi đưa tên icon đề xuất cho người xác nhận, agent tự kiểm tra tên
+      đó có THẬT SỰ tồn tại trong catalog Font Awesome 6 hay không, bằng dữ
+      liệu chính thức — KHÔNG đoán theo trí nhớ, KHÔNG scrape website JS
+      (fontawesome.com/search — đã thử, thất bại, xem why_step_1_exists).
+    how: >
+      Cài gói npm chính thức của Font Awesome vào workspace của AGENT (không
+      phải vào repo dự án — đây là công cụ tra cứu tạm thời, không phải
+      dependency của PRD Copilot):
+        npm install @fortawesome/fontawesome-free@6.7.2
+      Đọc file đi kèm: node_modules/@fortawesome/fontawesome-free/metadata/icon-families.json
+      — file JSON này là danh sách tên/alias/search-term CHÍNH THỨC của Font
+      Awesome, khoá theo đúng tên icon (vd "trash", "pen", "filter"). Tra tên
+      đề xuất có phải 1 khoá trong file này không.
+    coverage_limit: >
+      File này CHỈ phủ tầng Free (~1895 icon), KHÔNG có icon riêng của Pro
+      (GHN dùng FA6 Pro, `icon_set.full_catalog_size` ~3000+ icon). Tên KHÔNG
+      có trong file này KHÔNG TỰ ĐỘNG SAI — có thể là icon Pro thật. Ngược
+      lại: tên CÓ trong file này thì chắc chắn ĐÚNG (đây là dữ liệu chính
+      thức, không phải suy đoán) — dùng để LOẠI tên bịa/sai chính tả, không
+      dùng để KHẲNG ĐỊNH một tên là sai.
+    if_found: "Đánh dấu tên đề xuất là đã xác nhận CÚ PHÁP đúng thật (không phải bịa) — vẫn phải qua step_2 mới được dùng thật."
+    if_not_found: "Không loại bỏ ngay — có thể là icon Pro. Ghi rõ 'chưa xác nhận qua dữ liệu Free' khi đưa cho step_2, để người xác nhận biết cần tự kiểm tra kỹ hơn."
+    precedent: >
+      Ngày 12/09: dùng đúng quy trình này phát hiện "filter-list" (ghi từ
+      trang Icons 12:2 ngày 07/09) không tồn tại trong catalog FA6 — chỉ có
+      "filter"/"filter-circle-dollar"/"filter-circle-xmark". Williams xác
+      nhận đổi sang "filter" — xem decisions.md 12/09-A và
+      icon_set.correction_2026-09-12.
+
+  step_2_human_confirm:
+    what: >
+      DÙ step_1 đã xác nhận cú pháp đúng, vẫn PHẢI có người mở plugin bộ icon
+      trong công cụ thiết kế (hoặc tự tra trực tiếp trên fontawesome.com bằng
+      mắt) xác nhận icon đó ĐÃ ĐƯỢC IMPORT vào file DS thật và ĐÚNG NGỮ CẢNH
+      sử dụng — trước khi renderer dùng thật.
+    why: >
+      step_1 chỉ trả lời "tên này có tồn tại trong catalog Font Awesome
+      không", KHÔNG trả lời "icon này đã có sẵn trong file Figma của GHN
+      chưa" và KHÔNG trả lời "icon này có đúng ý nghĩa nghiệp vụ mà designer
+      muốn không" — hai câu đó chỉ người mới trả lời được.
+
+  why_step_1_exists: >
+    Trước 12/09, quy trình chỉ có step_2 (bước người) — nghĩa là MỌI tên đề
+    xuất, kể cả tên bịa hoàn toàn, đều phải chờ người kiểm hết, không có lớp
+    lọc rẻ nào ở giữa. step_1 không thay thế step_2, chỉ giảm số lần người
+    phải xử lý một tên rõ ràng sai ngay từ đầu.
+  why_cannot_automate_fully: >
+    Đã thử tự động hoá 100% và thất bại thật: fetch trang search của bộ icon
+    không được (web app JS, không đọc được qua fetch thường); công cụ tra
+    design system chỉ tìm được component/style đã publish, không tìm được
+    icon instance lẻ. Gói npm ở step_1 KHÔNG giải quyết được 2 việc đó — nó
+    chỉ giải quyết "tên có tồn tại trong catalog Font Awesome không", nên
+    step_2 vẫn không thể bỏ.
+  source: "[XÁC NHẬN — Williams 07/09 (step_2), 12/09 (step_1 bổ sung)]"
 
 # -----------------------------------------------------------------------------
 # QUIRK CẤP FILE — ảnh hưởng MỌI component

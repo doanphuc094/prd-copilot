@@ -379,3 +379,28 @@ xoá nội dung (nguyên tắc provenance: giữ lại, không xoá — xem
 `_core.rules.yaml § provenance.never_delete`) — các mục `_todo`/`TODO_chua_lam`
 còn lại trong đó vẫn là việc thật cần làm, chỉ là không còn là nơi CHỨA giá
 trị đã chốt nữa.
+
+## 12/09-A — Sửa icon "Bộ lọc": filter-list → filter (đối chiếu dữ liệu FA6 thật)
+
+**by**: Williams ("Okay dùng filter đi")
+**affects**: `profile.ghn/ds/_shared.binding.yaml` (`icon_set.confirmed_icons`, `icon_names."Bộ lọc"`)
+
+**Bối cảnh**: Trước đây `icon_names."Bộ lọc"` ghi `filter-list`, đánh dấu
+`[FIGMA]` (đọc từ trang Icons 12:2 ngày 07/09). Lúc rà lại toàn bộ rule để
+chuẩn bị thêm component mới, Claude cài gói npm chính thức
+`@fortawesome/fontawesome-free@6.7.2` và đối chiếu `metadata/icon-families.json`
+đi kèm (dữ liệu tên icon CHÍNH THỨC của Font Awesome, không phải scrape
+website JS đã thất bại trước đây) với 14 icon trong bảng `icon_names`.
+
+**Phát hiện**: 13/14 icon khớp thật. Riêng `filter-list` KHÔNG tồn tại trong
+catalog FA6 — chỉ có `filter`, `filter-circle-dollar`, `filter-circle-xmark`.
+
+**Quyết định**: Đổi thành `filter`. Cập nhật cả 2 chỗ: `icon_set.confirmed_icons`
+(danh sách đọc từ trang 12:2) và `icon_names."Bộ lọc"`.
+
+**Giới hạn thật (ghi lại để không lặp lại nhầm lẫn)**: gói Free chỉ phủ ~1895
+icon tầng Free của FA6, không có icon riêng của Pro (GHN dùng FA6 Pro,
+~3000+ icon theo `icon_set.full_catalog_size`). Một icon không có trong dữ
+liệu Free KHÔNG tự động sai — có thể là icon Pro thật, chỉ là nguồn này không
+xác nhận được. Trường hợp `filter-list` bị loại vì không khớp bất kỳ biến thể
+nào hợp lý trong họ "filter", không phải chỉ vì "không có trong Free".

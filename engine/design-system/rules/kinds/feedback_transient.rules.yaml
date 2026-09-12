@@ -1,0 +1,185 @@
+# =============================================================================
+# feedback_transient.rules.yaml — LOẠI: PHẢN HỒI KHÔNG CHIẾM QUYỀN TƯƠNG TÁC
+#
+# Thành viên:
+#   đang dùng:  (chưa — viết trước khi có binding, xem _pending_confirmation)
+#   dự kiến:    Toast, Alert
+#
+# Trục bắt buộc: status
+#
+# ⚠️ TÊN + MÔ TẢ KIND NÀY TRONG manifest.yaml CÓ THỂ CẦN SỬA (đề xuất, xem
+# _pending_confirmation cuối file):
+#   manifest.yaml hiện mô tả: "Xuất hiện rồi tự biến mất"
+#   → điều này CHỈ đúng cho Toast pattern `status` (tự biến mất theo thời gian,
+#     KHÔNG có nút đóng thủ công — xác nhận Williams 12/09).
+#   → Alert là banner TĨNH, nằm nguyên trong layout, KHÔNG tự biến mất
+#     [XÁC NHẬN — Williams 12/09, ảnh "Có 2 điểm giao không thể xếp tuyến"].
+#   → Cái THẬT SỰ chung giữa Toast và Alert không phải "tự biến mất", mà là:
+#     không có backdrop, không chặn thao tác phía sau, không ép người dùng xử
+#     lý trước khi làm việc khác — khác hẳn overlay (Dialog), nơi luôn chiếm
+#     focus/chặn nền [xem rules/kinds/overlay.rules.yaml].
+#   Đề xuất sửa component_kinds.feedback_transient.about trong manifest.yaml
+#   theo định nghĩa hành vi này — CHƯA sửa, chờ Williams xác nhận.
+#
+# Đọc _core.rules.yaml trước — kiểu trục, kỷ luật, ngưỡng cảm ứng ở đó.
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  kind: feedback_transient
+  layer: kind
+  portable: true
+  version: 2.0-draft
+  requires: [_core.rules.yaml]
+  requires_axes: [status]
+  status: "[ĐỀ XUẤT — nhiều mục đã Williams xác nhận qua chat 12/09, một số mục còn mở — xem _pending_confirmation]"
+
+undisableable: []
+
+# =============================================================================
+# STATUS — trục ngữ nghĩa trạng thái hệ thống
+#
+# KHÁC với action_trigger.intent: intent nói "vai của hành động trong việc
+# hoàn thành mục đích màn hình" (primary/alternate/destructive/no_path).
+# status nói "hệ thống vừa báo cái gì" (thành công/lỗi/...). Hai trục độc lập,
+# không dùng lẫn tên hay logic của nhau.
+# =============================================================================
+status:
+  decides: status
+  axis_kind: closed_role_set
+  ask: "Phản hồi này báo về trạng thái hệ thống nào vừa xảy ra hoặc đang tồn tại?"
+
+  roles_confirmed:
+    - role: success
+      meaning: "Một hành động người dùng vừa hoàn thành đúng như mong đợi"
+      icon_meaning: "dấu tích trong vòng tròn (check-circle)"
+      source: "[XÁC NHẬN — Williams 12/09] ảnh Toast 'Cập nhật thông tin thành công'"
+    - role: error
+      meaning: "Một hành động thất bại, hoặc có điều kiện lỗi cần chú ý"
+      icon_meaning: "dấu X trong vòng tròn (x-circle)"
+      source: "[XÁC NHẬN — Williams 12/09] ảnh Toast 'Đã huỷ tải về' + ảnh Alert 'Có 2 điểm giao không thể xếp tuyến'"
+
+  roles_open:
+    note: >
+      Toast BẢN DESKTOP trong Figma có 9 giá trị Type: White, Primary, Success,
+      Secondary, Error, Grey, Disable, Warning, Info — chỉ 2 giá trị (Success,
+      Error) đã có ảnh thật xác nhận ý nghĩa. Phần còn lại KHÔNG được suy đoán
+      — xem _pending_confirmation.
+    values_needing_meaning: [Warning, Info, Primary, Secondary, Grey, White, Disable]
+    cross_reference: >
+      button.binding.yaml § quirks.status_color_types đã ghi chú trước:
+      "Bộ giá trị Info/Success/Warning CHÍNH LÀ trục status mà Toast BẮT BUỘC
+      phải có — cùng bộ từ, Button cấm dùng, Toast bắt buộc dùng." Điều này gợi
+      ý chỉ nhóm mang nghĩa trạng thái (Success/Error/Warning/Info) thuộc trục
+      `status` thật sự; Primary/Secondary/Grey/White/Disable có thể KHÔNG phải
+      status (có thể là giá trị style/kiểu hiển thị khác, hoặc trạng thái
+      neutral/hệ thống chưa được đặt tên) — cần Williams xác nhận, không suy
+      đoán tiếp ở lớp kind.
+    mobile_evidence: >
+      [FIGMA — node 3569:33454 "Toast Message (Mobile App)", đọc 12/09] Toast
+      bản MOBILE (app tài xế) dùng trục "Status" riêng, CHỈ 4 giá trị: Success,
+      Failed, Info, Warning — sạch hơn hẳn bản desktop, không lẫn giá trị màu
+      kiểu Button (Primary/Secondary/Grey/White/Disable). Đây là bằng chứng
+      MẠNH ủng hộ giả thuyết: 4 giá trị này (đổi tên Error→Failed) mới là
+      `status` thật; phần còn lại của Type bên desktop nhiều khả năng là kế
+      thừa property dùng chung với Button, không có ý nghĩa status riêng.
+      Toast desktop và Toast mobile có thể là 2 BINDING khác nhau của cùng 1
+      khái niệm `status` — cần Williams xác nhận trước khi viết binding.
+
+  icon_meaning_vocabulary:
+    growth: >
+      Mỗi khi 1 status role mới được xác nhận, thêm 1 dòng vào roles_confirmed
+      (ý nghĩa) và binding thật vào profile.binding.icon_names — không tự thêm
+      icon cho status chưa xác nhận.
+
+  fallback:
+    action: escalate
+    message: "Không xác định được trạng thái hệ thống từ tài liệu nghiệp vụ. Cần designer chỉ định."
+
+# =============================================================================
+# ĐỊNH NGHĨA CHÍNH THỨC — Toast (nguồn: trang docs Figma, không phải suy diễn)
+#
+# [FIGMA — node 3574:14993 "Toast Message (Mobile App)" § MASTER TYPE docs,
+# đọc 12/09] Nguyên văn:
+#   "Toast message là thành phần UI dùng để thông báo tạm thời đến người dùng
+#   về một hành động vừa xảy ra. Xuất hiện ở cạnh dưới hoặc cạnh trên hoặc dưới
+#   màn hình (tuỳ app), toast không can thiệp vào trải nghiệm chính và sẽ tự
+#   biến mất sau một khoảng thời gian ngắn (3s đối với các hành động đơn giản)."
+#
+# Đây CHÍNH LÀ định nghĩa hành vi mà FBTR-B-02 đang mô tả bằng ngôn ngữ luật —
+# giờ có nguồn chính thức, không còn là suy luận riêng của agent.
+# =============================================================================
+toast_official_definition:
+  source: "[FIGMA] node 3574:14993, docs page 'Toast Message (Mobile App)'"
+  duration: "3s cho hành động đơn giản (không có action) — hàm ý: có action thì có thể lâu hơn hoặc chờ user tự đóng, xem content_pattern.action"
+  placement: "Cạnh trên hoặc cạnh dưới màn hình, tuỳ app — KHÔNG cố định 1 vị trí cho mọi platform"
+  non_interference: "Không can thiệp vào trải nghiệm chính — khớp FBTR-B-02 (không backdrop, không bẫy focus)"
+
+# =============================================================================
+# CONTENT PATTERN — Toast (component-specific, ghi tạm ở đây vì
+# rules/components/toast.rules.yaml chưa tồn tại — DỜI sang đó khi component
+# Toast được thêm chính thức vào manifest.yaml § components)
+# =============================================================================
+toast_content_pattern_draft:
+  status_note: "[NHÁP — cần dời vào rules/components/toast.rules.yaml khi Toast được đăng ký trong manifest.yaml § components]"
+  patterns:
+    - id: status
+      structure: "icon + tiêu đề, KHÔNG action, KHÔNG dismiss"
+      behaviour: "Tự biến mất sau ~3s, không có nút đóng thủ công"
+      when: "Phản hồi kết quả 1 hành động vừa hoàn thành (thành công/thất bại)"
+      source: "[XÁC NHẬN — Williams 12/09] 2 ảnh Toast 'Đã huỷ tải về' / 'Cập nhật thông tin thành công'"
+    - id: action
+      structure: "icon + tiêu đề + 1 nút hành động + dismiss"
+      behaviour: "Có dismiss vì có action (xem rule chung: dismiss chỉ xuất hiện cùng action) — thời lượng hiển thị có thể khác 3s, chưa xác nhận"
+      when: "Có việc người dùng có thể làm ngay sau thông báo — ví dụ thử lại một hành động thất bại, hoặc hoàn tác một hành động vừa làm"
+      label_examples: ["Thử lại", "Hoàn tác"]
+      source: "[FIGMA] node 3574:17770, hướng dẫn UX writing của Toast Mobile: 'Nếu có hành động (button): ghi rõ hành động như Thử lại, Hoàn tác'"
+      note: >
+        Hướng dẫn viết chữ chỉ nói SỐ ÍT ("hành động", "button" — số ít) — đây
+        là bằng chứng gián tiếp pattern thật chỉ có 1 button, KHÔNG phải 2 như
+        frame kitchen-sink Type=Primary (đã Williams xác nhận 12/09 là demo,
+        chưa có context thật — xem _pending_confirmation, mục kitchen sink giờ
+        ĐÃ ĐÓNG, không còn mở).
+  writing_guideline:
+    source: "[FIGMA] node 3574:17770"
+    rules:
+      - "Tối đa 2 dòng"
+      - "Tránh từ kỹ thuật / nội bộ"
+      - "Câu chủ động: 'Tạo đơn thành công' thay vì 'Đơn hàng đã được tạo'"
+      - "Có hành động thì ghi rõ động từ hành động (Thử lại, Hoàn tác), không ghi chung chung"
+    scope_note: "Nguồn từ docs Toast MOBILE — chưa xác nhận áp dụng cho Toast desktop, nhưng nhiều khả năng là quy ước chung của công ty. Hỏi Williams nếu cần áp rộng hơn."
+
+# =============================================================================
+# GIỚI HẠN HÀNH VI CỦA LOẠI
+# =============================================================================
+behavioural_limits:
+  - id: FBTR-B-01
+    rule: >
+      feedback_transient KHÔNG được dùng để bắt buộc người dùng xác nhận một
+      hành động phá huỷ. Việc đó thuộc overlay (Dialog) — xem CMP-DLG-01.
+    why: >
+      Toast/Alert không chặn thao tác nền và có thể bị bỏ lỡ (Toast tự biến
+      mất theo thời gian, Alert có thể nằm ngoài vùng nhìn thấy khi cuộn) —
+      không đủ đảm bảo người dùng đã đọc trước khi hệ thống cho phép hành động
+      tiếp theo xảy ra.
+    relation_to_composition_rule: "Hệ quả trực tiếp của CMP-DLG-01 — không lặp logic ở đây, chỉ tham chiếu."
+
+  - id: FBTR-B-02
+    rule: "Thành viên của kind này không được có backdrop, không bẫy focus (focus trap)."
+    why: "Đây chính là ranh giới hành vi phân biệt feedback_transient với overlay — xem block đầu file."
+
+# =============================================================================
+# _pending_confirmation — CHƯA CHỐT, không đưa vào build tới khi Williams xác nhận
+# =============================================================================
+_pending_confirmation:
+  - item: "Đổi component_kinds.feedback_transient.about trong manifest.yaml"
+    from: "Xuất hiện rồi tự biến mất"
+    to: "Phản hồi không chiếm quyền tương tác — không backdrop, không chặn nền, không bẫy focus"
+    why: "Xem block đầu file — 'tự biến mất' không đúng với Alert (banner tĩnh). Cần xác nhận thêm sau câu trả lời của Williams về 'Alert Dialog' — xem mục cuối."
+  - item: "Ý nghĩa nghiệp vụ của Toast Type = Warning, Info, Primary, Secondary, Grey, White, Disable (bản desktop)"
+    why: "Chỉ Success/Error có ảnh thật xác nhận. Toast MOBILE dùng trục Status sạch hơn (Success/Failed/Info/Warning, 4 giá trị) — gợi ý desktop nên thu hẹp về đúng 4 giá trị này, còn lại loại khỏi trục status, nhưng chưa tự quyết ở lớp kind."
+  - item: "ĐÃ ĐÓNG — kitchen sink Type=Primary (2 button)"
+    resolved: "[XÁC NHẬN — Williams 12/09] Đúng là demo, chưa có context thực nào. Pattern action thật (1 nút, xem toast_content_pattern_draft.patterns.action) có bằng chứng độc lập từ hướng dẫn UX writing mobile."
+  - item: "Alert có nút đóng thủ công (dismiss) không, hay chỉ biến mất khi điều kiện lỗi được giải quyết?"
+    why: "Chưa có bằng chứng — chỉ mới xác nhận Alert KHÔNG tự biến mất theo thời gian như Toast"
+  - item: "'Alert Dialog' — Williams nói có 1 dạng Alert chặn nền, trỏ vào node 112:11396. Đọc metadata node đó: tên CANVAS là '⚫ Alert Dialog' nhưng bên trong chỉ thấy các instance 'Alert / Alert organism' đặt trong mockup desktop/mobile (docs page) — KHÔNG thấy layer backdrop/overlay riêng nào. Giả thuyết: 'chặn nền hay không' là quyết định ở tầng CONTAINER/cách dùng (code), không phải 1 component Figma khác — tức Alert có thể thuộc CẢ HAI kind (feedback_transient khi đặt inline, overlay khi đặt trong modal có backdrop), giống cách Button thuộc cả interactive_control và action_trigger. CẦN Williams xác nhận trước khi sửa file này và overlay.rules.yaml."

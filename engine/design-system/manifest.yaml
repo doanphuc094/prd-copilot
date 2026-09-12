@@ -84,14 +84,15 @@ component_kinds:
     about: "Nổi lên trên nội dung, chiếm focus"
     members_active: []
     members_planned: [Dialog, AlertDialog, BottomSheet, Popover, ContextMenu]
-    status: "CHƯA VIẾT — viết khi thêm Dialog"
+    status: "[KHUNG SƯỜN — viết 12/09, chờ Williams review] Chưa đọc được cấu trúc Dialog thật trong Figma (thiếu node-id) — xem file § _pending_confirmation"
 
   feedback_transient:
     file: rules/kinds/feedback_transient.rules.yaml
     about: "Xuất hiện rồi tự biến mất"
+    about_note: "[ĐỀ XUẤT sửa — cần Williams xác nhận] Chỉ đúng cho Toast; Alert là banner tĩnh không tự biến mất — xem file § _pending_confirmation cho định nghĩa đề xuất thay thế"
     members_active: []
     members_planned: [Toast, Alert]
-    status: "CHƯA VIẾT — viết khi thêm Toast"
+    status: "[ĐỀ XUẤT — viết 12/09, chờ Williams review] Nhiều mục đã xác nhận qua chat, một số còn mở — xem file § _pending_confirmation"
 
   form_input:
     file: rules/kinds/form_input.rules.yaml

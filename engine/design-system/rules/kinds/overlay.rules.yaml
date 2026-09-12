@@ -1,0 +1,86 @@
+# =============================================================================
+# overlay.rules.yaml — LOẠI: CHIẾM FOCUS, CHẶN NỀN
+#
+# Thành viên:
+#   đang dùng:  (chưa — viết trước khi có binding, xem _pending_confirmation)
+#   dự kiến:    Dialog, AlertDialog, BottomSheet, Popover, ContextMenu
+#
+# Đây là kind ĐỐI LẬP hành vi với feedback_transient (xem block đầu file đó):
+# overlay LUÔN có backdrop, chặn thao tác nền, và (trừ Popover/ContextMenu nhẹ)
+# thường bẫy focus tới khi người dùng xử lý xong.
+#
+# TRẠNG THÁI FILE NÀY: khung sườn — dựa trên bằng chứng gián tiếp
+# (_composition.rules.yaml § CMP-DLG-01 đã có từ trước, và draft Dialog/Alert
+# Williams paste 08/09). CHƯA đọc trực tiếp cấu trúc Dialog trong Figma — thiếu
+# node-id (chỉ có componentKey "Dialog / Dialog oragism" =
+# 8b04f4f411eda928c14075725b148bb6a9e5590b, xác nhận là component THẬT, tách
+# biệt khỏi Alert, qua search_design_system 12/09). Xem _pending_confirmation.
+#
+# Đọc _core.rules.yaml trước.
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  kind: overlay
+  layer: kind
+  portable: true
+  version: 2.0-draft
+  requires: [_core.rules.yaml]
+  requires_axes: [content_pattern]
+  status: "[KHUNG SƯỜN — cấu trúc Dialog thật trong Figma chưa đọc được, xem _pending_confirmation]"
+
+undisableable: []
+
+# =============================================================================
+# GIỚI HẠN HÀNH VI CỦA LOẠI
+# =============================================================================
+behavioural_limits:
+  - id: OVL-B-01
+    rule: "Thành viên của kind này PHẢI có backdrop và chặn thao tác nền, trừ khi profile.policy khai ngoại lệ tường minh cho từng thành viên (vd Popover nhẹ có thể không chặn nền)."
+    why: "Đây là ranh giới hành vi phân biệt overlay với feedback_transient."
+
+  - id: OVL-B-02
+    rule: "Overlay dùng để bắt buộc xác nhận hành động phá huỷ PHẢI có đúng 2 lối ra: xác nhận và huỷ bỏ — không được chỉ có 1 lối ra (không cho thoát)."
+    check: "role == intent.destructive trong CMP-DLG-01 implies count(overlay.exit_actions) >= 2"
+    relation_to_composition_rule: "Cụ thể hoá CMP-DLG-01 ở cấp kind — CMP-DLG-01 nói CÓ bước xác nhận, luật này nói bước đó phải cho thoát được."
+
+# =============================================================================
+# CONTENT PATTERN — Dialog không có 1 anatomy cố định (ghi nhận từ draft
+# Williams 08/09: "Dialog không có fixed anatomy" — decision_log gốc)
+# =============================================================================
+content_pattern:
+  decides: content_pattern
+  axis_kind: enum
+  ask: "Nội dung bên trong overlay này khớp catalogued recipe nào?"
+  known_recipes:
+    - id: confirmation
+      about: "Xác nhận 1 hành động trước khi thực thi — thường đi kèm CMP-DLG-01"
+      evidence: "[FIGMA] node 773:12361 / 773:12382 — draft Williams 08/09"
+      status: "[XÁC NHẬN — có evidence node, chưa re-verify trực tiếp trong phiên này]"
+    - id: form
+      about: "Overlay chứa 1 form nhập liệu ngắn"
+      evidence: "KHÔNG CÓ — draft Williams 08/09 liệt kê nhưng chưa có node minh chứng"
+      status: "[cần verify — chưa có bằng chứng Figma]"
+  not_in_table:
+    rule: "Nội dung không khớp recipe nào đã catalogued → escalate, KHÔNG tự bịa cấu trúc mới cho Dialog."
+    why: "Dialog không có anatomy cố định — đây là lý do CÀNG phải catalogue recipe thay vì suy luận tự do."
+
+# =============================================================================
+# INVARIANTS của loại
+# =============================================================================
+invariants:
+  - id: OVL-INV-01
+    rule: "Overlay PHẢI có ít nhất 1 hành động thoát ra tường minh (đóng / huỷ / hoàn thành)."
+    status: "[cần verify phạm vi áp dụng — draft gốc gọi là FB-INV-4, Williams chưa xác nhận áp cho MỌI Dialog hay chỉ recipe đã catalogue]"
+
+# =============================================================================
+# _pending_confirmation — CHƯA CHỐT
+# =============================================================================
+_pending_confirmation:
+  - item: "Node-id thật của 'Dialog / Dialog oragism' trong Figma — chỉ có componentKey, chưa đọc được cấu trúc bên trong"
+    why: "Cần link Figma trực tiếp từ Williams (get_metadata/search không tự tìm ra node-id từ componentKey)"
+  - item: "OVL-INV-01 (dismiss bắt buộc) áp dụng cho MỌI Dialog hay chỉ 2 recipe đã catalogue (confirmation, form)?"
+    origin: "Draft Williams 08/09 gọi là FB-INV-4"
+  - item: "Xác nhận recipe 'form' bằng 1 node Figma thật, hoặc bỏ khỏi known_recipes nếu chưa có màn nào dùng"
+  - item: "'AlertDialog' trong manifest.yaml members_planned — có phải chính là recipe 'confirmation' ở trên, hay là 1 component Figma riêng biệt khác cả Dialog lẫn Alert?"
+    why: "manifest.yaml đã liệt kê AlertDialog như 1 thành viên planned riêng từ trước khi phiên này bắt đầu — chưa rõ đây là tên gọi khác của recipe confirmation, hay 1 component thứ 3 thật sự tồn tại trong Figma"
