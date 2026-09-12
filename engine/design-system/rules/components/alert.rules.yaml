@@ -94,13 +94,16 @@ _pending_confirmation:
       "Còn alert dialog tất cả dùng dạng outline không dùng fill" — Alert LUÔN
       Outline, không dùng Fill. Xem § invariants (ALERT-INV-01) phía trên và
       profile.ghn/ds/alert.binding.yaml § style.
-  - item: "'Alert button container (Base)' trong atoms Figma — Williams nói 'chưa hiểu mày giải thích rõ hơn được không'"
-    clarification: >
-      Đây là 1 block con (sub-part) nằm trong nhóm 'Atoms' của trang docs Alert
-      trên Figma — cùng nhóm với 'Alert header (Base)' và 'Alert paragraph
-      (Base)'. Nó là 1 KHUNG CHỨA dành riêng cho việc đặt (các) nút bên trong
-      Alert, tách biệt khỏi phần tiêu đề/nội dung chữ. Sự tồn tại của khung
-      này gợi ý component Alert CÓ THỂ được thiết kế để chứa nút thật (không
-      chỉ text link) — nhưng tao chưa thấy màn hình nào thật sự dùng tới nó.
-      Câu hỏi cho Williams: có use case nào Alert cần hiện nút (không phải chỉ
-      link) không, hay khung này chỉ để dành cho tương lai, chưa từng dùng?
+  - item: "'Alert button container (Base)' trong atoms Figma — ĐÃ XEM ẢNH THẬT (12/09), vẫn cần Williams xác nhận use case"
+    what_it_looks_like: >
+      [FIGMA — node 773:7518, đọc 12/09] Screenshot thật: 1 hàng NGANG gồm
+      ĐÚNG 2 nút cạnh nhau — 1 nút Outline (nhãn "Button") + 1 nút Fill (nhãn
+      "Button", màu cam). Về mặt hình ảnh giống HỆT khối footer 2-nút của
+      Dialog (xem rules/kinds/overlay.rules.yaml § anatomy.footer: Secondary
+      CTA = Outline, Primary CTA = Fill) — atom này nhiều khả năng là 1 khối
+      dùng chung/demo cho "hàng nút", KHÔNG phải cấu trúc riêng của Alert.
+    still_open: >
+      Đây vẫn chỉ là ảnh demo atom (không gắn với 1 màn hình Alert thật nào đã
+      thấy) — câu hỏi cho Williams vẫn còn nguyên: có use case thật nào Alert
+      cần hiện nút (Outline+Fill như atom này) không, hay atom này chỉ tồn tại
+      trong thư viện để dành, Alert thật ngoài sản phẩm GHN chưa từng dùng tới?

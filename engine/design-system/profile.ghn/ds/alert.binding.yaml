@@ -99,7 +99,7 @@ sub_parts:
   paragraph: "Alert / Alert paragraph (Base)"
   header_container: "Alert / Alert header container (Base)"
   button_container: "Alert / Alert button container (Base)"
-  source: "[FIGMA] node 112:11396 § Atoms, đọc 12/09"
+  source: "[FIGMA] node 112:11396 § Atoms → node 773:7518, đọc 12/09"
   note: >
     button_container tồn tại trong atoms nhưng chưa có bằng chứng use case
     nào của Alert thật sự dùng tới nút. [CẬP NHẬT 12/09] content_pattern
@@ -107,6 +107,11 @@ sub_parts:
     rules/components/alert.rules.yaml vì không phải template thật của design
     system — content_pattern của Alert hiện KHÔNG có giá trị nào xác nhận,
     nên câu hỏi "Alert cần button hay chỉ cần link" vẫn hoàn toàn mở.
+    [CẬP NHẬT 12/09, ảnh thật node 773:7518] Atom này hiện ra là 1 hàng 2 nút
+    Outline + Fill cạnh nhau — giống hệt khối footer 2-nút của Dialog (xem
+    rules/kinds/overlay.rules.yaml § anatomy.footer) — xem
+    rules/components/alert.rules.yaml § _pending_confirmation cho câu hỏi còn
+    mở về use case thật.
 
 # -----------------------------------------------------------------------------
 # _pending_confirmation
