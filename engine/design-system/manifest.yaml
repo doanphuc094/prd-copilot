@@ -16,7 +16,15 @@ meta:
   created: "2026-09-08"
   company: GHN
   active_profile: profile.ghn
-  status: "[ĐỀ XUẤT — chờ Williams review]"
+  status: "[XÁC NHẬN — Williams, cập nhật 2026-09-12]"
+  status_note: >
+    Toàn bộ nội dung Button (rules/kinds/*, rules/components/button.rules.yaml,
+    profile.ghn/policy.yaml § button, profile.ghn/ds/button.binding.yaml) đã
+    được Williams xác nhận từng mục — xem tag [XÁC NHẬN — Williams <ngày>] rải
+    trong các file đó và profile.ghn/decisions.md. Nhãn "2.0-draft" ở field
+    version phía trên chỉ nói kiến trúc còn ít component (mới có Button) và
+    còn có thể mở rộng thêm kind/component mới — KHÔNG có nghĩa nội dung hiện
+    tại chưa được duyệt.
 
 # -----------------------------------------------------------------------------
 # LỚP LUẬT — thứ tự gộp. Sau đè lên trước khi CÙNG rule id (compiler báo lỗi

@@ -18,7 +18,13 @@ meta:
   layer: policy
   version: 2.0-draft
   created: "2026-09-08"
-  status: "[ĐỀ XUẤT — chờ Williams review]"
+  status: "[XÁC NHẬN — Williams, cập nhật 2026-09-12]"
+  status_note: >
+    Mọi quyết định trong file này (touch floor, dense_table_below_breakpoint,
+    standard_row_actions, size_by_position, icon_policy...) đã có tag
+    [XÁC NHẬN — Williams <ngày>] riêng — xem từng mục. Nhãn "2.0-draft" ở field
+    version chỉ nói scope hiện mới có Button, sẽ mở rộng thêm scope khi thêm
+    component mới — KHÔNG có nghĩa nội dung hiện tại chưa duyệt.
 
 # =============================================================================
 # DÙNG CHUNG MỌI COMPONENT
