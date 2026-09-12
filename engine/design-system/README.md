@@ -57,6 +57,23 @@ hiệu kind sai, không phải component phức tạp (xem
 
 ## Trạng thái
 
-`[ĐỀ XUẤT — chờ Williams review]` — xem `profile.ghn/policy.yaml` để biết cụ thể
-2 mục còn treo: `touch.floor_px`/`floor_px_icon_only` và
-`touch.dense_table_below_breakpoint` (đang `null`, chặn ICTL-Z-08).
+**Cập nhật 2026-09-12** — 2 mục từng ghi "chờ Williams review" đã CHỐT xong, không
+còn treo:
+
+- `touch.floor_px` / `touch.floor_px_icon_only` — đã chốt mô hình 3 tầng theo
+  trục `emphasis` (rank1 → 48px; không rank1 nhưng cô lập + đạt ngoại lệ
+  TOUCH-24 → có thể xuống 24px; còn lại → `floor_px_icon_only_default` 40px).
+  Dựa trên khảo sát Figma thật (App Truck, App B2B-DRIVER) — xem
+  `profile.ghn/decisions.md` entry 09/09-A và rule `ICTL-Z-06`.
+- `touch.dense_table_below_breakpoint` — đã chốt `card_list` ("Trên mobile
+  không sử dụng bảng table dạng dữ liệu") — xem `profile.ghn/policy.yaml` và
+  `profile.ghn/decisions.md`.
+
+Còn 1 việc treo khác, chưa phải quyết định nghiệp vụ mà là lựa chọn kỹ thuật:
+kind `feedback_transient` hiện chỉ có 2 thành viên, dưới ngưỡng
+`guardrails.kind_needs_3_members` — compiler vẫn chạy được nhưng cảnh báo
+(warning, không phải lỗi). Sẽ tự hết khi có component thứ 3 thuộc kind này
+(ứng viên tự nhiên: Toast).
+
+`AGENTS.md` (checklist đọc-trước-khi-sinh-spec.json cho agent) đã cập nhật để
+trỏ về `manifest.yaml` làm nguồn — xem file đó ở gốc repo.
