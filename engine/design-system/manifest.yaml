@@ -97,10 +97,10 @@ component_kinds:
   form_input:
     file: rules/kinds/form_input.rules.yaml
     about: "Nhận dữ liệu người dùng nhập"
-    members_active: []
-    members_planned: [Input, Textarea, Select, Combobox, Datepicker]
+    members_active: [Input]
+    members_planned: [Textarea, Select, Combobox, Datepicker]
     requires_axes: [icon_slots]
-    status: "[XÁC NHẬN — Williams 12/09] Rule icon đầu tiên (FRMIN-B-01, FRMIN-B-02) đã chốt qua chat, xem rules/kinds/form_input.rules.yaml + decisions.md § 12/09-N. Kind vẫn 0 members_active — Input chưa đăng ký thành components: chính thức, chỉ ở members_planned."
+    status: "[XÁC NHẬN — Williams 12/09] Rule icon đầu tiên (FRMIN-B-01, FRMIN-B-02) đã chốt qua chat, xem rules/kinds/form_input.rules.yaml + decisions.md § 12/09-N. Input đăng ký thành components: chính thức § 12/09-N (Williams: 'Đăng ký ngay') — xem components.Input bên dưới. Vẫn chỉ 1 members_active, dưới ngưỡng cảnh báo guardrails.kind_needs_3_members — chấp nhận tạm thời, cùng khuôn feedback_transient lúc mới có 2 (xem 08/09-D)."
 
 # -----------------------------------------------------------------------------
 # COMPONENT
@@ -148,6 +148,19 @@ components:
       status:          {kind: closed_role_set}
       style:           {kind: closed_role_set}
       content_pattern: {kind: enum}
+
+  Input:
+    kinds: [form_input]
+    rules: rules/components/input.rules.yaml       # gần rỗng — xem file
+    binding: profile.ghn/ds/input.binding.yaml
+    policy_scope: input
+    status: "[XÁC NHẬN — Williams 12/09] Đăng ký chính thức, xem decisions.md § 12/09-N. Nhiều mục giá trị/ý nghĩa nghiệp vụ vẫn [cần verify] — xem rules/components/input.rules.yaml + profile.ghn/ds/input.binding.yaml § _pending_confirmation."
+    axes:
+      size:        {kind: ordered_scale}
+      type:        {kind: closed_role_set}
+      destructive: {kind: closed_role_set}
+      state:       {kind: closed_role_set}
+      icon:        {kind: icon_slots}
 
 # -----------------------------------------------------------------------------
 # GIÁ TRỊ DÙNG CHUNG — mọi component đều nạp

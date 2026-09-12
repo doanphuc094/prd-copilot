@@ -1,0 +1,52 @@
+# =============================================================================
+# input.rules.yaml — LUẬT RIÊNG CỦA INPUT
+#
+# Giống Button (rules/components/button.rules.yaml): file này GẦN RỖNG. Input
+# chỉ khai 1 kind (form_input) — luật hành vi (icon trái/phải) đã nằm ở
+# rules/kinds/form_input.rules.yaml (FRMIN-B-01, FRMIN-B-02). File này chỉ
+# giữ chỗ đăng ký + bản đồ chỉ đường, không định nghĩa lại.
+#
+# version: 1.0-draft
+# =============================================================================
+
+meta:
+  component: Input
+  layer: component
+  version: 1.0-draft
+  kinds: [form_input]
+  requires: [_core.rules.yaml, kinds/form_input.rules.yaml]
+  binding: profile.ghn/ds/input.binding.yaml
+  status: "[XÁC NHẬN — Williams 12/09] Đăng ký component chính thức, xem decisions.md § 12/09-N"
+
+# Không có luật riêng nào ở đây — mảng rỗng tường minh, giống lý do Button rỗng.
+rules: []
+invariants: []
+
+# -----------------------------------------------------------------------------
+# BẢN ĐỒ: luật của Input hiện nằm ở đâu
+# -----------------------------------------------------------------------------
+rules_live_at:
+  icon:
+    where: kinds/form_input.rules.yaml
+    ids: [FRMIN-B-01, FRMIN-B-02]
+  size:
+    where: "CHƯA VIẾT"
+    note: "profile.ghn/ds/input.binding.yaml § size khai axis nhưng chưa có behavioural rule/policy nào — xem input.binding.yaml § _pending_confirmation"
+  type:
+    where: "CHƯA VIẾT"
+    note: "Ý nghĩa nghiệp vụ của Type (Default/Combo/Leading dropdown/Trailing dropdown/w Chips) chưa xác nhận — xem input.binding.yaml § type.status"
+  destructive:
+    where: "profile.ghn/decisions.md § 12/09-G (validation là state riêng của Input, không phải rule của Dialog)"
+  universal:
+    where: "_core.rules.yaml § universal_a11y + § axis_invariants"
+    ids: [A11Y-INV-01, A11Y-01, A11Y-02]
+
+# -----------------------------------------------------------------------------
+# NẾU SAU NÀY FILE NÀY PHÌNH LÊN
+# -----------------------------------------------------------------------------
+growth_warning:
+  guardrail: "manifest.yaml § guardrails.component_file_stays_small (> 5 rule → cảnh báo)"
+  test_before_adding: >
+    Trước khi thêm luật vào đây, trả lời: "Textarea/Select/Combobox/Datepicker
+    có cần luật này không?" Nếu CÓ dù chỉ 1 cái → nó thuộc kind form_input,
+    không thuộc đây.

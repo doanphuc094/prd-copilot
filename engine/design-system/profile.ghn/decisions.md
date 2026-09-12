@@ -954,3 +954,59 @@ này hiện có 0 `members_active` (Input chưa đăng ký thành `components:` 
 thức, chỉ nằm trong `members_planned`) — việc có nên đăng ký `Input` thành
 component đầy đủ (binding riêng, axes riêng) hay chưa vẫn là câu hỏi kiến trúc
 mở, chưa hỏi Williams.
+
+---
+
+## 12/09-O — Input đăng ký thành `components:` chính thức
+
+**by**: Claude đề xuất qua `AskUserQuestion` (2 lựa chọn), Williams chọn
+**affects**: `manifest.yaml` (§ component_kinds.form_input.members_active,
+§ components.Input MỚI), `rules/components/input.rules.yaml` (MỚI, gần rỗng
+— cùng khuôn `button.rules.yaml`), `profile.ghn/ds/input.binding.yaml` (MỚI)
+
+**Bối cảnh**: Ngay sau `12/09-N`, Claude nêu câu hỏi kiến trúc còn mở (Input
+có nên đăng ký `components:` đầy đủ hay để nguyên `members_planned`) và đề
+xuất cụ thể: đăng ký ngay, vì đã có dữ liệu Figma thật verify được trong chính
+session này (không phải suy đoán) — cùng tier bằng chứng đã dùng để đăng ký
+Button/Toast/Alert.
+
+**Williams**: chọn "Đăng ký ngay (Recommended)".
+
+**Xác minh lại dữ liệu trước khi ghi binding** (Claude tự kiểm, không dùng lại
+số liệu nhớ từ trước khi bị mất context): gọi `search_design_system` xác nhận
+`componentKey 9c400e1d93884025583c2cf3bbcaea263301cde1` ("Input / Input
+organism") thật, thuộc library "GHN DS" — khớp đúng dữ liệu phiên trước. Sau
+đó chạy `figma.importComponentSetByKeyAsync(componentKey)` qua `use_figma` để
+đọc trực tiếp `variantGroupProperties` (Size: sm/md/lg — Type: Default/Combo/
+Leading dropdown/Trailing dropdown/w Chips — Destructive: True/False — State:
+Default/Filled/Focused/Disabled) và `componentPropertyDefinitions` boolean
+(Label#40:0, error message#67:0, Condition#725:86) — khớp 100% với dữ liệu đã
+ghi trong summary phiên trước, xác nhận không có sai lệch do trí nhớ.
+
+**Giới hạn ghi nhận thật (không che giấu)**: `component_set_id` ghi trong
+`input.binding.yaml` (`49:2577`) là id QUAN SÁT ĐƯỢC qua import trong file
+TEST (`uFbbdvWYC1dg3AjdnHCgxk`), KHÁC với cách Button/Alert lấy id (đọc trực
+tiếp trong 1 file docs GHN DS thật, node-id ổn định) — vì `get_metadata` thử
+trên node "46:6228" (id ghi trong summary phiên trước) trả về "not found"
+trong file `zECOR8UK45lmZcpMG9aOR7`, nghĩa là số đó không dùng lại được / hoặc
+thuộc ngữ cảnh khác. Đã ghi rõ giới hạn này trong `input.binding.yaml §
+component.note` và `_pending_confirmation`, KHÔNG che giấu bằng cách xoá field
+hay giả vờ chắc chắn.
+
+**Kết quả áp dụng**:
+- `manifest.yaml § component_kinds.form_input.members_active`: `[]` → `[Input]`
+- `manifest.yaml § components.Input` (MỚI): kinds `[form_input]`, rules/binding
+  path, axes (size/type/destructive/state/icon)
+- `rules/components/input.rules.yaml` (MỚI): gần rỗng, chỉ `rules_live_at` trỏ
+  về `kinds/form_input.rules.yaml` (FRMIN-B-01/02) — đúng khuôn
+  `button.rules.yaml`, không nhân bản luật
+- `profile.ghn/ds/input.binding.yaml` (MỚI): ghi đầy đủ property thật (Size/
+  Type/Destructive/State + 3 boolean), đánh dấu rõ những gì CHƯA xác nhận
+  (ý nghĩa nghiệp vụ của Type, size px thật, boolean `Condition`, ưu tiên
+  chevron/clear khi vừa dropdown vừa Filled) trong `_pending_confirmation` —
+  KHÔNG tự suy đoán để lấp cho đầy
+
+**Còn mở, chưa tự trả lời**: xem `input.binding.yaml § _pending_confirmation`
+— 6 mục, trong đó đáng chú ý nhất là liệu 2 giá trị Type ("Leading dropdown"/
+"Trailing dropdown") có chính là điều kiện "field là dropdown" mà FRMIN-B-02
+nhắc tới hay không — CHƯA hỏi Williams, không tự map.

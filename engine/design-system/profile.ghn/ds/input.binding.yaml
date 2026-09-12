@@ -1,0 +1,142 @@
+# =============================================================================
+# input.binding.yaml — GIÁ TRỊ DS RIÊNG CỦA INPUT (lớp C)
+#
+# Chỉ chứa thứ RIÊNG của Input. Thứ dùng chung (breakpoints, bộ icon, quirk
+# cấp file, bẫy liên component) nằm ở ds/_shared.binding.yaml.
+#
+# File này đổi khi DS ra bản mới — kể cả khi KHÔNG đổi công ty.
+# version: 1.0-draft
+# =============================================================================
+
+meta:
+  component: Input
+  layer: ds-binding-component
+  version: 1.0-draft
+  created: "2026-09-12"
+  shared: profile.ghn/ds/_shared.binding.yaml
+  status: "[XÁC NHẬN — Williams 12/09] Đăng ký thành component chính thức (trước đó chỉ nằm ở members_planned của kind form_input) — xem decisions.md § 12/09-N. Nhiều mục giá trị/ý nghĩa nghiệp vụ vẫn [cần verify], xem _pending_confirmation."
+
+component:
+  name: "Input / Input organism"
+  component_set_id: "49:2577"
+  component_key: "9c400e1d93884025583c2cf3bbcaea263301cde1"
+  library_key: "lk-250e103acf2b45b04608ee560ea1a546cd58015985b5b548800febe7e720fb83abfcf9e680931bb089ee0468c5b18d7a350dafbcc8d16f038ef58c80ab5cce1c"
+  total_variants: 105
+  source: "[FIGMA] search_design_system (xác nhận componentKey thật, libraryName GHN DS) + figma.importComponentSetByKeyAsync qua use_figma (đọc trực tiếp variantGroupProperties + componentPropertyDefinitions), đọc 12/09"
+  note: >
+    Khác với Button/Alert (đọc trực tiếp trong 1 file docs GHN DS có node-id ổn
+    định), Input được xác nhận qua `importComponentSetByKeyAsync(componentKey)`
+    chạy trong file TEST (uFbbdvWYC1dg3AjdnHCgxk) — cách này cho ĐÚNG
+    componentKey/variant properties thật (đã đối chiếu khớp `search_design_system`),
+    nhưng `component_set_id` ở trên là id QUAN SÁT ĐƯỢC trong ngữ cảnh import đó,
+    KHÔNG chắc là node-id gốc ổn định trong file library GHN DS thật. Muốn mở
+    trực tiếp trong Figma, dùng `component_key` qua search_design_system —
+    KHÔNG dùng id này ghép thành URL node-id.
+
+# -----------------------------------------------------------------------------
+# TÊN PROPERTY THẬT TRONG DS
+# -----------------------------------------------------------------------------
+figma_properties:
+  size: Size
+  type: Type
+  destructive: Destructive
+  state: State
+  label_visible: "Label#40:0"        # boolean
+  error_message_visible: "error message#67:0"  # boolean
+  condition: "Condition#725:86"      # boolean — [cần verify] ý nghĩa chưa rõ
+  source: "[FIGMA] componentPropertyDefinitions, đọc 12/09"
+
+# -----------------------------------------------------------------------------
+# BINDING: SIZE
+# -----------------------------------------------------------------------------
+size:
+  axis_kind: ordered_scale
+  scale: [sm, md, lg]
+  source: "[FIGMA]"
+  status: "[cần verify] Chưa đo px thật (height/padding), chưa có mapping nghiệp vụ theo vị trí — khác Button đã có size.height_px + policy.size_by_position"
+
+# -----------------------------------------------------------------------------
+# BINDING: TYPE — biến thể cấu trúc field
+# -----------------------------------------------------------------------------
+type:
+  axis_kind: closed_role_set
+  values: [Default, Combo, "Leading dropdown", "Trailing dropdown", "w Chips"]
+  source: "[FIGMA]"
+  status: >
+    [cần verify] Ý nghĩa nghiệp vụ + cách các giá trị này khớp với FRMIN-B-02
+    (rule icon phải: chevron-down/chevron-up CHỈ khi field là "loại dropdown")
+    CHƯA được Williams xác nhận tường minh. Giả thuyết hợp lý (CHƯA áp dụng):
+    "Leading dropdown"/"Trailing dropdown" = field có dropdown gắn kèm (vị trí
+    icon trái/phải) → đây có thể CHÍNH LÀ điều kiện "field là dropdown" trong
+    FRMIN-B-02, nhưng chưa hỏi Williams nên KHÔNG tự map. "Combo" và "w Chips"
+    chưa rõ nghĩa hoàn toàn.
+
+# -----------------------------------------------------------------------------
+# BINDING: DESTRUCTIVE — trạng thái validation lỗi
+# -----------------------------------------------------------------------------
+destructive:
+  axis_kind: closed_role_set
+  values: [True, False]
+  meaning: >
+    [XÁC NHẬN — Williams 12/09-G, trả lời cho câu hỏi validation của Dialog
+    nhưng là cơ chế của chính Input] "mỗi input đều có 1 dạng [Destructive =
+    on] thì sẽ hiện báo lỗi nên nếu user nhập sai input nào thì destructive
+    bật lên và ghi nội dung báo lỗi bên dưới chính input đó" — True = field
+    đang ở trạng thái lỗi, hiện `error message` bên dưới; False = bình thường.
+  source: "[FIGMA] + [XÁC NHẬN — Williams, xem decisions.md § 12/09-G]"
+
+# -----------------------------------------------------------------------------
+# BINDING: STATE
+# -----------------------------------------------------------------------------
+state:
+  axis_kind: closed_role_set
+  values: [Default, Filled, Focused, Disabled]
+  meaning:
+    Filled: >
+      [XÁC NHẬN — Williams 12/09-N, hỏi qua AskUserQuestion] Field ĐANG CÓ GIÁ
+      TRỊ — đây là State ánh xạ với "trạng thái pressed" trong rule icon phải
+      FRMIN-B-02 (icon "clear" hiện khi State=Filled, KHÔNG phải Focused).
+    Default: "[cần verify] Chưa xác nhận icon phải xử lý thế nào ở state này — xem rules/kinds/form_input.rules.yaml § _pending_confirmation"
+    Focused: "[cần verify] Không dùng làm điều kiện cho icon 'clear' (đã loại trừ tường minh khỏi Filled ở 12/09-N)"
+    Disabled: "[cần verify] Chưa xác nhận icon phải xử lý thế nào ở state này"
+  source: "[FIGMA] + [XÁC NHẬN một phần — Williams 12/09-N]"
+
+# -----------------------------------------------------------------------------
+# THÀNH PHẦN CON (atoms) — boolean props điều khiển hiện/ẩn
+# -----------------------------------------------------------------------------
+sub_parts:
+  label: "Label#40:0 — hiện/ẩn nhãn field"
+  error_message: "error message#67:0 — hiện/ẩn dòng thông báo lỗi (dùng cùng destructive=True, xem trên)"
+  condition: "Condition#725:86 — [cần verify] ý nghĩa chưa rõ, chưa thấy dùng trong bất kỳ recipe/render nào tới nay"
+  source: "[FIGMA] componentPropertyDefinitions, đọc 12/09"
+
+# -----------------------------------------------------------------------------
+# ICON — trục icon_slots, luật ở rules/kinds/form_input.rules.yaml (FRMIN-B-01/02)
+# -----------------------------------------------------------------------------
+icon:
+  axis_kind: icon_slots
+  slots: [leading, trailing]
+  rules_live_at: "rules/kinds/form_input.rules.yaml (FRMIN-B-01 leading, FRMIN-B-02 trailing)"
+  glyph_mechanism: >
+    Icon glyph được set bằng cách ghi TÊN ligature FA6 trực tiếp vào
+    `characters` của TEXT child lồng trong instance "font awesome / Base" (vd
+    characters = "chevron-down") — không phải 1 property biến thể riêng.
+  verified_examples:
+    - field: "Số tiền" (demo render 12/09)
+      leading: "money-bill"
+      trailing: "clear (State=Filled)"
+    - field: "Diễn giải" (demo render 12/09)
+      leading: "align-left"
+      trailing: "clear (State=Filled)"
+  source: "[FIGMA] + [XÁC NHẬN — Williams 12/09-N]"
+
+# -----------------------------------------------------------------------------
+# _pending_confirmation
+# -----------------------------------------------------------------------------
+_pending_confirmation:
+  - item: "component_set_id thật, ổn định trong file library GHN DS gốc — hiện chỉ có id quan sát qua import trong file test, xem component.note ở trên."
+  - item: "Ý nghĩa nghiệp vụ đầy đủ của trục Type (Default/Combo/Leading dropdown/Trailing dropdown/w Chips) — đặc biệt liệu 2 giá trị dropdown có phải chính là điều kiện 'field là dropdown' của FRMIN-B-02 hay không."
+  - item: "size.scale (sm/md/lg) — chưa đo px thật, chưa có mapping theo vị trí sử dụng (form ngắn / bảng lọc / v.v.)."
+  - item: "Ý nghĩa boolean 'Condition#725:86' — chưa rõ, chưa dùng trong bất kỳ render/recipe nào."
+  - item: "Icon phải ở State=Default và State=Disabled — xem rules/kinds/form_input.rules.yaml § _pending_confirmation (chưa hỏi Williams)."
+  - item: "Ưu tiên chevron vs clear khi field vừa là dropdown vừa Filled — xem rules/kinds/form_input.rules.yaml § _pending_confirmation (chưa hỏi Williams)."
