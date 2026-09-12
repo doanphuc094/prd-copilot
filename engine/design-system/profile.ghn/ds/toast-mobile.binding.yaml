@@ -1,0 +1,99 @@
+# =============================================================================
+# toast-mobile.binding.yaml — GIÁ TRỊ DS RIÊNG CỦA TOAST, BẢN MOBILE ONLY
+#
+# [XÁC NHẬN — Williams 12/09] "Làm một bản riêng đánh dấu chỉ xài ở mobile
+# only". File này CHỈ áp dụng khi build cho app mobile (app tài xế) — KHÔNG
+# dùng cho Toast web/desktop, xem profile.ghn/ds/toast.binding.yaml cho bản đó.
+#
+# Đây là component/binding platform-scoped ĐẦU TIÊN trong hệ thống — quyết
+# định kiến trúc: 1 component logic (Toast) có thể có NHIỀU binding theo
+# platform, chọn qua manifest.yaml § components.Toast.binding_by_platform.
+# Xem profile.ghn/decisions.md cho quyết định này.
+#
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  component: Toast
+  platform: mobile
+  layer: ds-binding-component
+  version: 2.0-draft
+  created: "2026-09-12"
+  shared: profile.ghn/ds/_shared.binding.yaml
+  status: "[ĐỀ XUẤT — 12/09, xem _pending_confirmation]"
+
+component:
+  name: "Toast (Mobile App — app tài xế)"
+  page_id: "3569:33454"
+  source: "[FIGMA] node 3569:33454 'Toast Message (Mobile App)', đọc 12/09"
+  note: >
+    KHÔNG tìm thấy componentKey riêng qua search_design_system (chỉ tìm thấy
+    'Toast / Toast oragism' của bản desktop) — chưa rõ đây là component GHN DS
+    độc lập hay dùng lại component desktop với Status override cho app mobile.
+    Xem _pending_confirmation.
+
+# -----------------------------------------------------------------------------
+# TÊN PROPERTY THẬT TRONG DS (bản mobile)
+# -----------------------------------------------------------------------------
+figma_properties:
+  status: Status    # ⚠️ khác tên với bản desktop (Type) — xem _shared cross_component_traps nếu cần ghi bẫy đặt tên
+  source: "[FIGMA]"
+
+# -----------------------------------------------------------------------------
+# BINDING: STATUS → CHUỖI DS (bản mobile — sạch hơn desktop, chỉ 4 giá trị)
+# -----------------------------------------------------------------------------
+status:
+  axis_kind: closed_role_set
+  bind:
+    success: "Success"
+    error: "Failed"     # ⚠️ tên khác bản desktop ("Error") — cùng ý nghĩa, khác chuỗi DS
+    warning: "Warning"
+    info: "Info"
+  source: "[FIGMA] node 3569:33454 § Frame 22, đọc 12/09"
+  naming_trap: >
+    Vai `error` bind qua chuỗi "Failed" ở mobile nhưng "Error" ở desktop — 2 DS
+    con cùng 1 công ty, khác tên gọi cho cùng 1 ý nghĩa. Lớp binding tồn tại
+    chính để hấp thụ khác biệt này.
+
+# -----------------------------------------------------------------------------
+# NODE ID THEO TỪNG GIÁ TRỊ STATUS
+# -----------------------------------------------------------------------------
+node_ids_by_status:
+  Success: "3569:40615"
+  Failed: "3569:40620"
+  Info: "3569:40625"
+  Warning: "3569:40630"
+  source: "[FIGMA] node 3569:40614 'Toast' (frame chứa 4 symbol trên), đọc 12/09"
+
+# -----------------------------------------------------------------------------
+# SIZE
+# -----------------------------------------------------------------------------
+size:
+  axis_kind: scalar_physical
+  unit: px
+  outer_container:
+    width: 361
+    height: 48
+  measured_variant_filter: "Đồng nhất qua cả 4 symbol Status"
+  measured_on: "2026-09-12"
+  note: >
+    Kích thước (361×48) nhỏ hơn hẳn bản desktop (850×76) — khớp việc đây là
+    2 component/context khác nhau (mobile screen hẹp hơn nhiều), không phải
+    cùng 1 component đo lại.
+
+# -----------------------------------------------------------------------------
+# HÀNH VI — dùng chung định nghĩa/content_pattern với bản desktop
+# (rules/components/toast.rules.yaml), TRỪ tên chuỗi status khác nhau
+# -----------------------------------------------------------------------------
+behaviour_note: >
+  official_definition (3s tự đóng cho pattern status, không tự đóng cho
+  pattern action) và content_pattern (status/action) áp dụng chung cho cả 2
+  platform — xem rules/components/toast.rules.yaml. File này chỉ khai GIÁ TRỊ
+  khác nhau giữa 2 platform (tên property, tên chuỗi status, size, node-id).
+
+# -----------------------------------------------------------------------------
+# _pending_confirmation
+# -----------------------------------------------------------------------------
+_pending_confirmation:
+  - item: "Đây có phải component GHN DS độc lập (component_key riêng) hay Toast desktop được cấu hình lại cho mobile? search_design_system chưa trả về kết quả riêng cho bản mobile."
+  - item: "Cấu trúc pattern 'action' (nếu có) trên mobile — chưa drill vào từng symbol Status để xem có chứa button/dismiss hay không, chỉ mới đọc kích thước ngoài"

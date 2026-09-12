@@ -88,11 +88,11 @@ component_kinds:
 
   feedback_transient:
     file: rules/kinds/feedback_transient.rules.yaml
-    about: "Xuất hiện rồi tự biến mất"
-    about_note: "[ĐỀ XUẤT sửa — cần Williams xác nhận] Chỉ đúng cho Toast; Alert là banner tĩnh không tự biến mất — xem file § _pending_confirmation cho định nghĩa đề xuất thay thế"
-    members_active: []
-    members_planned: [Toast, Alert]
-    status: "[ĐỀ XUẤT — viết 12/09, chờ Williams review] Nhiều mục đã xác nhận qua chat, một số còn mở — xem file § _pending_confirmation"
+    about: "Phản hồi không chiếm quyền tương tác — không backdrop, không chặn nền, không bẫy focus"
+    about_source: "[XÁC NHẬN — Williams 12/09] 'Okay tao ủng hộ' — thay cho mô tả cũ 'Xuất hiện rồi tự biến mất', vốn chỉ đúng cho Toast (Alert là banner tĩnh, không tự biến mất)"
+    members_active: [Toast, Alert]
+    members_planned: []
+    status: "[ĐỀ XUẤT — Toast+Alert đăng ký 12/09, binding đầu tiên chưa qua verify đầy đủ — xem rules/components/toast.rules.yaml, rules/components/alert.rules.yaml, và profile.ghn/ds/{toast,alert}.binding.yaml § _pending_confirmation"
 
   form_input:
     file: rules/kinds/form_input.rules.yaml
@@ -118,6 +118,35 @@ components:
       size:      {kind: ordered_scale_physical, unit: px}
       state:     {kind: closed_role_set}
       icon:      {kind: icon_slots}
+
+  Toast:
+    kinds: [feedback_transient]
+    rules: rules/components/toast.rules.yaml
+    binding: profile.ghn/ds/toast.binding.yaml     # mặc định = web/desktop
+    binding_by_platform:
+      mobile: profile.ghn/ds/toast-mobile.binding.yaml
+      source: "[XÁC NHẬN — Williams 12/09] 'Làm một bản riêng đánh dấu chỉ xài ở mobile only'"
+      note: >
+        Component/binding platform-scoped ĐẦU TIÊN trong hệ thống — quyết
+        định kiến trúc mới, xem decisions.md 12/09-C. Compiler chọn binding
+        theo platform đang build; không khai platform → dùng `binding` mặc
+        định (web/desktop).
+    policy_scope: toast
+    status: "[ĐỀ XUẤT — đăng ký 12/09, xem rules/components/toast.rules.yaml § _pending_confirmation]"
+    axes:
+      status:          {kind: closed_role_set}
+      content_pattern: {kind: enum}
+
+  Alert:
+    kinds: [feedback_transient]
+    rules: rules/components/alert.rules.yaml
+    binding: profile.ghn/ds/alert.binding.yaml
+    policy_scope: alert
+    status: "[ĐỀ XUẤT — đăng ký 12/09, xem rules/components/alert.rules.yaml § _pending_confirmation]"
+    axes:
+      status:          {kind: closed_role_set}
+      style:           {kind: closed_role_set}
+      content_pattern: {kind: enum}
 
 # -----------------------------------------------------------------------------
 # GIÁ TRỊ DÙNG CHUNG — mọi component đều nạp

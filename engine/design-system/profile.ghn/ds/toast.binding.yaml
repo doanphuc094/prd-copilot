@@ -1,0 +1,112 @@
+# =============================================================================
+# toast.binding.yaml — GIÁ TRỊ DS RIÊNG CỦA TOAST (lớp C)
+#
+# Chỉ chứa thứ RIÊNG của Toast. Thứ dùng chung nằm ở ds/_shared.binding.yaml.
+# File này đổi khi DS ra bản mới — kể cả khi KHÔNG đổi công ty.
+#
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  component: Toast
+  layer: ds-binding-component
+  version: 2.0-draft
+  created: "2026-09-12"
+  shared: profile.ghn/ds/_shared.binding.yaml
+  status: "[ĐỀ XUẤT — 12/09, xem _pending_confirmation]"
+
+component:
+  name: "Toast / Toast oragism"
+  component_set_id: "1023:5898"
+  component_key: "8f491eaf399f43a8b3736b5f3bc1a5f1656f3a7f"
+  library_key: "lk-250e103acf2b45b04608ee560ea1a546cd58015985b5b548800febe7e720fb83abfcf9e680931bb089ee0468c5b18d7a350dafbcc8d16f038ef58c80ab5cce1c"
+  total_variants: 9
+  source: "[FIGMA] search_design_system + get_metadata, đọc 12/09"
+
+# -----------------------------------------------------------------------------
+# TÊN PROPERTY THẬT TRONG DS
+# -----------------------------------------------------------------------------
+figma_properties:
+  status: Type
+  source: "[FIGMA]"
+
+# -----------------------------------------------------------------------------
+# BINDING: STATUS → CHUỖI DS
+# -----------------------------------------------------------------------------
+status:
+  axis_kind: closed_role_set
+  bind:
+    success: "Success"
+    error: "Error"
+  backlog:
+    values: [Warning, Info, Primary, Secondary, Grey, White, Disable]
+    status: "[XÁC NHẬN — Williams 12/09] Chưa có giá trị thực — xem kinds/feedback_transient.rules.yaml § roles_open"
+  source: "[FIGMA]"
+
+# -----------------------------------------------------------------------------
+# SIZE — kích thước vật lý thật
+# -----------------------------------------------------------------------------
+size:
+  axis_kind: scalar_physical
+  unit: px
+  outer_container:
+    width: 850
+    height: 76
+  measured_variant_filter: "Type=Primary (node 1023:5881, frame kitchen-sink)"
+  measured_on: "2026-09-12"
+  note: >
+    Kích thước khung (850×76) và nhịp spacing bên trong (xem internal_spacing)
+    nhiều khả năng là số THẬT bất kể content_pattern nào được dùng — chỉ riêng
+    SỐ LƯỢNG BUTTON (2) trong frame đo được là demo, đã Williams xác nhận
+    (xem rules/components/toast.rules.yaml). KHÔNG suy ra 850×76 là sai chỉ vì
+    frame đo được là kitchen sink.
+
+  internal_spacing:
+    left_padding_px: 24
+    gap_between_elements_px: 16
+    icon_size_px: 16
+    source: >
+      [FIGMA] đo từ node 1023:5881 (Type=Primary): header x=24 (trái);
+      button1 x=564, header kết thúc ở 24+524=548 → gap 16;
+      button2 x=696, button1 kết thúc ở 564+116=680 → gap 16;
+      icon x=810, button2 kết thúc ở 696+98=794 → gap 16.
+      Nhịp 16px trùng khớp item_spacing_px của Button (button.binding.yaml)
+      — có thể là token spacing chung của DS, không phải trùng hợp.
+    measured_on: "2026-09-12"
+
+# -----------------------------------------------------------------------------
+# NODE ID THEO TỪNG GIÁ TRỊ STATUS (Type) — bản desktop
+# -----------------------------------------------------------------------------
+node_ids_by_status:
+  White: "140:15449"
+  Primary: "1023:5881"
+  Success: "1023:5879"
+  Secondary: "1023:5878"
+  Error: "1023:5876"
+  Grey: "1023:5875"
+  Disable: "1023:5874"
+  Warning: "1023:5877"
+  Info: "1023:5880"
+  source: "[FIGMA] node 1023:5898, đọc 12/09"
+
+# -----------------------------------------------------------------------------
+# QUIRK RIÊNG CỦA TOAST TRONG DS NÀY
+# -----------------------------------------------------------------------------
+quirks:
+  mobile_variant_exists:
+    finding: >
+      Có 1 trang docs riêng "Toast Message (Mobile App)" (node 3569:33454, app
+      tài xế GHN Truck) dùng trục Status CHỈ 4 giá trị (Success/Failed/Info/
+      Warning), sạch hơn hẳn bản desktop. Instance trong trang đó tên "Toast"
+      (không phải "Toast / Toast oragism") — search_design_system KHÔNG trả về
+      component GHN DS riêng nào tên khớp bản mobile này.
+    status: "[cần verify — KHÔNG tự tạo binding riêng cho bản mobile tới khi rõ]"
+    action_if_needed: "Hỏi Williams khi có màn hình mobile thật cần Toast, hoặc khi cần biết component GHN DS thật đứng sau trang docs đó."
+
+# -----------------------------------------------------------------------------
+# _pending_confirmation
+# -----------------------------------------------------------------------------
+_pending_confirmation:
+  - item: "7 giá trị status backlog (status.backlog) — bind thật khi có màn hình cần dùng"
+  - item: "Toast mobile — component GHN DS riêng hay demo dùng lại component desktop? Xem quirks.mobile_variant_exists"
+  - item: "content_pattern=action (rules/components/toast.rules.yaml) — chỉ có 1 button theo bằng chứng gián tiếp (UX writing guideline), CHƯA có node Figma đo trực tiếp cấu trúc pattern này (khác kitchen sink 2-button)"

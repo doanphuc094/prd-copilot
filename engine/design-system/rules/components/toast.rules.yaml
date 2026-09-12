@@ -1,0 +1,123 @@
+# =============================================================================
+# toast.rules.yaml — LUẬT RIÊNG CỦA TOAST
+#
+# Trục status (success/error xác nhận, phần còn lại backlog) DÙNG CHUNG với
+# Alert — xem kinds/feedback_transient.rules.yaml. File này chỉ giữ thứ THỰC
+# SỰ riêng của Toast: content_pattern (Alert có content_pattern KHÁC hẳn cấu
+# trúc, không dùng chung được) và các luật/định nghĩa gắn liền với nó.
+#
+# version: 2.0-draft
+# =============================================================================
+
+meta:
+  component: Toast
+  layer: component
+  version: 2.0-draft
+  kinds: [feedback_transient]
+  requires: [_core.rules.yaml, kinds/feedback_transient.rules.yaml]
+  binding: profile.ghn/ds/toast.binding.yaml
+  status: "[ĐỀ XUẤT — Williams xác nhận nhiều phần qua chat 12/09, xem _pending_confirmation]"
+
+# =============================================================================
+# ĐỊNH NGHĨA CHÍNH THỨC — nguồn docs Figma, không phải suy diễn
+# =============================================================================
+official_definition:
+  source: "[FIGMA] node 3574:14993, docs 'Toast Message (Mobile App)', đọc 12/09"
+  quote: >
+    "Toast message là thành phần UI dùng để thông báo tạm thời đến người dùng
+    về một hành động vừa xảy ra. Xuất hiện ở cạnh dưới hoặc cạnh trên hoặc dưới
+    màn hình (tuỳ app), toast không can thiệp vào trải nghiệm chính và sẽ tự
+    biến mất sau một khoảng thời gian ngắn (3s đối với các hành động đơn giản)."
+  duration_simple: "3s"
+  duration_with_action: "[cần verify — chưa xác nhận có lâu hơn 3s khi có action đi kèm hay không]"
+  placement: "Cạnh trên hoặc cạnh dưới màn hình, tuỳ app — KHÔNG cố định 1 vị trí"
+
+# =============================================================================
+# CONTENT_PATTERN — trục riêng của Toast
+# =============================================================================
+content_pattern:
+  decides: content_pattern
+  axis_kind: enum
+  ask: "Toast này có action đi kèm hay chỉ báo trạng thái?"
+  values:
+    - id: status
+      structure: "icon + tiêu đề"
+      dismiss: false
+      behaviour: "Tự biến mất sau ~3s, KHÔNG có nút đóng thủ công"
+      when: "Phản hồi kết quả 1 hành động vừa hoàn thành (thành công/thất bại)"
+      source: "[XÁC NHẬN — Williams 12/09] 2 ảnh Toast 'Đã huỷ tải về' / 'Cập nhật thông tin thành công'"
+
+    - id: action
+      structure: "icon + tiêu đề + 1 nút hành động + dismiss"
+      dismiss: true
+      behaviour: "KHÔNG tự đóng — chờ người dùng tự thao tác (bấm action hoặc dismiss)"
+      behaviour_source: "[XÁC NHẬN — Williams 12/09] 'nếu có pattern action thì không tự đóng'"
+      when: "Có việc người dùng có thể làm ngay sau thông báo — thử lại 1 hành động thất bại, hoặc hoàn tác 1 hành động vừa làm"
+      label_examples: ["Thử lại", "Hoàn tác"]
+      source: "[FIGMA] node 3574:17770, hướng dẫn UX writing Toast Mobile: 'Nếu có hành động (button): ghi rõ hành động như Thử lại, Hoàn tác'"
+      note: >
+        Chữ "hành động"/"button" trong hướng dẫn đều số ít → bằng chứng gián
+        tiếp pattern thật chỉ 1 nút. Frame Figma desktop 'Type=Primary'
+        (node 1023:5881) có 2 nút cùng lúc — Williams xác nhận 12/09 đó là
+        demo "kitchen sink" (đủ mọi slot), KHÔNG phải pattern thật.
+
+  not_in_table:
+    rule: >
+      Không khớp 2 pattern trên → escalate, KHÔNG tự bịa cấu trúc mới (vd 2
+      button cùng lúc, hoặc pattern chưa catalogue).
+
+# =============================================================================
+# INVARIANTS riêng của Toast
+# =============================================================================
+invariants:
+  - id: TOAST-INV-01
+    rule: "content_pattern == action implies dismiss == true; content_pattern == status implies dismiss == false"
+    check: "content_pattern == 'action' implies toast.dismiss == true; content_pattern == 'status' implies toast.dismiss == false"
+    source: "[XÁC NHẬN — Williams 12/09] 'dismiss icon chỉ thuộc pattern nào có action -> đúng'"
+
+# =============================================================================
+# HƯỚNG DẪN VIẾT CHỮ (UX writing)
+# =============================================================================
+writing_guideline:
+  source: "[FIGMA] node 3574:17770, docs Toast Mobile"
+  scope_note: >
+    Nguồn từ docs Toast MOBILE — chưa xác nhận áp cho Toast desktop, nhiều
+    khả năng là quy ước chung công ty nhưng chưa hỏi Williams để mở rộng.
+  rules:
+    - "Tối đa 2 dòng"
+    - "Tránh từ kỹ thuật / nội bộ"
+    - "Câu chủ động: 'Tạo đơn thành công' thay vì 'Đơn hàng đã được tạo'"
+    - "Có hành động thì ghi rõ động từ hành động (Thử lại, Hoàn tác), không ghi chung chung"
+
+# =============================================================================
+# rules_live_at — chỉ đường tới luật KHÔNG nằm ở đây
+# =============================================================================
+rules_live_at:
+  status:
+    where: kinds/feedback_transient.rules.yaml
+    note: "Trục status (success/error xác nhận, 7 giá trị còn lại backlog) dùng chung với Alert"
+  behavioural_limits:
+    where: kinds/feedback_transient.rules.yaml
+    ids: [FBTR-B-01, FBTR-B-02]
+
+# =============================================================================
+# _pending_confirmation
+# =============================================================================
+_pending_confirmation:
+  - item: "ĐÃ ĐÓNG — Duration pattern 'action'"
+    resolved: "[XÁC NHẬN — Williams 12/09] Không tự đóng — xem content_pattern.values[action].behaviour_source"
+  - item: "ĐÃ ĐÓNG — Toast mobile là binding riêng"
+    resolved: >
+      [XÁC NHẬN — Williams 12/09] "Làm một bản riêng đánh dấu chỉ xài ở mobile
+      only" — xem profile.ghn/ds/toast-mobile.binding.yaml (MỚI). Component
+      Toast giờ có 2 binding theo platform — xem manifest.yaml §
+      components.Toast.binding_by_platform (quyết định kiến trúc mới, log ở
+      decisions.md).
+  - item: "ĐÃ ĐÓNG (backlog) — Bằng chứng pattern 'action' hiện chỉ là GIÁN TIẾP (suy từ hướng dẫn UX writing nói số ít 'hành động/button'), CHƯA có 1 node Figma nào vẽ trực tiếp cấu trúc 1-button này (khác hẳn frame kitchen-sink 2-button đã biết là demo)"
+    resolved: >
+      [XÁC NHẬN — Williams 12/09] "Tạm chưa có đưa vào backlog keep track nếu
+      có context dùng thì đề xuất cho tao" — giữ nguyên pattern `action` như
+      đang mô tả (suy luận hợp lý từ hướng dẫn UX writing, CHƯA có node Figma
+      vẽ trực tiếp cấu trúc 1-button), KHÔNG coi là chặn (blocking). Đây là
+      backlog item để Claude chủ động đề xuất lại nếu gặp context/màn hình
+      thật xác nhận cấu trúc — Williams không cần tự nhớ theo dõi việc này.
