@@ -610,3 +610,106 @@ component thay vì gộp chung 1 batch.
 
 **⚠️ Việc còn mở**: Node-id thật của Dialog (generic), recipe "form" của
 Dialog, "Alert button container (Base)" — vẫn chưa có câu trả lời mới.
+
+---
+
+## 12/09-F — Nghiên cứu Dialog generic thật trong Figma; đề xuất anatomy + recipe
+
+**by**: Claude (đọc trực tiếp Figma theo yêu cầu Williams) — CHỜ Williams duyệt
+**affects**: `rules/kinds/overlay.rules.yaml` (§ anatomy MỚI, § content_pattern.known_recipes.form), `rules/components/alert.rules.yaml` (§ _pending_confirmation, mục button_container)
+
+Williams gửi link kèm node-id thật cho Dialog generic (957:16562, trang
+"Documentation") kèm yêu cầu: *"Đây là dialog generic - tuy nhiên mỗi dialog
+đều có cấu tạo khác nhau mày cần phải nghiên cứu kĩ và đề xuất cho tao"*.
+Claude đọc trực tiếp bảng anatomy chính thức của GHN DS:
+
+- **Header** (4 phần, [FIGMA] độ tin cậy cao): Left icon (show icon), Header
+  (show tiêu đề), Content (show mô tả), Right icon (Trigger — nút đóng X).
+- **Footer** (2 phần, [FIGMA]): Secondary CTA (Trigger), Primary CTA
+  (Trigger) — khớp đúng với OVL-B-03/OVL-INV-02 đã xác nhận trước đó
+  (Outline ↔ Secondary, Fill ↔ Primary).
+- **Body**: docs không cho anatomy cố định (khớp draft gốc Williams 08/09:
+  "Dialog không có fixed anatomy"), nhưng ví dụ chính thức "Edit profile"
+  (node 957:16612, có bản Light/Dark) cho thấy body CÓ THỂ chứa Input
+  organism thật (2 field "Email") — **ĐỀ XUẤT** nâng recipe `form` từ "chưa có
+  bằng chứng" lên "có ví dụ Figma thật", nhưng CHƯA coi là xác nhận, chờ
+  Williams duyệt lại (đây là ví dụ docs, chưa chắc là cách dùng thật trong
+  sản phẩm GHN).
+- **Artifact chưa rõ**: ví dụ "Edit profile" có 1 dòng chữ đỏ gạch ngang
+  "EXCLAMATION"/"TRIANGLE-EXCLAMATION" — nhìn giống icon bị vỡ tham chiếu,
+  KHÔNG rõ có đại diện 1 pattern cảnh báo lỗi input thật hay không. Hỏi lại
+  Williams, chưa tự kết luận.
+
+**"Alert button container (Base)" — đã xem ảnh thật (node 773:7518)**: là 1
+hàng 2 nút Outline + Fill, giống hệt khối footer Dialog — gợi ý đây là atom
+dùng chung/demo, không phải cấu trúc riêng của Alert. Câu hỏi "Alert có use
+case thật nào cần nút không" VẪN CÒN MỞ — ảnh chỉ xác nhận HÌNH DÁNG atom,
+không xác nhận có dùng thật hay không.
+
+**Lưu ý phương pháp**: Do sandbox Claude không tải được ảnh Figma qua curl
+(egress bị chặn), Claude mô tả lại nội dung ảnh bằng chữ thay vì gửi file ảnh
+trực tiếp cho Williams — nếu cần xem tận mắt, Williams tự mở link Figma
+(node-id đã ghi rõ trong từng mục trên).
+
+**⚠️ Việc còn mở**: Williams duyệt lại toàn bộ đề xuất anatomy + recipe form ở
+trên; xác nhận artifact "EXCLAMATION"; xác nhận use case thật của Alert
+button container.
+
+---
+
+## 12/09-G — Williams duyệt đề xuất Dialog anatomy: Footer Grey mặc định, Body = dynamic slot, validation ở Input
+
+**by**: Williams (xác nhận qua chat)
+**affects**: `rules/kinds/overlay.rules.yaml` (§ anatomy, § content_pattern)
+
+Williams duyệt cả 3 điểm đề xuất ở `12/09-F`, với 1 điều chỉnh quan trọng:
+
+1. **Footer 2-nút mặc định KHÔNG phải Secondary=Outline như bảng docs vẽ, mà
+   là Secondary=Grey.** Quote: *"Phần này nút secondary CTA chuyển thành nút
+   grey cho đồng bộ với alert dialog"* — khớp đúng OVL-INV-02 đã có (footer 2
+   nút → auto-downgrade Outline thành Grey). Bảng docs gốc chỉ vẽ atom demo,
+   không phải giá trị mặc định thật.
+
+2. **Body là dynamic SLOT, không phải anatomy cố định** — xác nhận rõ hơn
+   draft gốc 08/09 ("Dialog không có fixed anatomy"). Quote: *"Mày có thể tạo
+   một phần slot cho body để customize có thể layout các component vào ô slot
+   này để hình thành một nội dung hoàn chỉnh. Đối với component gì để ghép
+   vào dynamic slot này cần define từ PRD hoặc designer quyết định."* → recipe
+   (`confirmation`, `form`) là catalogue THAM KHẢO, không phải danh sách đóng;
+   PRD/designer có quyền lấp slot bằng tổ hợp khác, agent không tự suy luận
+   thay.
+
+3. **Validation lỗi input KHÔNG phải rule riêng của Dialog.** Quote: *"Đúng
+   đây là icon bị vỡ tham chiếu và đó là pattern cảnh báo lỗi input. Tuy
+   nhiên tao không làm theo kiểu này vì mỗi input đều có 1 dạng [Destructive =
+   on] thì sẽ hiện báo lỗi nên nếu user nhập sai input nào thì destructive bật
+   lên và ghi nội dung báo lỗi bên dưới chính input đó"* — validation là STATE
+   của chính Input organism (Destructive=on → Helper message/icon, đã có sẵn
+   trong anatomy Input phần 7/8), không phải pattern mới ở cấp Dialog.
+
+Recipe `form` chuyển từ ĐỀ XUẤT sang XÁC NHẬN thật. `overlay.rules.yaml`
+status tổng thể chuyển từ "[ĐỀ XUẤT]" sang "[XÁC NHẬN]" cho phần anatomy.
+
+**⚠️ Việc còn mở**: use case thật của "Alert button container (Base)" (Alert
+có cần nút thật không) — vẫn chưa có câu trả lời mới.
+
+---
+
+## 12/09-H — Sửa lỗi mô hình: "Grey" là Type (màu), không phải 1 emphasis riêng
+
+**by**: Williams (sửa lỗi qua chat)
+**affects**: `rules/kinds/overlay.rules.yaml` (§ OVL-B-03, § OVL-INV-02, § anatomy.footer)
+
+Williams sửa lại `12/09-G`: *"không phải secondary grey mà nó là grey/
+outline"*. Claude đã mô hình sai: viết "Grey" như 1 mức emphasis thứ 3 độc
+lập, ngang hàng Fill/Outline trong 1 thang 3 bậc. Nhưng theo đúng model Button
+đã có sẵn (`profile.ghn/ds/button.binding.yaml`): DS tách 2 property độc lập
+— **Type** (màu/intent: Primary/Secondary/Destructive/Grey...) và **Style**
+(emphasis×shape: Fill/Outline/Ghost × Round/Circle). "Grey" LUÔN là giá trị
+Type (intent = no_path), và theo quy ước đã xác nhận trước đó (Williams 09/09:
+*"nút icon grey button có viền"*), nút Grey luôn đi kèm emphasis Outline —
+không bao giờ đứng một mình như 1 emphasis riêng.
+
+**Sửa lại đúng**: Footer Dialog 2 nút → Secondary CTA đổi INTENT thành
+no_path (Type=Grey), emphasis GIỮ NGUYÊN Outline — không đổi mức nhấn, chỉ
+đổi màu. Đã sửa `OVL-B-03`, `OVL-INV-02`, và `anatomy.footer` cho khớp.

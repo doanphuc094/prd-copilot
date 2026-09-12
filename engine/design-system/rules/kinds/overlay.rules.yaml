@@ -9,12 +9,12 @@
 # overlay LUÔN có backdrop, chặn thao tác nền, và (trừ Popover/ContextMenu nhẹ)
 # thường bẫy focus tới khi người dùng xử lý xong.
 #
-# TRẠNG THÁI FILE NÀY: khung sườn — dựa trên bằng chứng gián tiếp
-# (_composition.rules.yaml § CMP-DLG-01 đã có từ trước, và draft Dialog/Alert
-# Williams paste 08/09). CHƯA đọc trực tiếp cấu trúc Dialog trong Figma — thiếu
-# node-id (chỉ có componentKey "Dialog / Dialog oragism" =
-# 8b04f4f411eda928c14075725b148bb6a9e5590b, xác nhận là component THẬT, tách
-# biệt khỏi Alert, qua search_design_system 12/09). Xem _pending_confirmation.
+# TRẠNG THÁI FILE NÀY: [CẬP NHẬT 12/09] Williams đã gửi link kèm node-id thật
+# (957:16562 — trang "Documentation" của Dialog generic), yêu cầu "nghiên cứu
+# kĩ và đề xuất", rồi DUYỆT đề xuất của Claude. Kết quả: Header (4 phần) +
+# Body (dynamic SLOT, không phải anatomy cố định — PRD/designer quyết định
+# nội dung) + Footer (2 CTA, mặc định Secondary=Grey/Primary=Fill) — xem §
+# anatomy. Recipe "form" đã XÁC NHẬN thật. Xem _pending_confirmation.
 #
 # AlertDialog: tiêu chí kích hoạt đã XÁC NHẬN (12/09, xem § alert_dialog_trigger)
 # — modal chặn nền cho thao tác critical, định nghĩa theo NGHIỆP VỤ chứ không
@@ -32,7 +32,7 @@ meta:
   version: 2.0-draft
   requires: [_core.rules.yaml]
   requires_axes: [content_pattern]
-  status: "[KHUNG SƯỜN — cấu trúc Dialog thật trong Figma chưa đọc được, xem _pending_confirmation]"
+  status: "[XÁC NHẬN — anatomy Header/Body(slot)/Footer + recipe 'form' đã Williams duyệt 12/09, xem _pending_confirmation]"
 
 undisableable: []
 
@@ -51,11 +51,24 @@ behavioural_limits:
 
   - id: OVL-B-03
     rule: >
-      Mức độ ưu tiên (emphasis) của các nút trong footer Dialog theo SỐ LƯỢNG
-      nút: Fill = tác vụ chính/quan trọng nhất, hoàn thành mục đích chính của
-      người dùng. Outline CHỈ hợp lệ khi footer có ĐÚNG 3 nút — vai trò tương
-      đương/gần với Fill nhưng ưu tiên thấp hơn. Grey = ưu tiên thấp nhất.
-    references: "Tham khảo rule emphasis đã có của Button — rules/kinds/interactive_control.rules.yaml, profile.ghn/ds/button.binding.yaml"
+      Mức độ ưu tiên của các nút trong footer Dialog theo SỐ LƯỢNG nút. Fill
+      (intent primary, emphasis Fill) = tác vụ chính/quan trọng nhất, hoàn
+      thành mục đích chính của người dùng. Outline (emphasis Outline, intent
+      alternate) CHỈ hợp lệ khi footer có ĐÚNG 3 nút — vai trò tương đương/gần
+      với Fill nhưng ưu tiên thấp hơn. Mức thấp nhất KHÔNG phải 1 emphasis thứ
+      3 riêng biệt — nó là intent=no_path (Type=Grey trong DS) trong khi
+      emphasis VẪN LÀ Outline (Style=Outline), đúng khuôn "Grey/Outline" Button
+      đã dùng sẵn (xem button.binding.yaml § icon_only_default: "nút icon grey
+      button có viền" — Grey luôn đi kèm Outline, không phải Fill).
+    correction: >
+      [XÁC NHẬN — Williams 12/09] "Không phải secondary grey mà nó là
+      grey/outline" — sửa lại cách gọi ban đầu (nhầm Grey thành 1 mức emphasis
+      độc lập ngang hàng Fill/Outline). Đúng theo model Button thật: Type
+      (màu/intent, gồm cả Grey=no_path) và Style (emphasis×shape, gồm
+      Fill/Outline/Ghost) là 2 property TÁCH BIỆT — "Grey" luôn là giá trị
+      Type, ghép với emphasis Outline, không bao giờ đứng một mình như 1 bậc
+      emphasis riêng.
+    references: "Tham khảo rule emphasis + quirk merged_style đã có của Button — rules/kinds/interactive_control.rules.yaml, profile.ghn/ds/button.binding.yaml"
     source: >
       [XÁC NHẬN — Williams 12/09] "Dùng fill cho các tác vụ chính quan trọng,
       giúp hoàn thành mục đích của người dùng. Đối với outline tao muốn sử
@@ -108,25 +121,115 @@ alert_dialog_trigger:
       bằng trực giác.
 
 # =============================================================================
-# CONTENT PATTERN — Dialog không có 1 anatomy cố định (ghi nhận từ draft
-# Williams 08/09: "Dialog không có fixed anatomy" — decision_log gốc)
+# ANATOMY — đọc trực tiếp từ trang docs Figma của Dialog generic (12/09)
+#
+# [FIGMA — node 957:16562 "Documentation", link Williams đưa 12/09] Trang docs
+# chính thức của "Dialog / Dialog oragism" (componentKey
+# 8b04f4f411eda928c14075725b148bb6a9e5590b) có bảng anatomy tách 3 khối: Header,
+# Content, Footer. Đây là cấu trúc CHÍNH THỨC do chính GHN DS ghi tài liệu,
+# không phải Claude suy luận — nhưng cách CHIA nó thành content_pattern/recipe
+# bên dưới là ĐỀ XUẤT của Claude dựa trên đó, xin Williams duyệt lại (đúng yêu
+# cầu "nghiên cứu kĩ và đề xuất").
+# =============================================================================
+anatomy:
+  header:
+    source: "[FIGMA] bảng anatomy 'Header', node 1255:1781/1255:1804, đọc 12/09"
+    parts:
+      - {id: 1, name: "Left icon", instruction: "Show icon"}
+      - {id: 2, name: "Header", instruction: "Show header (tiêu đề)"}
+      - {id: 3, name: "Content", instruction: "Show content (mô tả)"}
+      - {id: 4, name: "Right icon", instruction: "Trigger — nút đóng (X), có thể bấm được"}
+    note: "4 phần đều optional theo tên 'Show X' — không có phần nào đánh dấu bắt buộc trong bảng docs."
+  body:
+    decides: "body.slot_contents"
+    axis_kind: dynamic_slot
+    source: "[FIGMA] ví dụ 'Edit profile' (COLOR MODE, node 957:16612, và bản đơn 957:16584), đọc 12/09"
+    definition: >
+      [XÁC NHẬN — Williams 12/09] Body của Dialog là 1 SLOT động (không phải
+      anatomy cố định): "Mày có thể tạo một phần slot cho body để customize
+      có thể layout các component vào ô slot này để hình thành một nội dung
+      hoàn chỉnh." Component nào được ghép vào slot này KHÔNG do rule này quyết
+      định — "Đối với component gì để ghép vào dynamic slot này cần define từ
+      PRD hoặc designer quyết định." Đây là lý do draft gốc 08/09 nói "Dialog
+      không có fixed anatomy": đúng, vì body vốn được THIẾT KẾ để linh hoạt.
+    note: >
+      Ví dụ minh hoạ chính thức "Edit profile" CHO THẤY 1 cách lấp slot: chứa
+      Input organism thật (field "Email" — icon trái, giá trị, nút xoá,
+      chevron; anatomy riêng của Input đã có sẵn 8 phần: Left icon/Content/
+      Clear icon/Right icon/Focus/Input border/Helper message/Helper icon —
+      không phải phát minh mới, chỉ là Input tái dùng bên trong Dialog).
+      known_recipes ở content_pattern bên dưới là các cách lấp slot ĐÃ CATALOGUE
+      (đã gặp/đã xác nhận), KHÔNG phải danh sách đóng — PRD/designer có thể lấp
+      slot bằng tổ hợp component khác miễn là do PRD/designer quyết định tường
+      minh, không phải do agent tự suy ra.
+    validation_pattern: >
+      [XÁC NHẬN — Williams 12/09] Dòng chữ đỏ "EXCLAMATION"/"TRIANGLE-
+      EXCLAMATION" trong ví dụ Edit profile ĐÚNG LÀ icon bị vỡ tham chiếu, VÀ
+      đúng là có 1 pattern cảnh báo lỗi input thật — nhưng KHÔNG theo cách vẽ
+      trong ví dụ docs đó. Cách GHN dùng thật: "mỗi input đều có 1 dạng
+      [Destructive = on] thì sẽ hiện báo lỗi nên nếu user nhập sai input nào
+      thì destructive bật lên và ghi nội dung báo lỗi bên dưới chính input đó"
+      — nghĩa là validation lỗi là STATE của CHÍNH Input organism (bật
+      Destructive → hiện Helper message/Helper icon, đã có sẵn trong anatomy
+      Input phần 7/8), KHÔNG phải 1 pattern riêng của Dialog. Dialog không cần
+      thêm rule validation nào — chỉ cần Input tự xử lý state của nó khi được
+      ghép vào slot.
+  footer:
+    source: "[FIGMA] bảng anatomy 'Footer', node 957:16887/957:16900, đọc 12/09"
+    parts:
+      - {id: 1, name: "Secondary CTA", instruction: "Trigger"}
+      - {id: 2, name: "Primary CTA", instruction: "Trigger"}
+    note: >
+      "Secondary CTA" ↔ nút thứ 2, "Primary CTA" ↔ Fill. Bảng docs gốc vẽ
+      Secondary bằng Outline (Type mặc định, chưa áp OVL-INV-02) — đó chỉ là
+      hình minh hoạ atom. ÁP DỤNG THẬT theo OVL-INV-02: footer đúng 2 nút →
+      Secondary CTA = intent no_path (Type=Grey), emphasis VẪN Outline
+      (Style=Outline) — gọi tắt "Grey/Outline", KHÔNG phải đổi sang 1 emphasis
+      "Grey" tách biệt.
+    default_2_button_style: >
+      [XÁC NHẬN — Williams 12/09] "Nút secondary CTA chuyển thành nút grey cho
+      đồng bộ với alert dialog", sửa lại sau đó: "Không phải secondary grey mà
+      nó là grey/outline". Footer 2-nút mặc định của Dialog = Secondary
+      (intent no_path/Type=Grey, emphasis Outline) + Primary (intent primary,
+      emphasis Fill). Outline với intent alternate (còn giữ màu riêng, chưa
+      chuyển no_path) CHỈ xuất hiện khi footer có ĐÚNG 3 nút (bậc giữa, theo
+      OVL-B-03).
+
+# =============================================================================
+# CONTENT PATTERN — cách LẤP SLOT body (xem § anatomy.body.definition: body là
+# 1 dynamic slot, KHÔNG phải anatomy cố định — [XÁC NHẬN Williams 12/09]).
+# known_recipes dưới đây là các cách lấp slot ĐÃ GẶP/ĐÃ CATALOGUE, không phải
+# danh sách đóng — PRD/designer vẫn có thể lấp slot bằng tổ hợp khác.
 # =============================================================================
 content_pattern:
   decides: content_pattern
   axis_kind: enum
-  ask: "Nội dung bên trong overlay này khớp catalogued recipe nào?"
+  ask: "Nội dung bên trong slot body này khớp catalogued recipe nào?"
   known_recipes:
     - id: confirmation
       about: "Xác nhận 1 hành động trước khi thực thi — thường đi kèm CMP-DLG-01"
       evidence: "[FIGMA] node 773:12361 / 773:12382 — draft Williams 08/09"
       status: "[XÁC NHẬN — có evidence node, chưa re-verify trực tiếp trong phiên này]"
     - id: form
-      about: "Overlay chứa 1 form nhập liệu ngắn"
-      evidence: "KHÔNG CÓ — draft Williams 08/09 liệt kê nhưng chưa có node minh chứng"
-      status: "[cần verify — chưa có bằng chứng Figma]"
+      about: "Slot body chứa 1 form nhập liệu ngắn (header + mô tả + 1..N field Input + footer 2 CTA)"
+      evidence: >
+        [FIGMA] Ví dụ chính thức "Edit profile" trong docs Dialog (node
+        957:16612, có cả bản Light/Dark; bản đơn ở 957:16584): Header (icon +
+        tiêu đề "Edit profile" + nút đóng X) + Content (mô tả "Make changes to
+        your profile here. Click save when you're done.") + 2 field "Email"
+        (Input organism thật) + Footer (Secondary: intent no_path/Type=Grey,
+        emphasis Outline; Primary: emphasis Fill — theo default_2_button_style
+        ở § anatomy.footer).
+      validation: "Lỗi input hiển thị qua state riêng của Input (Destructive=on → Helper message/icon) — xem § anatomy.body.validation_pattern. KHÔNG có pattern cảnh báo lỗi riêng ở cấp Dialog."
+      status: "[XÁC NHẬN — Williams 12/09] Recipe thật, dùng khi PRD/designer chọn lấp slot body bằng 1..N field Input"
   not_in_table:
-    rule: "Nội dung không khớp recipe nào đã catalogued → escalate, KHÔNG tự bịa cấu trúc mới cho Dialog."
-    why: "Dialog không có anatomy cố định — đây là lý do CÀNG phải catalogue recipe thay vì suy luận tự do."
+    rule: >
+      Nội dung không khớp recipe nào đã catalogued KHÔNG tự động là lỗi —
+      body là dynamic slot (xem § anatomy.body), PRD/designer có quyền lấp
+      slot bằng tổ hợp component khác. Agent KHÔNG tự bịa/suy luận tổ hợp mới
+      thay PRD/designer — nếu gặp tổ hợp chưa catalogue, escalate hỏi nguồn
+      (PRD hay designer quyết định gì) rồi mới thêm recipe mới vào đây.
+    why: "Phân biệt 'chưa catalogue' (bình thường, chờ bổ sung) với 'agent tự suy luận cấu trúc' (không cho phép) — đúng theo cách Williams định nghĩa slot 12/09."
 
 # =============================================================================
 # INVARIANTS của loại
@@ -139,10 +242,17 @@ invariants:
     source: "[XÁC NHẬN — Williams 12/09] 'Áp cho mọi dialog' — draft gốc gọi luật này là FB-INV-4"
 
   - id: OVL-INV-02
-    rule: "footer.button_count == 2 implies mọi nút vốn sẽ là Outline (theo OVL-B-03) TỰ ĐỘNG chuyển thành Grey."
-    check: "count(dialog.footer.buttons) == 2 implies (button.emphasis == outline → auto_convert(grey))"
-    why: "Tăng tỉ lệ tương phản (contrast) hướng về nút Fill/primary khi footer chỉ có 2 nút — không cần Outline làm bậc trung gian nữa."
-    relation: "Cụ thể hoá OVL-B-03 khi footer có đúng 2 nút — 3 nút thì Outline vẫn hợp lệ như bậc giữa."
+    rule: >
+      footer.button_count == 2 implies nút Secondary CTA đổi intent thành
+      no_path (Type=Grey trong DS) — emphasis GIỮ NGUYÊN Outline (Style=
+      Outline), KHÔNG đổi sang 1 emphasis khác. "Chuyển thành Grey" nghĩa là
+      đổi MÀU/INTENT, không phải đổi mức nhấn.
+    check: >
+      count(dialog.footer.buttons) == 2 implies (secondary.intent == no_path
+      AND secondary.emphasis == Outline) — emphasis không đổi qua bước này.
+    why: "Tăng tỉ lệ tương phản (contrast) hướng về nút Fill/primary khi footer chỉ có 2 nút — đổi màu nút phụ về trung tính (Grey), không cần giữ màu 'alternate' có sắc độ riêng."
+    relation: "Cụ thể hoá OVL-B-03 khi footer có đúng 2 nút — 3 nút thì Outline (intent alternate, còn giữ màu riêng, CHƯA đổi về Grey) vẫn hợp lệ như bậc giữa."
+    correction: "[XÁC NHẬN — Williams 12/09] 'Không phải secondary grey mà nó là grey/outline' — sửa lại: đây là đổi Type (Grey), không phải đổi Style/emphasis. Xem OVL-B-03 § correction."
     source: "[XÁC NHẬN — Williams 12/09] 'trong trường hợp 2 nút, do tao muốn điều chỉnh tỉ lệ contrast vào nút primary nhiều hơn nên khi dialog chỉ có 2 nút, mày auto chuyển nút outline về grey giúp tao'"
 
 # =============================================================================
@@ -155,22 +265,27 @@ _pending_confirmation:
       câu trả lời Fill/Outline/Grey là cho NÚT của Dialog footer, không liên
       quan Alert Style. Đã chuyển thành OVL-B-03 (mức ưu tiên) + OVL-INV-02
       (auto-downgrade 2 nút) ở trên, không còn là dự thảo.
-  - item: "Node-id thật của 'Dialog / Dialog oragism' trong Figma — chỉ có componentKey, chưa đọc được cấu trúc bên trong"
-    why: >
-      Williams gửi link file (https://www.figma.com/design/zECOR8UK45lmZcpMG9aOR7/GHN-DS?m=dev)
-      nhưng KHÔNG có node-id trong URL (không có tham số ?node-id=...) — link
-      này chỉ trỏ tới file, không trỏ tới 1 frame/node cụ thể, nên chưa đọc
-      được. Cần Williams mở đúng frame Dialog trong Figma rồi copy link (Right
-      click → Copy link to selection), link đó sẽ tự có ?node-id=.
+  - item: "ĐÃ ĐÓNG — Node-id thật của 'Dialog / Dialog oragism' trong Figma"
+    resolved: >
+      [XÁC NHẬN — Williams 12/09] Gửi link kèm node-id 957:16562 (trang
+      "Documentation" của Dialog generic) kèm yêu cầu: "Đây là dialog generic
+      - tuy nhiên mỗi dialog đều có cấu tạo khác nhau mày cần phải nghiên cứu
+      kĩ và đề xuất cho tao". Đã đọc trực tiếp — xem § anatomy.
   - item: "ĐÃ ĐÓNG — OVL-INV-01 áp dụng phạm vi nào"
     resolved: "[XÁC NHẬN — Williams 12/09] Áp cho MỌI Dialog"
-  - item: "Xác nhận recipe 'form' bằng 1 node Figma thật, hoặc bỏ khỏi known_recipes nếu chưa có màn nào dùng"
-    clarification_asked: >
-      Williams hỏi lại 'form là cái gì' — recipe này đến từ draft Williams tự
-      paste ngày 08/09 (không phải Claude bịa): Dialog dạng chứa 1 form nhập
-      liệu ngắn bên trong (ví dụ 1 dialog có vài field để nhập thay vì cả 1
-      trang riêng). Cần Williams xác nhận: có ví dụ thật nào trong GHN DS
-      dùng Dialog kiểu này không, hay bỏ khỏi known_recipes vì chưa từng dùng.
+  - item: "ĐÃ ĐÓNG — Đề xuất anatomy Header/Body(slot)/Footer + recipe 'form', vòng duyệt của Williams 12/09"
+    resolved: >
+      [XÁC NHẬN — Williams 12/09] Cả 3 điểm đã duyệt: (1) Footer 2-nút mặc
+      định = Secondary Grey + Primary Fill (không phải Outline) — xem §
+      anatomy.footer.default_2_button_style; (2) Body là 1 dynamic SLOT, nội
+      dung lấp slot do PRD/designer quyết định, recipe chỉ là catalogue tham
+      khảo không phải danh sách đóng — xem § anatomy.body.definition; (3)
+      artifact "EXCLAMATION" đúng là icon vỡ VÀ đúng là có pattern cảnh báo
+      lỗi input thật, nhưng validation nằm ở STATE riêng của Input
+      (Destructive=on → Helper message/icon), không phải rule riêng của
+      Dialog — xem § anatomy.body.validation_pattern. Recipe `form` nay
+      chuyển từ ĐỀ XUẤT sang XÁC NHẬN.
+    note: "Mỗi Dialog cụ thể (Williams: 'mỗi dialog đều có cấu tạo khác nhau') sẽ có content_pattern riêng khai khi có màn hình thật — file này chỉ giữ khung anatomy CHUNG + recipe đã catalogue."
   - item: "ĐÃ ĐÓNG (1 phần) — 'AlertDialog' là gì"
     resolved: >
       [XÁC NHẬN — Williams 12/09] AlertDialog định nghĩa theo NGHIỆP VỤ: modal
