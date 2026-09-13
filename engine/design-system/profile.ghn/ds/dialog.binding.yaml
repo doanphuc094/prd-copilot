@@ -1,0 +1,160 @@
+# =============================================================================
+# dialog.binding.yaml — GIÁ TRỊ DS RIÊNG CỦA DIALOG (lớp C)
+#
+# Chỉ chứa thứ RIÊNG của Dialog. Anatomy/footer/content_pattern/invariants đã
+# nằm ở rules/kinds/overlay.rules.yaml — file này CHỈ giữ giá trị Figma thật
+# (componentKey, property names, node quirk).
+#
+# version: 1.0-draft
+# =============================================================================
+
+meta:
+  component: Dialog
+  layer: ds-binding-component
+  version: 1.0-draft
+  created: "2026-09-12"
+  shared: profile.ghn/ds/_shared.binding.yaml
+  status: "[XÁC NHẬN — Williams 12/09] Đăng ký component chính thức (trước đó chỉ ở members_planned của kind overlay, dù anatomy đã được nghiên cứu kỹ từ 12/09-F/G). Xem decisions.md § 12/09-R."
+
+component:
+  name: "Dialog / Dialog oragism"
+  type: "COMPONENT — không phải COMPONENT_SET (không có biến thể variant nào, chỉ có boolean toggle)"
+  component_key: "8b04f4f411eda928c14075725b148bb6a9e5590b"
+  library_key: "lk-250e103acf2b45b04608ee560ea1a546cd58015985b5b548800febe7e720fb83abfcf9e680931bb089ee0468c5b18d7a350dafbcc8d16f038ef58c80ab5cce1c"
+  source: "[FIGMA] search_design_system (xác nhận componentKey) + figma.importComponentByKeyAsync qua use_figma (đọc trực tiếp componentPropertyDefinitions + cấu trúc con), đọc 12/09 — khớp 100% với node-id 957:16562 đã đọc trước đó (đúng component, không lệch)"
+  default_dimensions:
+    width_px: 431
+    height_px: 372
+    note: >
+      Đây là kích thước của bản instance MẶC ĐỊNH (ví dụ "Edit profile", 2
+      field Input) — KHÔNG phải kích thước cố định của Dialog. Body là dynamic
+      slot (xem overlay.rules.yaml § anatomy.body) nên height thay đổi theo
+      nội dung. Width có thể cũng cần đổi theo recipe/màn hình — CHƯA khảo sát
+      (xem _pending_confirmation).
+
+# -----------------------------------------------------------------------------
+# TÊN PROPERTY THẬT TRONG DS — 5 boolean, KHÔNG có variant enum nào
+# -----------------------------------------------------------------------------
+figma_properties:
+  error_message_visible: "Error message#966:2"     # boolean — xem quirk bên dưới, KHÔNG dùng theo mặc định
+  header_visible: "Header#966:3"                    # boolean — ẩn/hiện cả khối Header
+  button_container_visible: "Button container#966:4"  # boolean — ẩn/hiện cả khối Footer
+  primary_button_visible: "Primary button#966:5"    # boolean — ẩn/hiện riêng nút Primary CTA
+  secondary_button_visible: "Secondary button#966:6"  # boolean — ẩn/hiện riêng nút Secondary CTA
+  source: "[FIGMA] componentPropertyDefinitions, đọc 12/09"
+
+# -----------------------------------------------------------------------------
+# THÀNH PHẦN CON (sub-components) — có componentKey riêng
+# -----------------------------------------------------------------------------
+sub_parts:
+  header:
+    name: "Dialog / Dialog header (Base)"
+    component_key: "e19ff0c5bf26c1a621694a4478d04b8f10854004"
+    own_props: "iconLeft, iconRight, Content (bool), Header (bool) — khớp đúng 4 phần anatomy đã ghi ở overlay.rules.yaml § anatomy.header"
+  error_message_block:
+    name: "Dialog / Dialog helper text (Base)"
+    component_key: "6888944390f30b8a834589bc1a71e3395e3e050a"
+    own_props: "Error message (bool), iconError (bool), nội dung text mặc định 'Error message'"
+    status: >
+      [XÁC NHẬN — Williams 13/09] Đây là banner LỖI Ở CẤP DIALOG, dùng khi
+      SUBMIT/LƯU THẤT BẠI vì lý do HỆ THỐNG (network error, lỗi server, không
+      submit được) — KHÁC HOÀN TOÀN với validation của Input (Destructive=on
+      → helper message riêng TỪNG FIELD, dùng khi NGƯỜI DÙNG nhập sai — đã
+      xác nhận ở overlay.rules.yaml § anatomy.body.validation_pattern). Quote:
+      *"có công dụng khi submit lỗi, lỗi hệ thống mà không submit được chứ
+      không phải lỗi từng input"*. Mặc định GIỮ TẮT
+      (`error_message_visible = false`) — chỉ bật khi submit thất bại, KHÔNG
+      dùng thay cho validation từng field.
+    rules_live_at: "rules/kinds/overlay.rules.yaml § content_pattern.known_recipes.form.submit_error_pattern"
+
+# -----------------------------------------------------------------------------
+# QUIRK RIÊNG — đã trả giá thật (xem decisions.md 12/09-J/L)
+# -----------------------------------------------------------------------------
+quirks:
+  master_default_uses_outdated_button:
+    severity: cao
+    finding: >
+      Bản mặc định của chính component gốc (khi import, chưa override gì) có
+      Footer dùng BỘ BUTTON CŨ/LEGACY (biến thể tên "Stype=Round" — property
+      lỗi chính tả, khác hẳn "Style" của Button organism thật), và nút vị trí
+      "Secondary CTA" mặc định là Type=Grey.
+      Xác nhận lại 12/09 (re-verify qua use_figma, khớp đúng phát hiện cũ ở
+      decisions.md 12/09-J): mainComponent 2 nút Footer mặc định là
+      "Stype=Round, Size=sm, Type=Grey, State=Default" và "Stype=Round,
+      Size=sm, Type=Primary, State=Default".
+    consequence: >
+      TUYỆT ĐỐI KHÔNG dùng bản mặc định của component gốc làm chuẩn tham
+      chiếu cho footer — nó KHÔNG khớp quy ước đã xác nhận thật
+      (`default_2_button_style` ở overlay.rules.yaml: cả 2 nút đều dùng Button
+      organism THẬT — componentKey `4e004e9d80a82cf3b0ec50e3b8cb9c6fb8eeb210`
+      — và đều Type=Primary, chỉ khác Style Outline/Fill). Khi dựng Dialog
+      thật, PHẢI tự thay 2 instance Footer bằng Button organism đúng, KHÔNG
+      giữ nguyên bản mặc định.
+    source: "[FIGMA] xác nhận trực tiếp qua use_figma 12/09, khớp lại phát hiện đã ghi ở decisions.md 12/09-J/L"
+
+  no_responsive_size_mode:
+    finding: "Áp dụng file_level_quirks.no_responsive_dimension_mode (_shared.binding.yaml) — Dialog cũng không có cơ chế đổi kích thước theo breakpoint qua variable mode, compiler phải tự áp."
+    consequence: >
+      [XÁC NHẬN — Williams 13/09] Dialog THẬT SỰ đổi thành BottomSheet trên
+      mobile (đúng lý do BottomSheet tồn tại như 1 member riêng của kind
+      overlay) — TRỪ AlertDialog, luôn giữ nguyên dạng Dialog (modal giữa
+      màn hình) trên MỌI kích thước, kể cả mobile. Xem rule đầy đủ ở
+      `rules/kinds/overlay.rules.yaml § responsive_member_swap`.
+
+# -----------------------------------------------------------------------------
+# SIZE — [XÁC NHẬN — Williams 13/09, "Okay hoàn toàn hợp lý"]
+#
+# Bối cảnh: Williams muốn height là 1 "dynamic range" chiếm khoảng 60-80%
+# chiều dọc màn hình (ví dụ desktop chuẩn 1728×1080, mobile 375×812), và yêu
+# cầu Claude đề xuất WIDTH tương ứng. Claude trình bày cách hiểu + đề xuất cụ
+# thể, Williams xác nhận toàn bộ ("Okay hoàn toàn hợp lý").
+# -----------------------------------------------------------------------------
+size:
+  height:
+    rule: >
+      [XÁC NHẬN — Williams 13/09] "dynamic range chiếm khoảng 60-80% kích
+      thước chiều dọc 1 màn hình"
+    interpretation: >
+      [XÁC NHẬN — Williams 13/09, "Okay hoàn toàn hợp lý"] max-height = 80%
+      chiều cao viewport (TRẦN CỨNG — Dialog KHÔNG bao giờ cao hơn), height
+      thật theo nội dung (content-driven) và cuộn (scroll) bên trong Body nếu
+      nội dung vượt trần. 60% là quan sát THỰC TẾ (form vài field tự nhiên
+      rơi vào khoảng 60-80%), KHÔNG phải sàn ép buộc — 1 confirmation dialog
+      ngắn không bị kéo giãn tới 60%.
+    computed_reference_px:
+      desktop_1728x1080: {approx_60pct: 648, cap_80pct: 864}
+      mobile_375x812:    {approx_60pct: 487, cap_80pct: 650}
+      note: "Chỉ là điểm tham chiếu tính từ 2 kích thước màn hình mẫu Williams cho — build bằng đơn vị vh/%, không hardcode px, vì viewport thật của người dùng khác nhau."
+  width:
+    rule: >
+      [XÁC NHẬN — Williams 13/09, "Okay hoàn toàn hợp lý"] KHÔNG scale width
+      theo %/vw của viewport (một Dialog rộng 80% ở màn 1728px sẽ ~1382px —
+      quá khổ cho form/confirmation thường). Dùng 1 thang WIDTH CỐ ĐỊNH (px),
+      chọn theo độ phức tạp nội dung — áp dụng khi render dạng Dialog (trên
+      breakpoint chuyển BottomSheet, xem overlay.rules.yaml § OVL-B-04):
+        - sm = 400px  — confirmation/AlertDialog, nội dung ngắn, không field nhập liệu
+        - md = 480px  — recipe `form` mặc định, vài field Input (khớp gần
+          đúng width thật của bản mặc định component gốc — 431px)
+        - lg = 640px  — nội dung phức tạp hơn (nhiều field, hoặc nhúng bảng/
+          danh sách nhỏ trong Body)
+      Dưới breakpoint chuyển BottomSheet: width không áp theo thang này —
+      BottomSheet dùng full viewport width (trừ margin an toàn 2 bên, số px
+      cụ thể chưa đề xuất — chờ BottomSheet đăng ký component).
+    recipe_mapping: "AlertDialog/confirmation → sm; recipe form (mặc định) → md; nội dung phức tạp hơn → lg"
+    rationale: "Modal không nên scale tuyến tính theo chiều rộng màn hình rất rộng (khác height, vốn hợp lý scale theo viewport vì nội dung cuộn dọc) — quy ước phổ biến (Material Design...), không phải phát minh riêng."
+  status: "[XÁC NHẬN — Williams 13/09] Cả height lẫn width đã duyệt — xem decisions.md § 13/09-B"
+
+# -----------------------------------------------------------------------------
+# _pending_confirmation
+# -----------------------------------------------------------------------------
+_pending_confirmation:
+  - item: "ĐÃ ĐÓNG — khối 'Error message' cấp Dialog có công dụng thật không"
+    resolved: "[XÁC NHẬN — Williams 13/09] Dùng cho submit/lưu thất bại vì lỗi hệ thống — xem sub_parts.error_message_block.status."
+  - item: "ĐÃ ĐÓNG (1 phần) — quan hệ Dialog↔BottomSheet trên mobile"
+    resolved: "[XÁC NHẬN — Williams 13/09] Có tự động đổi, trừ AlertDialog — xem quirks.no_responsive_size_mode.consequence + overlay.rules.yaml § responsive_member_swap."
+    still_open: "Ngưỡng breakpoint cụ thể để chuyển (đề xuất dùng _shared.binding.yaml § breakpoints.sm=640, CHƯA xác nhận) — xem overlay.rules.yaml § responsive_member_swap."
+  - item: "ĐÃ ĐÓNG — số px cụ thể của width (3 bậc sm/md/lg) và cách hiểu height 60-80% (trần, không phải sàn)"
+    resolved: "[XÁC NHẬN — Williams 13/09, \"Okay hoàn toàn hợp lý\"] Xem § size ở trên — cả height lẫn width đã duyệt."
+  - item: "BottomSheet chưa có binding riêng (chưa đăng ký component) — width/margin full-viewport của nó chưa có số cụ thể."
+  - item: "ĐÃ ĐÓNG — ngưỡng breakpoint cụ thể để Dialog tự đổi sang BottomSheet"
+    resolved: "[XÁC NHẬN — Williams 13/09] Dùng _shared.binding.yaml § breakpoints.sm=640 — xem overlay.rules.yaml § OVL-B-04.threshold."

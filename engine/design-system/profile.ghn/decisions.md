@@ -1092,3 +1092,144 @@ hơn (vd `file-invoice-dollar`, `circle-plus`). Nếu xác nhận, cân nhắc c
 viết thành 1 rule chính thức ở `rules/kinds/overlay.rules.yaml` (icon header
 Dialog luôn phải khớp ngữ cảnh, không giữ leftover từ ví dụ docs) hay để mỗi
 lần escalate riêng — CHƯA tự quyết định phạm vi rule ở đây.
+
+---
+
+## 12/09-R — Dialog đăng ký thành `components:` chính thức; xác nhận lại quirk Button cũ trong bản mặc định
+
+**by**: Williams ("Vậy mày đăng kí cho dialog luôn đi check xem dialog có thiếu gì không")
+**affects**: `manifest.yaml` (§ component_kinds.overlay.members_active, §
+components.Dialog MỚI), `rules/components/dialog.rules.yaml` (MỚI, gần rỗng —
+cùng khuôn button/input), `profile.ghn/ds/dialog.binding.yaml` (MỚI)
+
+**Bối cảnh**: Sau round 12/09-O (đăng ký Input), Williams hỏi tổng quan còn
+bao nhiêu component cần viết rule (và có tính color/typography/spacing
+không). Claude trả lời: kiến trúc kind làm việc đăng ký thêm component RẺ
+(không cần viết rule mới trừ khi hành vi mới), và chỉ ra Dialog là gap đáng
+chú ý nhất — đã có rule đầy đủ ở `overlay.rules.yaml` (anatomy Header/Body
+slot/Footer, recipe `form`, đã Williams duyệt từ 12/09-F/G/I/J/L), đã dùng
+thật trong demo, nhưng CHƯA từng đăng ký `components:` — giống tình trạng cũ
+của Input. Williams yêu cầu đăng ký ngay + kiểm tra thiếu gì.
+
+**Verify lại dữ liệu Figma (không dùng lại số cũ từ trí nhớ)**: `search_design_
+system` xác nhận `componentKey 8b04f4f411eda928c14075725b148bb6a9e5590b`
+("Dialog / Dialog oragism") thật, khớp đúng dữ liệu đã ghi ở `12/09-F`.
+`figma.importComponentByKeyAsync` (không phải ComponentSet — Dialog là 1
+COMPONENT đơn, không có variant, chỉ có 5 boolean: Error message/Header/
+Button container/Primary button/Secondary button) xác nhận đúng
+`componentPropertyDefinitions`. Dump cây con xác nhận LẠI (re-verify, không
+chỉ tin ghi chú cũ) phát hiện đã biết ở `12/09-J`: 2 nút Footer mặc định của
+CHÍNH component gốc dùng bộ Button CŨ/legacy (`Stype=Round` — lỗi chính tả),
+nút vị trí "Secondary CTA" mặc định là **Type=Grey** — khớp lại đúng bằng
+chứng cũ, không lệch.
+
+**3 điều "thiếu" tìm được, ghi vào `_pending_confirmation`, CHƯA tự trả lời**:
+1. Khối "Error message" cấp DIALOG (khác hẳn per-field validation của Input,
+   đã xác nhận ở `12/09-G`) — có công dụng thật nào không (vd banner lỗi
+   submit/network, khác lỗi từng field), hay luôn luôn tắt? Williams mới xác
+   nhận ví dụ docs cũ (icon vỡ) KHÔNG phải cách dùng thật CHO CASE ĐÓ cụ thể —
+   chưa xác nhận liệu khối này có công dụng khác nào không.
+2. Width/kích thước Dialog theo recipe/màn hình — 431px hiện chỉ là 1 điểm dữ
+   liệu từ ví dụ mặc định, chưa đo thêm, chưa có mapping theo loại nội dung.
+3. Quan hệ Dialog (desktop) ↔ BottomSheet (planned member khác, cùng kind
+   overlay) trên mobile — có phải Dialog tự đổi thành BottomSheet dưới 1
+   breakpoint nào không? Chưa khảo sát, chưa hỏi.
+
+**Kết quả áp dụng**: `manifest.yaml § component_kinds.overlay.members_active`
+`[]` → `[Dialog]`; `components.Dialog` (MỚI) đăng ký với `kinds: [overlay]`,
+`axes: {content_pattern}`; `rules/components/dialog.rules.yaml` (MỚI, gần
+rỗng, trỏ về `overlay.rules.yaml`); `profile.ghn/ds/dialog.binding.yaml`
+(MỚI) ghi đầy đủ componentKey/sub_parts (header, error-message block, đều có
+componentKey riêng)/quirk Button cũ (cảnh báo rõ: KHÔNG dùng bản mặc định của
+component gốc làm chuẩn footer).
+
+**Ghi chú**: AlertDialog VẪN CHƯA có binding riêng — đúng theo quyết định cũ
+(`12/09-B`/overlay.rules.yaml): AlertDialog định nghĩa theo NGHIỆP VỤ, không
+phải theo 1 component Figma khác, nên chưa cần node/binding riêng cho tới khi
+có màn hình thật cần phân biệt.
+
+---
+
+## 13/09-A — Trả lời 3 câu hỏi mở của Dialog (12/09-R): submit-error banner, size responsive, quan hệ BottomSheet
+
+**by**: Williams (xác nhận qua chat, sau khi được hỏi 3 câu ở round 12/09-R)
+**affects**: `rules/kinds/overlay.rules.yaml` (§ content_pattern.known_recipes.
+form.submit_error_pattern MỚI, § OVL-B-04 MỚI), `profile.ghn/ds/dialog.binding.
+yaml` (§ sub_parts.error_message_block xác nhận, § size MỚI — ĐỀ XUẤT)
+
+**1. Khối "Error message" cấp Dialog — XÁC NHẬN có công dụng thật.** Quote:
+*"ĐÚNG mày chỉ ra được chỗ tao còn thiếu là có công dụng khi submit lỗi, lỗi
+hệ thống mà không submit được chứ không phải lỗi từng input"* — dùng cho lỗi
+SUBMIT/HỆ THỐNG (network, server), KHÁC HẲN validation từng field của Input
+(Destructive=on, đã xác nhận từ 12/09-G). Ghi thành `submit_error_pattern` ở
+recipe `form` (overlay.rules.yaml) + cập nhật status trong dialog.binding.yaml.
+
+**2. Size responsive — height xác nhận ý tưởng, CHƯA chốt cách hiểu chính
+xác; width là ĐỀ XUẤT của Claude, CHƯA xác nhận.** Williams: *"mày có thể set
+dynamic range chiếm khoảng 60-80% kích thước chiều dọc 1 màn hình (ví dụ...
+desktop... 1728x1080, còn mobile là 375x812) mày có thể đề xuất phần chiều
+ngang như thế nào cho hợp lý"*. Claude đề xuất:
+- Height: đọc 60-80% là max-height=80vh (trần cứng, cuộn nội bộ khi vượt),
+  60% là quan sát thực tế chứ không phải sàn ép buộc — **CHƯA xác nhận đây có
+  đúng ý Williams không** (khác với việc 60% là sàn cứng bắt mọi Dialog kể cả
+  confirmation ngắn cũng phải cao tối thiểu 60%).
+- Width: đề xuất thang CỐ ĐỊNH theo px (không theo %/vw) — sm≈400/md≈480/
+  lg≈640 — vì modal không nên scale tuyến tính theo chiều rộng viewport rất
+  rộng (vd 80% của 1728px ~1382px là quá khổ cho 1 form thường). Map đề xuất:
+  AlertDialog/confirmation→sm, recipe form mặc định→md (gần khớp 431px thật
+  của component gốc), phức tạp hơn→lg.
+- **TOÀN BỘ mục size này là ĐỀ XUẤT, chưa qua xác nhận của Williams** — xem
+  `dialog.binding.yaml § size`.
+
+---
+
+## 13/09-B — Xác nhận toàn bộ đề xuất size Dialog (height 80vh cap + width 3 bậc cố định)
+
+**by**: Williams ("Okay hoàn toàn hợp lý")
+**affects**: `profile.ghn/ds/dialog.binding.yaml` (§ size — chuyển từ ĐỀ XUẤT
+sang XÁC NHẬN)
+
+Xác nhận toàn bộ đề xuất ở `13/09-A`, không sửa gì thêm:
+- **Height**: max-height = 80% viewport (trần cứng, cuộn nội bộ khi vượt);
+  60% chỉ là quan sát thực tế (form nhiều field tự nhiên rơi vào khoảng đó),
+  KHÔNG phải sàn ép buộc mọi Dialog.
+- **Width**: thang cố định theo px, không theo %/vw — sm=400px (confirmation/
+  AlertDialog), md=480px (recipe form mặc định), lg=640px (nội dung phức tạp
+  hơn).
+
+**Còn mở, KHÔNG nằm trong xác nhận này** (chưa hỏi lại riêng, không tự suy ra
+là đã chốt): ngưỡng breakpoint cụ thể để Dialog tự đổi sang BottomSheet
+(`OVL-B-04.threshold`, tạm đề xuất dùng `_shared.binding.yaml § breakpoints.
+sm`=640, chưa xác nhận riêng) và số liệu width/margin của chính BottomSheet
+(chưa đăng ký component).
+
+---
+
+## 13/09-C — Xác nhận ngưỡng breakpoint 640px cho Dialog↔BottomSheet
+
+**by**: Williams (sau khi hỏi lại "375px chiều rộng thôi mà?" — Claude giải
+thích 640 là NGƯỠNG CẮT cho cả dải hẹp, không phải mô tả 1 thiết bị cụ thể,
+mobile 375px vẫn rơi đúng vào nhóm hẹp vì 375 < 640 — Williams: "Okay vậy
+update thôi")
+**affects**: `rules/kinds/overlay.rules.yaml` (§ OVL-B-04.threshold, chuyển
+ĐỀ XUẤT → XÁC NHẬN), `profile.ghn/ds/dialog.binding.yaml` (§ _pending_
+confirmation, đóng mục breakpoint)
+
+Xác nhận dùng `_shared.binding.yaml § breakpoints.sm` (640px, có sẵn, khớp
+chuẩn Tailwind, dùng chung mọi component) làm ngưỡng: viewport width < 640px
+→ BottomSheet (trừ AlertDialog, luôn giữ Dialog); >= 640px → Dialog. Không
+thêm số breakpoint mới, tái dùng giá trị đã có.
+
+**Còn mở**: số liệu width/margin cụ thể của chính BottomSheet khi render (full
+viewport trừ margin bao nhiêu) — chưa đăng ký BottomSheet thành component,
+chưa có số.
+
+**3. Dialog↔BottomSheet trên mobile — XÁC NHẬN có tự động đổi, TRỪ
+AlertDialog.** Quote: *"Có tự động đổi qua lại cho consistency, đối với alert
+dialog thì vẫn giữ nguyên là dialog bên bản mobile"*. Lý do (Claude viết,
+chưa hỏi lại Williams xác nhận lý do, chỉ ghi để dễ hiểu): BottomSheet dễ bị
+dismiss ngoài ý muốn (vuốt xuống/chạm ra ngoài) — không chấp nhận được cho
+thao tác critical mà AlertDialog đại diện. Ghi thành `OVL-B-04`. Ngưỡng
+breakpoint cụ thể để chuyển đổi CHƯA xác nhận — tạm đề xuất dùng
+`_shared.binding.yaml § breakpoints.sm` (640px) làm mặc định, cần Williams
+duyệt lại. BottomSheet bản thân vẫn CHƯA đăng ký component/binding riêng.

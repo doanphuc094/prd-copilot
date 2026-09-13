@@ -2,8 +2,9 @@
 # overlay.rules.yaml — LOẠI: CHIẾM FOCUS, CHẶN NỀN
 #
 # Thành viên:
-#   đang dùng:  (chưa — viết trước khi có binding, xem _pending_confirmation)
-#   dự kiến:    Dialog, AlertDialog, BottomSheet, Popover, ContextMenu
+#   đang dùng:  Dialog (đăng ký chính thức 12/09-R, xem
+#               profile.ghn/ds/dialog.binding.yaml + rules/components/dialog.rules.yaml)
+#   dự kiến:    AlertDialog, BottomSheet, Popover, ContextMenu
 #
 # Đây là kind ĐỐI LẬP hành vi với feedback_transient (xem block đầu file đó):
 # overlay LUÔN có backdrop, chặn thao tác nền, và (trừ Popover/ContextMenu nhẹ)
@@ -93,6 +94,41 @@ behavioural_limits:
       hình NÚT của Dialog footer, KHÔNG liên quan tới trục Style (Fill/
       Outline) của chính component Alert (xem rules/components/alert.rules.yaml
       cho câu hỏi đó, trả lời riêng: Alert luôn dùng Outline).
+
+  - id: OVL-B-04
+    rule: >
+      Trên viewport MOBILE, thành viên `Dialog` của kind này TỰ ĐỘNG đổi hình
+      thức render thành `BottomSheet` (trượt lên từ đáy màn hình, thay vì
+      modal giữa màn hình) — vì tính nhất quán với quy ước mobile. NGOẠI LỆ:
+      `AlertDialog` LUÔN LUÔN giữ nguyên hình thức Dialog (modal giữa màn
+      hình, có backdrop chặn nền đầy đủ), KHÔNG BAO GIỜ đổi thành BottomSheet,
+      kể cả trên mobile.
+    why: >
+      BottomSheet thường cho phép thoát bằng vuốt xuống/chạm ra ngoài — dễ bị
+      dismiss NGOÀI Ý MUỐN. Với thao tác CRITICAL mà AlertDialog đại diện
+      (không thể khôi phục, hoặc khôi phục được nhưng hậu quả nghiêm trọng —
+      xem § alert_dialog_trigger), việc dismiss ngoài ý muốn là rủi ro không
+      chấp nhận được — nên AlertDialog phải giữ dạng chặn nền tường minh
+      (Dialog) trên MỌI kích thước màn hình.
+    source: >
+      [XÁC NHẬN — Williams 13/09] "Có tự động đổi qua lại cho consistency,
+      đối với alert dialog thì vẫn giữ nguyên là dialog bên bản mobile" — trả
+      lời câu hỏi mở từ round đăng ký Dialog (12/09-R): quan hệ Dialog↔
+      BottomSheet trên mobile.
+    threshold: >
+      [XÁC NHẬN — Williams 13/09] Dùng `profile.ghn/ds/_shared.binding.yaml §
+      breakpoints.sm` (640px, đã có sẵn, dùng chung mọi component, khớp chuẩn
+      Tailwind) làm ngưỡng: viewport width < 640px → BottomSheet (trừ
+      AlertDialog, luôn giữ Dialog), viewport width >= 640px → Dialog. Đây là
+      NGƯỠNG CẮT (breakpoint) cho cả 1 dải kích thước hẹp — KHÔNG cần khớp
+      đúng 1 thiết bị cụ thể nào (mobile ví dụ 375px vẫn rơi đúng vào nhóm
+      hẹp vì 375 < 640, không mâu thuẫn với việc breakpoint lớn hơn nhiều so
+      với 375). Tái dùng đúng breakpoint đã có sẵn của file, không thêm số mới.
+    still_open: >
+      BottomSheet CHƯA đăng ký thành component (chưa có binding riêng — xem
+      manifest.yaml § component_kinds.overlay.members_planned) — luật này ghi
+      lại HÀNH VI đã xác nhận trước, nhưng chưa có giá trị Figma (componentKey,
+      anatomy riêng của BottomSheet) để render thật.
 
 # =============================================================================
 # ALERTDIALOG — tiêu chí kích hoạt (NGHIỆP VỤ, không phải theo component Figma)
@@ -261,8 +297,18 @@ content_pattern:
         đã chốt — xem § anatomy.footer.outdated_docs_example. Recipe này áp
         dụng cấu trúc (Header/Content/2 field Input/Footer), KHÔNG áp dụng
         màu nút của chính ảnh ví dụ đó.
-      validation: "Lỗi input hiển thị qua state riêng của Input (Destructive=on → Helper message/icon) — xem § anatomy.body.validation_pattern. KHÔNG có pattern cảnh báo lỗi riêng ở cấp Dialog."
-      status: "[XÁC NHẬN — Williams 12/09] Recipe thật, dùng khi PRD/designer chọn lấp slot body bằng 1..N field Input"
+      validation: "Lỗi input hiển thị qua state riêng của Input (Destructive=on → Helper message/icon) — xem § anatomy.body.validation_pattern. KHÔNG có pattern cảnh báo lỗi riêng ở cấp Dialog cho lỗi TỪNG FIELD."
+      submit_error_pattern: >
+        [XÁC NHẬN — Williams 13/09] Khối "Error message" cấp DIALOG (boolean
+        `Error message#966:2` trên component gốc, xem
+        profile.ghn/ds/dialog.binding.yaml § sub_parts.error_message_block) là
+        1 pattern THẬT, RIÊNG BIỆT với validation từng field: dùng khi SUBMIT/
+        LƯU THẤT BẠI vì lý do HỆ THỐNG (network error, lỗi server, không gửi
+        được) — không phải khi người dùng nhập sai 1 field cụ thể (case đó
+        vẫn dùng Destructive=on của chính Input, không đổi). Quote: *"có công
+        dụng khi submit lỗi, lỗi hệ thống mà không submit được chứ không phải
+        lỗi từng input"*. Mặc định TẮT, chỉ bật khi submit thất bại.
+      status: "[XÁC NHẬN — Williams 12/09, bổ sung 13/09] Recipe thật, dùng khi PRD/designer chọn lấp slot body bằng 1..N field Input"
   not_in_table:
     rule: >
       Nội dung không khớp recipe nào đã catalogued KHÔNG tự động là lỗi —
