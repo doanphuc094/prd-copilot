@@ -1695,3 +1695,56 @@ OVL-B-03 (13/09-G), không cần sửa gì, chỉ củng cố thêm bằng dữ 
 tự xem lại.
 
 **Còn mở**: ý nghĩa nghiệp vụ của recipe "w Button" — chưa hỏi Williams.
+
+---
+
+## 13/09-M — Đóng ý nghĩa recipe "w Button"; gửi link cho Williams tự kiểm boolean Active của sidebar
+
+**by**: Williams — "Ý nghĩa nghiệp vụ của button hiện chưa có usecase nào" +
+"Cho tao link" (yêu cầu link để tự kiểm tra boolean `Active#4109:93` đang hỏi
+dở từ 13/09-J/K).
+**affects**: `profile.ghn/ds/bottomsheet.binding.yaml` (đóng hẳn §
+type_variant.business_meaning — 5/5 recipe), `profile.ghn/ds/sidebar-research-notes.md`
+(§ 4b — thêm link + phát hiện mới về `hidden`).
+
+**1. Recipe "w Button" — đóng.** Giống "Action item": chưa có usecase thật,
+giữ trong hệ thống nhưng không gán business rule. Vậy 5/5 recipe BottomSheet
+đã có câu trả lời đầy đủ (2 chưa có usecase, 3 có ý nghĩa cụ thể).
+
+**2. Sidebar boolean `Active#4109:93` — gửi link, CHƯA đóng.** Đọc lại kỹ
+metadata thật của frame SidebarMenu (node 22894:77037) khi chuẩn bị link,
+phát hiện thêm: các node từng dùng làm "bằng chứng" cho vế "State=Default mà
+Active=true" (77045/77046/77052/77053) đều có `hidden=true` — tức không hiển
+thị thật trên canvas, có thể là biến thể dự phòng chưa dọn. Ví dụ rõ nhất còn
+lại là node `22894:77043` (đang hiển thị thật, State=Active nhưng
+Active=false). Đã gửi 2 link cho Williams tự mở Figma kiểm tra (node cụ thể +
+cả frame) — CHƯA tự kết luận ý nghĩa property này, chờ Williams xem trực tiếp
+rồi trả lời.
+
+---
+
+## 13/09-N — Đóng nốt boolean Active của sidebar — cùng nguyên nhân với chevron
+
+**by**: Williams — "Okay là do tao làm ẩu không bấm active mà đổi màu đè lên
+component nên nó mất đi bản chất của component gốc" (sau khi tự mở link kiểm
+tra node `22894:77043`).
+**affects**: `profile.ghn/ds/sidebar-research-notes.md` (§ 4b đóng hẳn, § 7
+cập nhật).
+
+Đóng nốt điểm chưa khớp cuối cùng của khảo sát Sidebar (mục 13/09-J § 4b).
+Williams xác nhận: property `Active#4109:93` LÀ đúng ý nghĩa "module đang
+active" như tên gọi — sự lệch quan sát được là do Williams tự thao tác thủ
+công (đổi màu đè trực tiếp lên fill của instance thay vì bật đúng property
+Active có sẵn), làm mất đi binding gốc của component. Cùng nguyên nhân gốc
+rễ với điểm (a) đã đóng ở 13/09-K (chevron luôn hiện down) — cả 2 đều do thói
+quen "đổi màu đè lên component" thay vì dùng property/variant chuẩn, KHÔNG
+PHẢI lỗi/hành vi bất thường của chính component DS gốc.
+
+**Kết luận toàn bộ khảo sát Sidebar**: component DS gốc ("Left Menu" +
+"Left menu items (Base)") hành xử ĐÚNG 100% theo mô tả ban đầu của Williams
+(module active = State=Active + Active=true; module có sub-menu = Right
+icon=true + chevron đổi hướng theo đóng/mở; sub-menu không icon chỉ text).
+Sai lệch quan sát được trong bản Freight thật đều là do Williams tự
+customize thủ công, không phải vấn đề của hệ thống thiết kế. Không còn điểm
+nào chưa khớp — sẵn sàng để Williams quyết định đăng ký Sidebar thành
+component chính thức khi cần.

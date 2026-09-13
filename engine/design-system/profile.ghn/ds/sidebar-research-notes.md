@@ -108,13 +108,29 @@ nào theo ngay sau (77054/77056/77059 không thấy sub-menu con trong data đã
 **→ Cần Williams xác nhận: chevron có ĐỔI chiều (down↔up) theo trạng thái
 đóng/mở thật không, hay luôn cố định là down?**
 
-**(b) Boolean `Active#4109:93` KHÔNG khớp trục `State`.**
-Đọc thật: node 77043 (`State=Active`) có `Active#4109:93 = false`; ngược lại
-nhiều node `State=Default` (77046, 77052, 77053) lại có `Active#4109:93 =
-true`. Tên property trùng với tên trục State nhưng GIÁ TRỊ không tương ứng —
-có thể đây là 1 property THỪA/legacy không còn dùng, hoặc mang ý nghĩa khác
-hoàn toàn (không phải "module này đang active"). **Chưa rõ ý nghĩa thật —
-chưa hỏi Williams.**
+**(b) [ĐÃ ĐÓNG — Williams 13/09-N] Boolean `Active#4109:93` KHÔNG khớp trục `State`.**
+Đọc thật: node `22894:77043` (`State=Active`, item "Quản lí khách hàng", ĐANG
+HIỂN THỊ trên canvas — không bị ẩn) có `Active#4109:93 = false`; ngược lại
+vài node `State=Default` khác lại có `Active#4109:93 = true` — NHƯNG lưu ý
+mới phát hiện (13/09-M): các node đó (`22894:77045`, `22894:77046`,
+`22894:77052`, `22894:77053`) đều có `hidden = true` trên canvas — tức là
+KHÔNG hiển thị thật trong sidebar Freight ở màn hình này, có thể là biến thể
+dự phòng/chưa dọn dẹp chứ không phải bằng chứng mạnh về hành vi thật. Ví dụ
+RÕ nhất để kiểm là node `22894:77043` (đang hiển thị, State=Active nhưng
+Active=false).
+- Link để Williams tự kiểm (đúng theo Williams yêu cầu "cho tao link"):
+  - Node cụ thể có mismatch: https://www.figma.com/design/s2NE6ikwLnsZSUp97RBfof/B2B-PORTAL?node-id=22894-77043
+  - Cả frame SidebarMenu để xem toàn cảnh: https://www.figma.com/design/s2NE6ikwLnsZSUp97RBfof/B2B-PORTAL?node-id=22894-77037
+- **[ĐÃ ĐÓNG — Williams 13/09-N]** Williams tự mở link kiểm tra và xác nhận:
+  "Okay là do tao làm ẩu không bấm active mà đổi màu đè lên component nên nó
+  mất đi bản chất của component gốc" — tức property `Active#4109:93` LÀ đúng
+  ý nghĩa "module này đang active" như tên gọi, nhưng khi Williams tự chỉnh
+  sửa (đổi màu đè trực tiếp lên fill thay vì bật đúng property `Active`) đã
+  làm sai lệch giá trị thật của property so với trạng thái hiển thị — đây là
+  lỗi thao tác thủ công của Williams trên file B2B Portal, KHÔNG PHẢI lỗi/
+  hành vi bất thường của chính component DS gốc. Cùng nguyên nhân với điểm
+  (a) ở trên (chevron luôn hiện down) — cả 2 phát sinh từ cùng thói quen "đổi
+  màu đè lên component" thay vì dùng đúng property/variant có sẵn.
 
 ## 5. Icon thật đã dùng trong sidebar Freight (chưa qua bước xác nhận FA6 Pro
    — mới chỉ đọc tên từ Figma, CHƯA chạy quy trình 2 bước icon đầy đủ)
@@ -140,7 +156,11 @@ arrow-right-from-bracket, chevron-down.
 
 ## 7. Việc còn lại khi quyết định đăng ký Sidebar chính thức
 
-- Trả lời 2 điểm chưa khớp ở Mục 4.
+- ~~Trả lời 2 điểm chưa khớp ở Mục 4~~ — [ĐÃ ĐÓNG 13/09-N] cả 2 điểm đều do
+  Williams tự chỉnh sửa thủ công (đổi màu đè lên component thay vì dùng đúng
+  property/variant), KHÔNG PHẢI lỗi component DS gốc — component gốc hành xử
+  đúng như Williams mô tả ban đầu (chevron đổi hướng theo đóng/mở; Active
+  đúng nghĩa "đang active").
 - Quyết định: Sidebar có nên là 1 `component_kind` MỚI, hay xếp vào 1 kind đã
   có (không có kind nào hiện tại khớp hành vi "menu điều hướng + expand/
   collapse")? Đề xuất tạm: kind mới `navigation` — CHƯA tạo, chờ Williams.

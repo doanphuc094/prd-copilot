@@ -46,7 +46,7 @@ type_variant:
       nghĩa là designer/agent được TỰ DO customize component Input bên trong
       cho phù hợp với yêu cầu cụ thể của PRD (không phải nội dung cố định 1
       kiểu duy nhất).
-    "w Button": "[cần verify] CHƯA hỏi Williams — chỉ mới xem cấu trúc con qua preview link, chưa có ý nghĩa nghiệp vụ."
+    "w Button": "[ĐÃ ĐÓNG 13/09-M] Williams: \"Ý nghĩa nghiệp vụ của button hiện chưa có usecase nào\" — giống Action item, giữ trong hệ thống nhưng KHÔNG có business rule cụ thể để áp."
     "w Illustration": >
       Dùng cho ONBOARDING / trạng thái RỖNG khi chưa có dữ liệu (empty state)
       — hiển thị icon "no-data" màu xám. LƯU Ý: KHÔNG có nút "Skip" (bỏ qua) —
@@ -208,8 +208,8 @@ quirks:
 _pending_confirmation:
   - item: "ĐÃ ĐÓNG — footer_button_type_variance"
     resolved: "[XÁC NHẬN — Williams 13/09] Sửa thành Type=Primary (Outline/Fill), đồng bộ Dialog — xem § quirks.footer_button_type_variance.resolution."
-  - item: "ĐÃ ĐÓNG 1 PHẦN — Ý nghĩa nghiệp vụ của 5 recipe trong type_variant"
-    resolved: "[XÁC NHẬN — Williams 13/09-L] 4/5 đã có ý nghĩa (Action item/w Textfield/w Illustration/w Checkbox) — xem § type_variant.business_meaning. Còn lại 'w Button' CHƯA hỏi."
+  - item: "ĐÃ ĐÓNG — Ý nghĩa nghiệp vụ của 5 recipe trong type_variant"
+    resolved: "[XÁC NHẬN — Williams 13/09-L/M] Cả 5/5 đã có câu trả lời — xem § type_variant.business_meaning. 'Action item' và 'w Button' đều chưa có usecase thật; 3 recipe còn lại có ý nghĩa cụ thể."
   - item: "ĐÃ ĐÓNG — Height AUTO có cap hay không"
     resolved: "[XÁC NHẬN — Williams 13/09] Có, cap 80vh giống Dialog — xem § size.height.cap."
   - item: "ĐÃ ĐÓNG — Tên biến thật của màu nền trắng"
