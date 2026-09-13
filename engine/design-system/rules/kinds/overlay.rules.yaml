@@ -3,8 +3,10 @@
 #
 # Thành viên:
 #   đang dùng:  Dialog (đăng ký chính thức 12/09-R, xem
-#               profile.ghn/ds/dialog.binding.yaml + rules/components/dialog.rules.yaml)
-#   dự kiến:    AlertDialog, BottomSheet, Popover, ContextMenu
+#               profile.ghn/ds/dialog.binding.yaml + rules/components/dialog.rules.yaml),
+#               BottomSheet (đăng ký chính thức 13/09-F, xem
+#               profile.ghn/ds/bottomsheet.binding.yaml + rules/components/bottomsheet.rules.yaml)
+#   dự kiến:    AlertDialog, Popover, ContextMenu
 #
 # Đây là kind ĐỐI LẬP hành vi với feedback_transient (xem block đầu file đó):
 # overlay LUÔN có backdrop, chặn thao tác nền, và (trừ Popover/ContextMenu nhẹ)
@@ -52,6 +54,15 @@ behavioural_limits:
     relation_to_composition_rule: "Cụ thể hoá CMP-DLG-01 ở cấp kind — CMP-DLG-01 nói CÓ bước xác nhận, luật này nói bước đó phải cho thoát được."
 
   - id: OVL-B-03
+    applies_to: >
+      [XÁC NHẬN — Williams 13/09] Rule này ở cấp KIND `overlay` — áp dụng cho
+      MỌI thành viên có footer 2-nút, KHÔNG riêng Dialog. Xác nhận cụ thể cho
+      BottomSheet: "Thay secondary button của bottom sheet thành primary/
+      outline cho đồng bộ với dialog của desktop" — BottomSheet có cùng quirk
+      component-gốc-mặc-định-sai như Dialog (mặc định demo dùng Type=Secondary
+      thay vì Primary+Outline), đã sửa theo ĐÚNG 1 rule chung này, KHÔNG tạo
+      convention riêng cho BottomSheet. Xem profile.ghn/ds/bottomsheet.binding.yaml
+      § quirks.footer_button_type_variance + decisions.md § 13/09-G.
     rule: >
       Mức độ ưu tiên của các nút trong footer Dialog. Fill (intent Primary,
       emphasis Fill) = tác vụ chính/quan trọng nhất, hoàn thành mục đích chính
@@ -125,10 +136,18 @@ behavioural_limits:
       hẹp vì 375 < 640, không mâu thuẫn với việc breakpoint lớn hơn nhiều so
       với 375). Tái dùng đúng breakpoint đã có sẵn của file, không thêm số mới.
     still_open: >
-      BottomSheet CHƯA đăng ký thành component (chưa có binding riêng — xem
-      manifest.yaml § component_kinds.overlay.members_planned) — luật này ghi
-      lại HÀNH VI đã xác nhận trước, nhưng chưa có giá trị Figma (componentKey,
-      anatomy riêng của BottomSheet) để render thật.
+      [ĐÃ ĐÓNG PHẦN LỚN — 13/09-F/G] BottomSheet đã đăng ký thành component
+      (profile.ghn/ds/bottomsheet.binding.yaml) với số liệu Figma thật: width
+      cố định 375px (TRÙNG KHỚP với mobile reference 375px dùng để lập luận
+      breakpoint 640px ở trên), height AUTO/hug theo nội dung nhưng CÓ max-
+      height cap 80vh áp thêm ở lớp DS — [XÁC NHẬN — Williams 13/09] giống hệt
+      Dialog, đảm bảo consistency khi đổi qua lại theo OVL-B-04. Footer 2 nút
+      cũng đã sửa để dùng ĐÚNG 1 rule chung OVL-B-03 (Primary+Outline /
+      Primary+Fill) thay vì Type=Secondary mặc định sai của component gốc —
+      xem OVL-B-03 § applies_to. Còn mở: ý nghĩa nghiệp vụ của 5 recipe nội
+      dung (Action item/w Textfield/w Button/w Illustration/w Checkbox) — có
+      nên map 1-1 với content_pattern recipe của Dialog (confirmation/form)
+      hay giữ riêng, CHƯA hỏi Williams.
 
 # =============================================================================
 # ALERTDIALOG — tiêu chí kích hoạt (NGHIỆP VỤ, không phải theo component Figma)

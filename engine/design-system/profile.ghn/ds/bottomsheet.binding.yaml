@@ -1,0 +1,183 @@
+# =============================================================================
+# bottomsheet.binding.yaml — GIÁ TRỊ DS RIÊNG CỦA BOTTOMSHEET (lớp C)
+#
+# Chỉ chứa thứ RIÊNG của BottomSheet. Thứ dùng chung nằm ở ds/_shared.binding.yaml.
+# version: 1.0-draft
+# =============================================================================
+
+meta:
+  component: BottomSheet
+  layer: ds-binding-component
+  version: 1.0-draft
+  created: "2026-09-13"
+  shared: profile.ghn/ds/_shared.binding.yaml
+  status: "[XÁC NHẬN — Williams 13/09, 'Đóng nốt các gap này đi'] Đăng ký thành component chính thức — xem decisions.md § 13/09-F. Số liệu dưới đây là dữ liệu THẬT đọc trực tiếp từ Figma (không phải suy đoán) — đóng gap 'BottomSheet width/margin' còn treo từ 13/09-C/dialog.binding.yaml."
+
+component:
+  name: "Bottom sheet / Bottom sheet organism"
+  type_note: "COMPONENT_SET (khác Dialog — Dialog là 1 COMPONENT đơn không variant)"
+  component_key: "4c05d3f58bd53f249633c0af34153b91ab849735"
+  library_key: "lk-250e103acf2b45b04608ee560ea1a546cd58015985b5b548800febe7e720fb83abfcf9e680931bb089ee0468c5b18d7a350dafbcc8d16f038ef58c80ab5cce1c"
+  source: "[FIGMA] search_design_system (xác nhận componentKey/libraryName GHN DS) + figma.importComponentSetByKeyAsync qua use_figma, đọc 13/09"
+  observed_component_set_id: "69:4844"
+  note: >
+    Cùng caveat như Input: id `69:4844` là id QUAN SÁT ĐƯỢC qua import trong
+    file TEST (uFbbdvWYC1dg3AjdnHCgxk), KHÔNG chắc là node-id ổn định trong
+    file library GHN DS gốc. Dùng `component_key` để mở đúng component thật,
+    không ghép id này thành URL.
+
+# -----------------------------------------------------------------------------
+# TRỤC "Type" — ĐÂY LÀ RECIPE/CONTENT-PATTERN, không phải size/state như Input
+# -----------------------------------------------------------------------------
+type_variant:
+  axis_kind: closed_role_set
+  values: ["Action item", "w Textfield", "w Button", "w Illustration", "w Checkbox"]
+  source: "[FIGMA] variantGroupProperties, đọc 13/09"
+  status: >
+    [cần verify] Đây là 5 RECIPE nội dung dựng sẵn trong chính component Figma
+    (khác Dialog — Dialog không có variant, ráp thủ công qua content_pattern
+    recipe ở cấp kind). Ý nghĩa nghiệp vụ cụ thể của từng recipe (khi nào
+    designer chọn "Action item" vs "w Checkbox" v.v.) CHƯA hỏi Williams — chỉ
+    quan sát tên + cấu trúc con, chưa suy diễn thành rule.
+
+# -----------------------------------------------------------------------------
+# KÍCH THƯỚC — SỐ LIỆU THẬT, đọc trực tiếp cả 5 variant
+# -----------------------------------------------------------------------------
+size:
+  width:
+    value: 375
+    unit: px
+    fixed: true
+    source: "[FIGMA — ĐO THẬT] Cả 5/5 variant (Action item, w Button, w Illustration,
+      w Textfield, w Checkbox) đều counterAxisSizingMode=FIXED, width=375px —
+      KHÔNG có variant nào khác width. 375px trùng khớp CHÍNH XÁC với mobile
+      viewport reference Williams cho ở 13/09-A (375x812) — xác nhận
+      BottomSheet được thiết kế để chiếm TRỌN chiều rộng màn hình mobile,
+      không có margin 2 bên NGOÀI mép sheet."
+    status: "[XÁC NHẬN bằng đo đạc thật 13/09 — không cần hỏi lại Williams, đây là số đo trực tiếp từ component]"
+  height:
+    mode: "AUTO / hug-content"
+    observed_range_px: [210, 812]
+    observed_variants:
+      - {variant: "w Button", height: 210}
+      - {variant: "w Textfield", height: 608}
+      - {variant: "w Illustration", height: 666}
+      - {variant: "Action item", height: 458}
+      - {variant: "w Checkbox", height: 812}
+    source: "[FIGMA — ĐO THẬT] primaryAxisSizingMode=AUTO trên cả 5 variant — height
+      hoàn toàn theo nội dung, KHÔNG có số cố định hay % nào set cứng trong
+      component. Variant cao nhất quan sát được (w Checkbox, 812px) trùng
+      CHÍNH XÁC với chiều cao viewport mobile reference (375x812) — tức
+      BottomSheet thật có thể cao tới TRỌN màn hình khi nội dung nhiều."
+    cap:
+      value: "80vh"
+      status: >
+        [XÁC NHẬN — Williams 13/09] "Bottom sheet cũng có cap cứng 80% viewport
+        mobile" — ÁP CÙNG max-height cap 80% chiều cao viewport như Dialog
+        (xem dialog.binding.yaml § size.height.interpretation). Component gốc
+        Figma tự nó KHÔNG có cơ chế cap (chỉ tự nhiên hug tới hết nội dung,
+        quan sát thật lên tới 812px = full viewport mobile reference) — cap
+        80vh là QUYẾT ĐỊNH THIẾT KẾ áp thêm ở lớp DS/renderer, không phải giá
+        trị đọc trực tiếp từ component. Trên 80vh, nội dung cuộn (scroll) bên
+        trong sheet, giống cơ chế của Dialog.
+    status: >
+      [XÁC NHẬN — Williams 13/09] Height AUTO/hug theo nội dung (số đo thật từ
+      component), NHƯNG có max-height cap 80vh áp thêm ở lớp DS (xem § cap ở
+      trên) — cùng quy tắc với Dialog, đảm bảo consistency giữa 2 dạng overlay
+      khi đổi qua lại theo OVL-B-04.
+
+# -----------------------------------------------------------------------------
+# HÌNH DẠNG — góc bo, màu nền
+# -----------------------------------------------------------------------------
+shape:
+  corner_radius:
+    top_left: 24
+    top_right: 24
+    bottom_left: 0
+    bottom_right: 0
+    source: "[FIGMA — ĐO THẬT, variant 'w Button'] Góc trên bo tròn 24px, góc dưới
+      vuông (sát mép dưới màn hình) — hình dạng bottom-sheet kinh điển."
+  background:
+    value: "trắng (r=1,g=1,b=1), BOUND vào 1 variable thật"
+    variable_id: "VariableID:7205590b6eedf1f8d158bc77332a5eb9ca0d44f4/3123:923"
+    source: "[FIGMA — ĐO THẬT]"
+    note: >
+      Đây là 1 điểm dữ liệu thật cho khối "Surface" còn `not_yet_surveyed` ở
+      _shared.binding.yaml — CHƯA tra được TÊN biến (chỉ có variable id thô),
+      cần 1 lần đọc riêng bằng get_variable_defs hoặc mở trực tiếp panel
+      Variables trong Figma để lấy tên người-đọc-được. Ghi lại ở đây để không
+      mất, CHƯA đưa vào _shared.binding.yaml (tránh trộn dữ liệu 1 component
+      vào file dùng chung khi chưa xác nhận biến này có scope toàn hệ thống
+      hay chỉ riêng BottomSheet).
+
+# -----------------------------------------------------------------------------
+# PADDING / SPACING NỘI DUNG — SỐ LIỆU THẬT
+# -----------------------------------------------------------------------------
+content_spacing:
+  outer_padding_px: {left: 16, right: 16, top: 4, bottom: 0}
+  item_spacing_px: 24
+  source: "[FIGMA — ĐO THẬT, variant 'w Button']"
+  note: >
+    16px padding trái/phải là số liệu THẬT đầu tiên cho khối "Spacing" còn
+    `not_yet_surveyed` ở _shared.binding.yaml (trước đây chỉ có enum
+    density compact/comfortable, KHÔNG có px thật). Chưa đủ để khái quát
+    thành cả grid/scale spacing hệ thống — chỉ là 1 điểm dữ liệu thật của
+    riêng component này.
+
+# -----------------------------------------------------------------------------
+# THÀNH PHẦN CON — cấu trúc lặp lại ở MỌI variant
+# -----------------------------------------------------------------------------
+sub_parts:
+  drag_handle: >
+    "Bottom sheet / Bottom sheet device (Base)" instance ở đầu mỗi variant
+    (height ~24px) — thanh kéo (grabber) ở đỉnh sheet, trang trí/hệ thống,
+    KHÔNG phải nội dung tuỳ biến.
+  bottom_safe_area: >
+    Cùng loại instance "Bottom sheet / Bottom sheet device (Base)" xuất hiện
+    LẦN NỮA ở cuối mỗi variant (height ~34px) — đại diện safe-area/home-
+    indicator của thiết bị, KHÔNG phải margin nội dung có thể chỉnh.
+  header: "Header Container#1154:12 (boolean) — bật/tắt header, cấu trúc tương tự Dialog (back/title/close), CHƯA đọc chi tiết property con."
+  footer: "ContainerButton#1109:32 (boolean) tổng, cùng ↳ PrimaryButton#1109:26 / ↳ SecondaryButton#1109:20 (boolean riêng từng nút) — bật/tắt độc lập."
+  source: "[FIGMA] componentPropertyDefinitions + cấu trúc con, đọc 13/09"
+
+# -----------------------------------------------------------------------------
+# QUIRK — khác biệt với Dialog, cần verify riêng
+# -----------------------------------------------------------------------------
+quirks:
+  no_legacy_button_issue: >
+    [XÁC NHẬN bằng kiểm tra thật 13/09] KHÔNG bị lỗi giống Dialog (Dialog dùng
+    nhầm Button set CŨ "Stype=Round" làm mặc định). Kiểm tra trực tiếp 2 nút
+    footer trong variant "w Button": cả 2 đều trỏ đúng `parentComponentSetKey`
+    = `4e004e9d80a82cf3b0ec50e3b8cb9c6fb8eeb210` — CHÍNH LÀ Button organism
+    THẬT đã xác nhận (không phải set cũ). BottomSheet không dính quirk này.
+  footer_button_type_variance:
+    status: "[XÁC NHẬN — Williams 13/09] ĐÃ SỬA, ÁP DỤNG rule chung với Dialog."
+    original_finding: >
+      Mặc định demo của "w Button" dùng 2 nút KHÁC Type nhau: nút trái
+      Type=Secondary (Style=Fill Round), nút phải Type=Primary (Style=Fill
+      Round) — KHÁC với rule OVL-B-03 đã xác nhận cho Dialog ("cả 2 nút đều
+      Type=Primary, chỉ khác Style Outline/Fill").
+    resolution: >
+      [XÁC NHẬN — Williams 13/09] "Thay secondary button của bottom sheet
+      thành primary/outline cho đồng bộ với dialog của desktop" — ĐÂY LÀ QUIRK
+      cùng loại với Dialog (component gốc có 1 bản mặc định KHÔNG khớp quy
+      ước thật), KHÔNG PHẢI 1 convention riêng của BottomSheet. Rule OVL-B-03
+      (cả 2 nút Type=Primary, khác Style Outline/Fill) áp DÙNG CHUNG cho cả
+      Dialog lẫn BottomSheet — 1 rule duy nhất ở cấp kind `overlay`, không
+      tách riêng theo member. Đã sửa trực tiếp trên instance demo (`use_figma`,
+      node `I69:4911;1128:71416`): Type Secondary→Primary, Style Fill
+      Round→Outline Round. Đã chụp screenshot xác nhận: 2 nút cùng màu cam
+      (Primary), khác Style Outline/Fill — khớp visual với Dialog.
+      Xem decisions.md § 13/09-G.
+
+# -----------------------------------------------------------------------------
+# _pending_confirmation
+# -----------------------------------------------------------------------------
+_pending_confirmation:
+  - item: "ĐÃ ĐÓNG — footer_button_type_variance"
+    resolved: "[XÁC NHẬN — Williams 13/09] Sửa thành Type=Primary (Outline/Fill), đồng bộ Dialog — xem § quirks.footer_button_type_variance.resolution."
+  - item: "Ý nghĩa nghiệp vụ của 5 recipe trong type_variant (Action item/w Textfield/w Button/w Illustration/w Checkbox) — khi nào dùng recipe nào, chưa hỏi."
+  - item: "ĐÃ ĐÓNG — Height AUTO có cap hay không"
+    resolved: "[XÁC NHẬN — Williams 13/09] Có, cap 80vh giống Dialog — xem § size.height.cap."
+  - item: "Tên biến thật (không chỉ variable id thô) của màu nền trắng — cần đọc riêng qua get_variable_defs hoặc panel Variables Figma."
+  - item: "Chi tiết property con của header (back button/title/close) — mới biết có Header Container#1154:12 (boolean tổng), chưa đọc property con chi tiết như đã làm với Dialog header."

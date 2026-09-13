@@ -138,8 +138,10 @@ size:
         - lg = 640px  — nội dung phức tạp hơn (nhiều field, hoặc nhúng bảng/
           danh sách nhỏ trong Body)
       Dưới breakpoint chuyển BottomSheet: width không áp theo thang này —
-      BottomSheet dùng full viewport width (trừ margin an toàn 2 bên, số px
-      cụ thể chưa đề xuất — chờ BottomSheet đăng ký component).
+      [XÁC NHẬN bằng đo đạc thật 13/09] BottomSheet dùng full viewport width
+      375px cố định (KHÔNG có margin 2 bên ngoài mép sheet — sheet chiếm
+      TRỌN chiều rộng màn hình), chỉ có padding NỘI DUNG 16px trái/phải bên
+      trong sheet. Xem profile.ghn/ds/bottomsheet.binding.yaml § size.width.
     recipe_mapping: "AlertDialog/confirmation → sm; recipe form (mặc định) → md; nội dung phức tạp hơn → lg"
     rationale: "Modal không nên scale tuyến tính theo chiều rộng màn hình rất rộng (khác height, vốn hợp lý scale theo viewport vì nội dung cuộn dọc) — quy ước phổ biến (Material Design...), không phải phát minh riêng."
   status: "[XÁC NHẬN — Williams 13/09] Cả height lẫn width đã duyệt — xem decisions.md § 13/09-B"
@@ -155,6 +157,7 @@ _pending_confirmation:
     still_open: "Ngưỡng breakpoint cụ thể để chuyển (đề xuất dùng _shared.binding.yaml § breakpoints.sm=640, CHƯA xác nhận) — xem overlay.rules.yaml § responsive_member_swap."
   - item: "ĐÃ ĐÓNG — số px cụ thể của width (3 bậc sm/md/lg) và cách hiểu height 60-80% (trần, không phải sàn)"
     resolved: "[XÁC NHẬN — Williams 13/09, \"Okay hoàn toàn hợp lý\"] Xem § size ở trên — cả height lẫn width đã duyệt."
-  - item: "BottomSheet chưa có binding riêng (chưa đăng ký component) — width/margin full-viewport của nó chưa có số cụ thể."
+  - item: "ĐÃ ĐÓNG — BottomSheet chưa có binding riêng, width/margin full-viewport chưa có số cụ thể"
+    resolved: "[XÁC NHẬN bằng đo đạc thật 13/09] BottomSheet đã đăng ký component chính thức — xem profile.ghn/ds/bottomsheet.binding.yaml § size.width (375px cố định, trùng khớp mobile reference) + § size.height (AUTO/hug, quan sát thật 210-812px). Xem decisions.md § 13/09-F."
   - item: "ĐÃ ĐÓNG — ngưỡng breakpoint cụ thể để Dialog tự đổi sang BottomSheet"
     resolved: "[XÁC NHẬN — Williams 13/09] Dùng _shared.binding.yaml § breakpoints.sm=640 — xem overlay.rules.yaml § OVL-B-04.threshold."

@@ -82,9 +82,9 @@ component_kinds:
   overlay:
     file: rules/kinds/overlay.rules.yaml
     about: "Nổi lên trên nội dung, chiếm focus"
-    members_active: [Dialog]
-    members_planned: [AlertDialog, BottomSheet, Popover, ContextMenu]
-    status: "[XÁC NHẬN — Williams 12/09] Anatomy (Header/Body slot/Footer) + recipe 'form' đã duyệt từ 12/09-F/G/I/J/L. Dialog đăng ký thành components: chính thức § 12/09-R — xem components.Dialog bên dưới. AlertDialog định nghĩa theo nghiệp vụ (§ alert_dialog_trigger trong file kind), chưa có binding riêng."
+    members_active: [Dialog, BottomSheet]
+    members_planned: [AlertDialog, Popover, ContextMenu]
+    status: "[XÁC NHẬN — Williams 12/09] Anatomy (Header/Body slot/Footer) + recipe 'form' đã duyệt từ 12/09-F/G/I/J/L. Dialog đăng ký thành components: chính thức § 12/09-R — xem components.Dialog bên dưới. BottomSheet đăng ký thành components: chính thức § 13/09-F (số liệu width/margin/height thật đã đóng gap còn treo từ OVL-B-04) — xem components.BottomSheet bên dưới. AlertDialog định nghĩa theo nghiệp vụ (§ alert_dialog_trigger trong file kind), chưa có binding riêng."
 
   feedback_transient:
     file: rules/kinds/feedback_transient.rules.yaml
@@ -168,6 +168,15 @@ components:
     binding: profile.ghn/ds/dialog.binding.yaml
     policy_scope: dialog
     status: "[XÁC NHẬN — Williams 12/09] Đăng ký chính thức, xem decisions.md § 12/09-R. Quirk quan trọng: bản mặc định của component gốc dùng Button set CŨ (Type=Grey) — KHÔNG dùng làm chuẩn, xem dialog.binding.yaml § quirks."
+    axes:
+      content_pattern: {kind: enum}
+
+  BottomSheet:
+    kinds: [overlay]
+    rules: rules/components/bottomsheet.rules.yaml   # gần rỗng — xem file
+    binding: profile.ghn/ds/bottomsheet.binding.yaml
+    policy_scope: bottomsheet
+    status: "[XÁC NHẬN — Williams 13/09, 'Đóng nốt các gap này đi'] Đăng ký chính thức qua dữ liệu Figma thật (component_set, không phải component đơn như Dialog) — xem decisions.md § 13/09-F. Số liệu width=375px cố định (khớp đúng mobile reference 375px của OVL-B-04), height AUTO/hug theo nội dung (quan sát thật 210px–812px, KHÔNG có cap nhân tạo như Dialog) đã đóng phần 'còn mở' trong dialog.binding.yaml § _pending_confirmation."
     axes:
       content_pattern: {kind: enum}
 

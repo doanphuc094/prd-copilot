@@ -1331,3 +1331,106 @@ liệu cụ thể thì dùng, không thì bỏ). Đã thực thi trên file test
 có 1 thành viên: Input). Khi Textarea/Select/Combobox/Datepicker được đăng
 ký sau này, cần áp lại đúng phép thử này cho field cụ thể của từng loại,
 không tự suy rộng ra business logic khác.
+
+---
+
+## 13/09-F — Đăng ký BottomSheet thành component, đóng gap "số liệu width/margin"
+
+**by**: Williams — "Đóng nốt các gap này đi" (trả lời câu hỏi mở về BottomSheet
+width/margin numbers và color/typography/spacing chưa khảo sát)
+**affects**: `manifest.yaml` (thêm `components.BottomSheet`, chuyển
+`overlay.members_active` → `[Dialog, BottomSheet]`), `rules/components/
+bottomsheet.rules.yaml` (MỚI), `profile.ghn/ds/bottomsheet.binding.yaml`
+(MỚI), `profile.ghn/ds/dialog.binding.yaml` (đóng 2 mục `_pending_
+confirmation` liên quan BottomSheet), `rules/kinds/overlay.rules.yaml` (§
+OVL-B-04.still_open cập nhật)
+
+**Quy trình**: search_design_system tìm "Bottom sheet / Bottom sheet organism"
+trong GHN DS (componentKey `4c05d3f58bd53f249633c0af34153b91ab849735`), import
+qua `use_figma` (`figma.importComponentSetByKeyAsync`), đọc trực tiếp cả 5
+variant, tạo 1 instance thật trên canvas + chụp screenshot để xác nhận hình
+ảnh khớp cấu trúc đọc được — cùng phương pháp/kỷ luật đã dùng cho Input và
+Dialog.
+
+**Số liệu THẬT đóng gap còn treo**:
+- **Width = 375px CỐ ĐỊNH** trên cả 5/5 variant — trùng khớp chính xác mobile
+  viewport reference Williams cho ở 13/09-A (375×812). Xác nhận BottomSheet
+  chiếm TRỌN chiều rộng màn hình mobile, không có margin 2 bên ngoài mép
+  sheet — chỉ có padding NỘI DUNG 16px trái/phải bên trong.
+- **Height = AUTO/hug theo nội dung**, quan sát thật trên 5 variant: 210px
+  (w Button, ngắn nhất) đến 812px (w Checkbox, dài nhất — TRÙNG KHỚP CHÍNH
+  XÁC chiều cao viewport mobile reference). Khác Dialog (đã có cap cứng
+  80vh) — BottomSheet trong Figma KHÔNG có cơ chế cap, tự nhiên hug hết nội
+  dung. Đây là quan sát thật, CHƯA hỏi Williams có nên thêm cap tương tự
+  Dialog hay không.
+- Góc trên bo 24px, góc dưới vuông (sát đáy màn hình) — hình dạng bottom-sheet
+  kinh điển. Nền trắng, bound vào 1 variable thật (chưa tra được tên, chỉ có
+  id thô) — 1 điểm dữ liệu thật đầu tiên cho khối "Surface" còn
+  `not_yet_surveyed`.
+- Kiểm tra lại quirk Button: BottomSheet KHÔNG dính lỗi giống Dialog (Dialog
+  dùng nhầm Button set cũ "Stype=Round" làm mặc định) — 2 nút footer của
+  BottomSheet đều trỏ đúng Button organism thật (`4e004e9d80a82cf3b0ec50e3b8cb9c6fb8eeb210`).
+  Tuy nhiên phát hiện 1 điểm CHƯA rõ: mặc định demo dùng Type=Secondary +
+  Type=Primary (khác quy ước Primary+Primary đã xác nhận cho Dialog ở
+  OVL-B-03) — ghi lại làm `_pending_confirmation`, KHÔNG tự quyết đây là quy
+  ước riêng hay lỗi demo default.
+
+**Còn mở (CHƯA hỏi Williams, ghi rõ trong bottomsheet.binding.yaml)**:
+ý nghĩa nghiệp vụ của 5 recipe (Action item/w Textfield/w Button/
+w Illustration/w Checkbox); có nên áp cap height giống Dialog hay không; quy
+ước Type nút footer (Secondary+Primary hay lỗi demo); tên biến thật của màu
+nền.
+
+**Về khảo sát foundational token (color/typography/spacing) nói chung**: vòng
+này CHỈ tìm được 1-2 điểm dữ liệu thật phát sinh TỰ NHIÊN từ việc đăng ký
+BottomSheet (1 biến màu nền, 16px padding nội dung) — KHÔNG phải 1 khảo sát
+đầy đủ toàn hệ thống. Khảo sát đầy đủ (cần đọc toàn bộ collection Variables
+của GHN DS, hoặc file `ghn-spacing-tokens.json` gốc chưa từng đọc trong phiên
+này) vẫn là việc RIÊNG, CHƯA làm — xem `_shared.binding.yaml` cho danh sách
+đầy đủ các mục `not_yet_surveyed`.
+
+---
+
+## 13/09-G — BottomSheet: cap height 80vh + đồng bộ footer button với Dialog
+
+**by**: Williams — quote nguyên văn: *"Bottom sheet cũng có cap cứng 80%
+viewport mobile"* và *"Thay secondary button của bottom sheet thành primary/
+outline cho đồng bộ với dialog của desktop"*
+**affects**: `profile.ghn/ds/bottomsheet.binding.yaml` (§ size.height.cap MỚI,
+§ quirks.footer_button_type_variance đóng), `rules/kinds/overlay.rules.yaml`
+(§ OVL-B-03 thêm `applies_to`, § OVL-B-04.still_open cập nhật)
+
+**1. Height cap 80vh.** Ở 13/09-F, ghi nhận component gốc Figma của
+BottomSheet KHÔNG có cơ chế cap chiều cao (chỉ tự nhiên hug tới hết nội
+dung, quan sát thật tới 812px). Williams xác nhận: áp CÙNG max-height cap
+80% viewport như Dialog (dialog.binding.yaml § size.height.interpretation).
+Đây là quyết định THIẾT KẾ thêm ở lớp DS/renderer (không phải giá trị đọc
+trực tiếp từ component) — trên 80vh, nội dung cuộn bên trong sheet, cùng cơ
+chế với Dialog. Mục đích: đảm bảo Dialog↔BottomSheet (OVL-B-04) nhất quán cả
+về hành vi kích thước, không chỉ hình thức.
+
+**2. Đồng bộ nút footer với Dialog.** Ở 13/09-F, phát hiện BottomSheet có
+cùng LOẠI quirk như Dialog: bản mặc định của component gốc (variant "w
+Button") dùng 2 nút Type=Secondary + Type=Primary — không khớp rule OVL-B-03
+đã xác nhận cho Dialog (cả 2 nút Type=Primary, khác Style Outline/Fill).
+Williams xác nhận đây KHÔNG phải 1 convention riêng của BottomSheet — sửa
+để dùng đúng 1 rule OVL-B-03 chung cho cả kind `overlay`. Đã áp dụng:
+
+- Đọc `Button / Button organism` (componentKey
+  `4e004e9d80a82cf3b0ec50e3b8cb9c6fb8eeb210`) xác nhận giá trị Style thật có
+  sẵn: `Outline Round` (song song `Fill Round` đã dùng).
+- Sửa trực tiếp instance demo BottomSheet trong file test
+  (`uFbbdvWYC1dg3AjdnHCgxk`, node `I69:4911;1128:71416`, nút vị trí
+  "Secondary CTA"): `Type` Secondary→Primary, `Style` Fill Round→Outline
+  Round — qua `use_figma`.
+- Chụp screenshot xác nhận: cả 2 nút cùng màu cam (Primary), khác nhau ở
+  Style (1 viền/1 nền đặc) — khớp visual 100% với quy ước Dialog đã xác
+  nhận ("Chưa lưu thay đổi").
+
+OVL-B-03 nay ghi rõ (`§ applies_to`): rule này ở cấp KIND, áp cho MỌI thành
+viên overlay có footer 2-nút — không tách riêng theo từng component.
+
+**Còn mở**: ý nghĩa nghiệp vụ của 5 recipe BottomSheet (Action item/
+w Textfield/w Button/w Illustration/w Checkbox), tên biến thật của màu nền,
+chi tiết property con của header — chưa hỏi Williams, không nằm trong 2 yêu
+cầu round này.

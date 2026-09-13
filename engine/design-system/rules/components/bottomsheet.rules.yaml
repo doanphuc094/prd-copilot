@@ -1,0 +1,26 @@
+# =============================================================================
+# bottomsheet.rules.yaml — component-level rules cho BottomSheet
+#
+# GẦN RỖNG có chủ đích (xem manifest.yaml § guardrails.component_file_stays_small
+# và kiến trúc 08/09-D: đăng ký component phải RẺ, hành vi sống ở cấp kind).
+# Toàn bộ hành vi thật của BottomSheet nằm ở rules/kinds/overlay.rules.yaml —
+# BottomSheet là 1 THÀNH VIÊN của kind `overlay`, giống Dialog.
+#
+# version: 1.0-draft
+# =============================================================================
+
+meta:
+  component: BottomSheet
+  kinds: [overlay]
+  layer: component
+  version: 1.0-draft
+  status: "[XÁC NHẬN — Williams 13/09] Đăng ký chính thức — xem decisions.md § 13/09-F"
+
+rules_live_at:
+  anatomy: "rules/kinds/overlay.rules.yaml § anatomy (Header/Body slot/Footer) — dùng chung với Dialog"
+  footer_emphasis: "rules/kinds/overlay.rules.yaml § footer emphasis pattern (2-button: 1 Outline + 1 Fill, cùng Type) — [cần verify riêng cho BottomSheet, xem bottomsheet.binding.yaml § quirks.footer_button_type_variance]"
+  content_pattern_recipes: "rules/kinds/overlay.rules.yaml § content_pattern.known_recipes"
+  exit_action_invariants: "rules/kinds/overlay.rules.yaml"
+  dialog_bottomsheet_swap: "rules/kinds/overlay.rules.yaml § OVL-B-04 — BottomSheet CHÍNH LÀ vế 'mobile' của rule này, trừ AlertDialog"
+
+behavioural_limits: []
