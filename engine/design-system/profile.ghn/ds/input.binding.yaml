@@ -43,7 +43,7 @@ figma_properties:
   state: State
   label_visible: "Label#40:0"        # boolean
   error_message_visible: "error message#67:0"  # boolean
-  condition: "Condition#725:86"      # boolean — [cần verify] ý nghĩa chưa rõ
+  condition: "Condition#725:86"      # boolean — [ĐÃ RÕ 13/09-K] xem sub_parts.condition
   source: "[FIGMA] componentPropertyDefinitions, đọc 12/09"
 
 # -----------------------------------------------------------------------------
@@ -62,10 +62,10 @@ size:
   source: "[FIGMA]"
   height_px:
     sm: 36
-    source: "[FIGMA — ĐỌC THẬT 13/09-H] get_variable_defs trên node Input thật (51:211, Size=sm) — biến `Size/size-input-sm` resolve ra 36px. Biến này KHÔNG nằm trong 3 collection local của file GHN DS gốc đã khảo sát (Primitives/Color Mode/Dimensions/Breakpoints) — có thể thuộc 1 library/collection Size RIÊNG chưa xác định được tên, get_variable_defs vẫn resolve đúng giá trị dù không truy được collection gốc."
-    md: "[cần verify] Chưa đo — chỉ mới đo được sm vì demo hiện tại chỉ có field Size=sm."
-    lg: "[cần verify] Chưa đo — tương tự md."
-  status: "[XÁC NHẬN 1 PHẦN 13/09-H] Đã có số đo px thật cho sm=36px (xem height_px ở trên) — md/lg vẫn cần verify khi có field demo dùng size khác. Vẫn chưa có mapping nghiệp vụ theo vị trí (khác Button đã có policy.size_by_position)."
+    md: 40
+    lg: 44
+    source: "[FIGMA — ĐỌC THẬT 13/09-H, 13/09-K] sm: get_variable_defs trên node Input thật (51:211, Size=sm) — biến `Size/size-input-sm` resolve ra 36px. md/lg: đo trực tiếp bounding box của sub-instance \"Input / Input filed type (Base)\" trên màn hình demo Williams đưa (file B2B Portal s2NE6ikwLnsZSUp97RBfof, node 23309:4068, frame \"1. Thiết lập chung\" — 3 hàng SM/MD/LG) — height thật lần lượt 36/40/44px, đúng cấp số cộng +4px mỗi bậc. Không đọc được tên biến `Size/size-input-md`/`Size/size-input-lg` qua get_variable_defs (tool không nhận node id dạng instance-lồng-instance của node này) nhưng số đo bounding box là số THẬT, không suy đoán."
+    status: "[ĐÃ ĐÓNG 13/09-K] Cả 3 size đã có số đo px thật: sm=36, md=40, lg=44. Vẫn chưa có mapping nghiệp vụ theo vị trí sử dụng (khác Button đã có policy.size_by_position) — chưa hỏi Williams, không critical."
 
 # -----------------------------------------------------------------------------
 # BINDING: TYPE — biến thể cấu trúc field
@@ -113,11 +113,27 @@ state:
     Disabled: "[cần verify] Chưa xác nhận icon phải xử lý thế nào ở state này"
   source: "[FIGMA] + [XÁC NHẬN một phần — Williams 12/09-N]"
   color_tokens_by_state:
-    status: "[XÁC NHẬN 1 PHẦN 13/09-H] Chỉ mới đọc thật State=Filled/Destructive=False."
+    status: "[ĐÃ ĐÓNG 13/09-K] Cả 4 tổ hợp đã đọc thật, xem chi tiết dưới. Nguồn: Williams đưa demo thật (file B2B Portal s2NE6ikwLnsZSUp97RBfof, node 23309:3544, frame \"1. Thiết lập chung\" — 3 hàng Focused/Disabled/Destructive), get_variable_defs trên từng instance."
     Filled_False: "border=`border/app/default` (#d4d4d8), nền=`bg/app/baseWhite` (#ffffff) — đọc get_variable_defs trên node 51:211. Xem _shared.binding.yaml § color_tokens.verified_component_bindings.input_state_filled."
-    Focused: "[cần verify] Chưa đọc — có thể dùng `border/primary/default` hoặc 1 focusRing token riêng theo kiến trúc chung, KHÔNG tự áp — cần field demo thật ở Focused để đọc."
-    Disabled: "[cần verify] Chưa đọc — có thể dùng `border/app/disabled` + `bg/app/disabled` theo kiến trúc chung, KHÔNG tự áp."
-    "Destructive=True": "[cần verify] Chưa đọc — có thể dùng `border/error/default` theo kiến trúc chung (đã thấy alias trùng text-error), KHÔNG tự áp."
+    Focused: >
+      [XÁC NHẬN — đọc thật 13/09-K] border=`border/info/default` (#3b82f6, xanh dương)
+      — LƯU Ý: KHÔNG có 1 token "focus" riêng, dùng chung màu info. Williams giải
+      thích thêm: "trạng thái Focused hầu như không dùng khi thiết kế Figma, chỉ
+      dùng khi làm prototype HTML cho PO review, và khi họ hover vào vùng input đó"
+      — tức trong demo Figma, hàng "Focused" mô phỏng cho hành vi hover/focus THẬT
+      sẽ có trong bản HTML, không phải 1 trạng thái Figma hay dùng khi thiết kế UI
+      tĩnh.
+    Disabled: >
+      [XÁC NHẬN — đọc thật 13/09-K] border=`border/app/disabled` (#e4e4e7),
+      nền=`bg/app/elevated` (#f4f4f5, KHÔNG phải baseWhite), text=`text/text-disabled`
+      (#a1a1aa), icon=`icon/icon-disabled` (#a1a1aa) — đúng như dự đoán kiến trúc
+      chung ở 13/09-H, nay đã xác nhận bằng dữ liệu thật thay vì suy đoán.
+    "Destructive=True": >
+      [XÁC NHẬN — đọc thật 13/09-K] border=`border/error/default` (#ef4444),
+      text=`text/text-error` (#ef4444), icon=`icon/icon-error` (#ef4444), nền vẫn
+      `bg/app/baseWhite`. Text "Error message" bên dưới field dùng font
+      "Content/Body 3" (12/20, Regular) + màu text-error, có icon cảnh báo (triangle)
+      đứng trước — kèm màu icon-error.
 
 # -----------------------------------------------------------------------------
 # THÀNH PHẦN CON (atoms) — boolean props điều khiển hiện/ẩn
@@ -125,8 +141,16 @@ state:
 sub_parts:
   label: "Label#40:0 — hiện/ẩn nhãn field"
   error_message: "error message#67:0 — hiện/ẩn dòng thông báo lỗi (dùng cùng destructive=True, xem trên)"
-  condition: "Condition#725:86 — [cần verify] ý nghĩa chưa rõ, chưa thấy dùng trong bất kỳ recipe/render nào tới nay"
-  source: "[FIGMA] componentPropertyDefinitions, đọc 12/09"
+  condition: >
+    Condition#725:86 — [ĐÃ RÕ — Williams 13/09-K] Bật thì hiện 1 hàng "Conditions"
+    gồm nhiều chip/tag nhỏ (label + icon check/xmark) ngay dưới field — quan sát
+    thật trên node 23309:4072/4329/4483 (file B2B Portal), mỗi hàng có 4 chip
+    dạng "Input / Input text type (Base)". Williams xác nhận: "cái condition bên
+    dưới vùng input hầu như tao không dùng tới — nên khi tạo input mày có thể
+    auto ẩn nó đi giúp tao". → QUY TẮC MỚI: khi dựng field Input mới qua pipeline,
+    mặc định Condition=False (ẩn), CHỈ bật khi có yêu cầu tường minh cần hiện dãy
+    điều kiện/tag đó.
+  source: "[FIGMA] componentPropertyDefinitions, đọc 12/09; ý nghĩa + default xác nhận 13/09-K"
 
 # -----------------------------------------------------------------------------
 # ICON — trục icon_slots, luật ở rules/kinds/form_input.rules.yaml (FRMIN-B-01/02)
@@ -154,7 +178,8 @@ icon:
 _pending_confirmation:
   - item: "component_set_id thật, ổn định trong file library GHN DS gốc — hiện chỉ có id quan sát qua import trong file test, xem component.note ở trên."
   - item: "Ý nghĩa nghiệp vụ đầy đủ của trục Type (Default/Combo/Leading dropdown/Trailing dropdown/w Chips) — đặc biệt liệu 2 giá trị dropdown có phải chính là điều kiện 'field là dropdown' của FRMIN-B-02 hay không."
-  - item: "size.scale (sm/md/lg) — chưa đo px thật, chưa có mapping theo vị trí sử dụng (form ngắn / bảng lọc / v.v.)."
-  - item: "Ý nghĩa boolean 'Condition#725:86' — chưa rõ, chưa dùng trong bất kỳ render/recipe nào."
+  - item: "size.scale (sm/md/lg) — [ĐÃ ĐÓNG 13/09-K] đã đo đủ px thật cả 3. Còn thiếu: mapping nghiệp vụ theo vị trí sử dụng (form ngắn / bảng lọc / v.v.), không critical."
+  - item: "Ý nghĩa boolean 'Condition#725:86' — [ĐÃ ĐÓNG 13/09-K] đã rõ + đã có default (ẩn), xem sub_parts.condition."
   - item: "Icon phải ở State=Default và State=Disabled — xem rules/kinds/form_input.rules.yaml § _pending_confirmation (chưa hỏi Williams)."
   - item: "Ưu tiên chevron vs clear khi field vừa là dropdown vừa Filled — xem rules/kinds/form_input.rules.yaml § _pending_confirmation (chưa hỏi Williams)."
+  - item: "State=Focused/Disabled/Destructive=True màu sắc — [ĐÃ ĐÓNG 13/09-K] đã đọc thật cả 3, xem state.color_tokens_by_state."

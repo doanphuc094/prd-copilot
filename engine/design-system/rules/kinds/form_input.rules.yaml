@@ -132,6 +132,18 @@ behavioural_limits:
       input có thể có lúc xài icon có lúc không cần xài tao cần mày đề xuất
       tạo ra được quy tắc nào có thể xài icon, khi nào không cần xài icon".
       Xem decisions.md § 13/09-D.
+  - id: FRMIN-B-04
+    status: "[XÁC NHẬN — Williams 13/09-K]"
+    rule: >
+      Property `Condition` (hàng chip/tag nhỏ hiển thị bên dưới field, xem
+      input.binding.yaml § sub_parts.condition) mặc định TẮT (ẩn) khi dựng
+      field mới qua pipeline. CHỈ bật khi có yêu cầu tường minh cần hiện dãy
+      điều kiện/tag đó cho field cụ thể.
+    source: >
+      [XÁC NHẬN — Williams 13/09-K] "lưu ý cái condition bên dưới vùng input
+      hầu như tao không dùng tới — nên khi tạo input mày có thể auto ẩn nó đi
+      giúp tao". Quan sát thật trên node 23309:4072/4329/4483 (file B2B
+      Portal s2NE6ikwLnsZSUp97RBfof) — xem decisions.md § 13/09-K.
 
 # =============================================================================
 # _pending_confirmation — CHƯA CHỐT

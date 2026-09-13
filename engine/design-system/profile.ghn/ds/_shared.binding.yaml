@@ -307,7 +307,9 @@ color_tokens:
       "bg/app/inverse":    {light: "#18181b", primitive_light: "Colors/Zinc/900"}
     border:
       "border/app/default": {light: "#d4d4d8", note: "Alias TRÙNG với bg/app/default — cùng 1 biến Color Mode dùng chung cho cả 2 role border+bg."}
+      "border/app/disabled": {light: "#e4e4e7", note: "Alias TRÙNG với bg/app/disabled — [MỚI 13/09-K] đọc thật trên Input State=Disabled."}
       "border/error/default": {light: "#ef4444", note: "Alias TRÙNG với text-error."}
+      "border/info/default": {light: "#3b82f6", note: "[MỚI 13/09-K] Xanh dương — đọc thật trên Input State=Focused. LƯU Ý: KHÔNG có token 'focus'/'focusRing' riêng, Focused dùng CHUNG màu info."}
     backdrop:
       "bg/app/baseBlack": {light: "#000000", dark: "#ffffff (ĐẢO NGƯỢC giống baseWhite — light=đen/dark=trắng)", primitive_light: "Colors/Base/Black"}
       usage: "[XÁC NHẬN — Williams 13/09] Dùng cho lớp phủ mờ (backdrop) của overlay: `bg/app/baseBlack` @ `Opacity/O5` (50%) — xem rules/kinds/overlay.rules.yaml § OVL-B-01.backdrop_color, áp dụng chung cho mọi thành viên overlay (Dialog, BottomSheet)."
@@ -315,6 +317,7 @@ color_tokens:
       "icon-muted":    {light: "#52525b"}
       "icon-disabled": {light: "#a1a1aa"}
       "icon-placeholder": {light: "#71717a"}
+      "icon-error":    {light: "#ef4444", note: "[MỚI 13/09-K] đọc thật trên Input Destructive=True — dùng cho icon cảnh báo trước 'Error message'."}
   verified_component_bindings:
     marker: "[FIGMA — ĐỌC THẬT qua get_variable_defs trên node THẬT, không phải suy đoán token nào 'nên' dùng]"
     bottomsheet_background: >
@@ -329,14 +332,29 @@ color_tokens:
       = `text/text-default` (#09090b) với font "Content/Body 2", label dùng
       font "Sub Title/Subtitle 2", icon (kể cả icon đang KHÔNG hiện) sẵn bind
       `icon/icon-disabled` (#a1a1aa) cho 1 slot — CHƯA rõ đây là default cho
-      MỌI state hay chỉ do state hiện tại. CHỈ xác nhận được State=Filled —
-      CHƯA kiểm Focused/Disabled/Destructive=True (xem still_not_verified).
-  still_not_verified:
-    - "Input border/bg ở State=Focused, State=Disabled, và Destructive=True — mới chỉ kiểm State=Filled/Destructive=False."
-    - "sidebar_background — chưa có ví dụ component thật nào (Sidebar) để đọc get_variable_defs, chỉ có thể ĐOÁN dùng bg/app/subtle hoặc bg/app/elevated theo kiến trúc chung — KHÔNG tự áp, để trống."
-    - "card_background — tương tự, chưa có component Card thật để đọc, không tự đoán."
+      MỌI state hay chỉ do state hiện tại. CHỈ xác nhận được State=Filled ở
+      vòng này — Focused/Disabled/Destructive=True đóng ở 13/09-K, xem
+      input_state_focused_disabled_destructive ngay dưới.
+    input_state_focused_disabled_destructive: >
+      [ĐÃ ĐÓNG 13/09-K — Williams đưa demo thật node 23309:3544, file B2B Portal
+      s2NE6ikwLnsZSUp97RBfof] đọc get_variable_defs trên 3 instance thật (row
+      Focused/Disabled/Destructive của demo). Focused: border=`border/info/default`
+      (#3b82f6) — dùng chung màu info, KHÔNG có token focus riêng; Williams lưu ý
+      state này hầu như không dùng khi thiết kế Figma, chỉ dùng khi build prototype
+      HTML cho PO review (mô phỏng hover). Disabled: border=`border/app/disabled`
+      (#e4e4e7), nền=`bg/app/elevated` (#f4f4f5, KHÔNG phải baseWhite),
+      text/icon=`text-disabled`/`icon-disabled` (#a1a1aa). Destructive=True:
+      border=`border/error/default` (#ef4444), text=`text-error`, icon=`icon-error`
+      (cả 2 #ef4444), nền vẫn baseWhite, dòng "Error message" dùng font
+      "Content/Body 3". Xem input.binding.yaml § state.color_tokens_by_state.
+  still_not_verified: []
+  still_not_verified_note: "Rỗng — mục Input Focused/Disabled/Destructive đã đóng ở 13/09-K (xem verified_component_bindings.input_state_focused_disabled_destructive); card/sidebar background đã đóng ở 13/09-I/J."
   resolved_13_09_I:
     - "ĐÃ ĐÓNG — Dialog/BottomSheet backdrop/scrim: [XÁC NHẬN — Williams 13/09] `bg/app/baseBlack` @ `Opacity/O5` (50%) — xem § backdrop ở trên + rules/kinds/overlay.rules.yaml § OVL-B-01.backdrop_color."
+  resolved_13_09_K:
+    - "ĐÃ ĐÓNG — Input State=Focused/Disabled/Destructive=True màu sắc thật (xem verified_component_bindings.input_state_focused_disabled_destructive)."
+    - "ĐÃ ĐÓNG — Input size=md/lg chiều cao thật: md=40px, lg=44px (xem input.binding.yaml § size.height_px)."
+    - "ĐÃ ĐÓNG — Ý nghĩa boolean Condition của Input + default ẩn (xem input.binding.yaml § sub_parts.condition, rules/kinds/form_input.rules.yaml § FRMIN-B-04)."
 
 # -----------------------------------------------------------------------------
 # SURFACE — bề mặt/khung. Xem thêm § color_tokens ở trên cho giá trị hex thật.
@@ -348,8 +366,13 @@ surface:
     when_to_use: "CỐ ĐỊNH cho mọi table_card, không tuỳ biến theo màn"
     confirmed_source: "schema-v1-draft.md Mục 3a, field header_style"
     cross_check_13_09_H: "Khớp CHÍNH XÁC với token `bg/app/subtle` (#fafafa) — xem color_tokens.resolved_values.background"
-  not_yet_surveyed:
-    [card_background, modal_overlay_background, sidebar_background]
+  card_background:
+    status: "[XÁC NHẬN — Williams 13/09-J] `bg/app/baseWhite` (#ffffff Light / #000000 Dark) — xem color_tokens.resolved_values.background."
+  sidebar_background:
+    status: "[XÁC NHẬN — Williams 13/09-J] `bg/app/baseWhite`, cùng token với card_background — xem color_tokens.resolved_values.background."
+    note: "Xem thêm profile.ghn/ds/sidebar-research-notes.md cho khảo sát riêng về Sidebar (chưa đăng ký component chính thức, chỉ mới nghiên cứu để dùng sau)."
+  not_yet_surveyed: []
+  not_yet_surveyed_note: "Rỗng — 3 mục cũ (card/sidebar/modal_overlay background) đã đóng hết ở 13/09-I/J."
   partially_surveyed:
     item: "input field border/background theo state"
     status: "[XÁC NHẬN 1 PHẦN 13/09-H] State=Filled/Destructive=False đã xác nhận thật (border/app/default + bg/app/baseWhite) — xem color_tokens.verified_component_bindings.input_state_filled. Focused/Disabled/Destructive=True CHƯA kiểm."

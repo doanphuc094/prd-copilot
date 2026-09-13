@@ -1541,3 +1541,157 @@ Ghi ở cấp KIND (`OVL-B-01.backdrop_color`), áp dụng CHUNG cho mọi thàn
 overlay có backdrop (Dialog, BottomSheet) — không tách riêng theo component,
 cùng cách tiếp cận đã dùng cho OVL-B-03. Đóng hẳn mục "modal_overlay_
 background/backdrop" từng ghi `still_not_verified` ở 13/09-H.
+
+---
+
+## 13/09-J — Card/Sidebar background + khảo sát Sidebar (NGHIÊN CỨU, chưa đăng ký)
+
+**by**: Williams — "Card-background/sidebar-background đều dùng bg/app/
+baseWhite"; "tụi tao có sidebar component... do Giao Hàng Nặng là nhánh mới
+tụi tao customize sidebar riêng dựa trên atom của sidebar design system...
+đưa ra đề xuất chung cho sử dụng sidebar"; link GHN DS sidebar (node
+1103:18352) + link B2B Portal (node 22894:77039, logo Giao Hàng Nặng); mô tả
+hành vi module/chevron/state của sidebar.
+**affects**: `profile.ghn/ds/_shared.binding.yaml` (§ surface: đóng
+card_background, sidebar_background), file MỚI
+`profile.ghn/ds/sidebar-research-notes.md` (nghiên cứu, KHÔNG đăng ký).
+Không đổi `manifest.yaml`.
+
+**1. Card/Sidebar background.** Williams xác nhận trực tiếp, không cần đo
+thêm: cả hai đều dùng `bg/app/baseWhite` (#ffffff Light / #000000 Dark) —
+cùng token đã dùng cho BottomSheet/Input background. Đóng 2 mục
+`not_yet_surveyed` còn treo từ 13/09-H trong `_shared.binding.yaml § surface`.
+
+**2. Khảo sát Sidebar — CHỈ nghiên cứu, KHÔNG đăng ký component.** Theo đúng
+yêu cầu của Williams ("đưa ra đề xuất chung... để sau này"), đã khảo sát THẬT
+(không đoán) 2 nguồn Figma:
+
+- GHN DS gốc (generic): component "Left Menu" (componentKey
+  `a9dabbc7e2f8b7a636175adf12016dad23645d71`, variant Type=[Mobile, Web] —
+  khung toàn bộ sidebar) và component con "Left menu items (Base)"
+  (componentKey `dbf4cf146de9387afd495867be9e17dc2a20d9cb` — atom "module",
+  variant Type=[main menu, sub menu, collapse, expand] × State=[Default,
+  Active], cùng boolean numberBadge/Menu name/Active/Right icon).
+- B2B Portal (thật, Freight custom): frame "Left Menu Freight" →
+  "SidebarMenu" (node 22894:77037) — đọc thật 10 module chính + các sub-menu,
+  đối chiếu từng điểm với mô tả của Williams.
+
+**Phát hiện quan trọng**: "collapse"/"expand" KHÔNG PHẢI là chevron của từng
+module — đó là 1 nút toggle DUY NHẤT thu gọn/mở rộng CẢ sidebar, nằm ngay
+dưới logo. Chevron mở/đóng sub-menu của TỪNG module là 1 khái niệm khác:
+boolean `Right icon` trên variant `main menu`.
+
+**Đối chiếu với sidebar Freight thật**: khớp đúng phần lớn mô tả của
+Williams (module đang xem = State Active; module có sub-menu = Right
+icon=true; sub-menu không icon chỉ có text; user ở sub-menu nào thì
+State=Active tại chính sub-menu đó).
+
+**2 điểm CHƯA khớp — cố tình để ngỏ, không tự đoán** (chi tiết đầy đủ trong
+`sidebar-research-notes.md § 4`):
+(a) Chevron luôn hiển thị `chevron-down` ở MỌI module có sub-menu, kể cả khi
+sub-menu đang hiển thị (mở) ngay bên dưới — không đổi thành chevron-up như
+Williams mô tả. Chưa rõ đây là quirk (leftover default, giống các quirk
+Dialog/BottomSheet trước đây) hay là hành vi thật (chevron cố định, trạng
+thái mở/đóng thể hiện bằng việc sub-menu CÓ xuất hiện hay không).
+(b) Boolean `Active#4109:93` không khớp trục `State` — có node State=Active
+lại có Active=false, và ngược lại. Chưa rõ ý nghĩa thật của property này.
+
+**Logo Giao Hàng Nặng**: đã xem + xác nhận đúng nội dung (logo "GHN" +
+wordmark "GiaoHang NẶNG" + tagline "Hàng Nặng Ký, Giá Nhẹ Vi"), node
+22894:77039 file B2B Portal. KHÔNG tải được file ảnh về trong phiên này —
+mạng ra ngoài của môi trường cloud bị egress policy chặn domain figma.com
+(xác nhận qua log proxy, không phải lỗi Figma) — đã KHÔNG thử bypass, chỉ ghi
+lại tham chiếu (file key + node id) để tải trong phiên khác có quyền mạng
+khác, hoặc Williams tải trực tiếp từ link Figma.
+
+**Kết luận**: toàn bộ nghiên cứu lưu tại `profile.ghn/ds/sidebar-research-
+notes.md`, KHÔNG có entry trong `manifest.yaml`, KHÔNG tạo
+`sidebar.rules.yaml`/`sidebar.binding.yaml` — cố tình chưa đăng ký vì nghiệp
+vụ chưa chốt hết (2 điểm ở trên) và Williams tự nói đây là việc "để sau này".
+Đề xuất tạm (CHƯA tạo): nếu đăng ký, Sidebar có thể cần 1 `component_kind`
+mới tên `navigation` (không kind nào hiện tại khớp hành vi menu điều hướng +
+expand/collapse) — chờ Williams quyết định.
+
+---
+
+## 13/09-K — Input Focused/Disabled/Destructive real colors + size md/lg + Condition default; BottomSheet recipe links; Sidebar chevron discrepancy resolved
+
+**by**: Williams — đưa 2 demo Figma thật để đo Input (node 23309:3544 —
+Focused/Disabled/Destructive; node 23309:4068 — size sm/md/lg), yêu cầu auto
+ẩn "Condition" chips bên dưới field, yêu cầu link 5 recipe BottomSheet để
+check, và xác nhận hành vi chevron sidebar.
+**affects**: `profile.ghn/ds/input.binding.yaml`, `rules/kinds/form_input.rules.yaml`
+(§ FRMIN-B-04 MỚI), `profile.ghn/ds/_shared.binding.yaml` (§ color_tokens),
+`profile.ghn/ds/bottomsheet.binding.yaml` (§ type_variant.preview_links_13_09_J),
+`profile.ghn/ds/sidebar-research-notes.md` (§ 4 đóng 1 phần).
+
+**1. Input — State=Focused/Disabled/Destructive=True, số liệu THẬT (không còn
+[cần verify]).** Đọc get_variable_defs trên đúng 3 instance trong demo
+Williams đưa (file B2B Portal s2NE6ikwLnsZSUp97RBfof, node 23309:3544):
+- Focused: border=`border/info/default` (#3b82f6, xanh dương) — LƯU Ý:
+  KHÔNG có token "focus" riêng, dùng chung màu info. Williams giải thích: state
+  này hầu như không dùng khi thiết kế Figma, chỉ dùng khi build prototype HTML
+  cho PO review (mô phỏng hành vi hover thật).
+- Disabled: border=`border/app/disabled` (#e4e4e7), nền=`bg/app/elevated`
+  (#f4f4f5, KHÔNG phải baseWhite), text/icon=`text-disabled`/`icon-disabled`
+  (#a1a1aa).
+- Destructive=True: border=`border/error/default`, text=`text-error`,
+  icon=`icon-error` (cả 3 #ef4444), nền vẫn baseWhite, "Error message" dùng
+  font "Content/Body 3".
+
+**2. Input — size md/lg, số đo THẬT.** Từ demo node 23309:4068 (label sẵn
+SM/MD/LG): đo trực tiếp bounding box field — sm=36px (đã biết), md=40px,
+lg=44px — cấp số cộng đều +4px.
+
+**3. Input — boolean "Condition" (hàng chip nhỏ dưới field), ý nghĩa + default
+MỚI.** Williams: "cái condition bên dưới vùng input hầu như tao không dùng
+tới — nên khi tạo input mày có thể auto ẩn nó đi giúp tao". → Rule mới
+FRMIN-B-04: mặc định Condition=False (ẩn) khi dựng field Input mới qua
+pipeline, chỉ bật khi có yêu cầu tường minh.
+
+**4. BottomSheet — link xem 5 recipe (Action item/w Textfield/w Button/w
+Illustration/w Checkbox).** Tạo lại 1 instance/variant trong file TEST
+(uFbbdvWYC1dg3AjdnHCgxk) để có node id thật, đưa link cho Williams tự xem +
+xác nhận ý nghĩa nghiệp vụ — xem bottomsheet.binding.yaml §
+type_variant.preview_links_13_09_J.
+
+**5. Sidebar — đóng 1 trong 2 điểm chưa khớp (mục 13/09-J).** Williams xác
+nhận: "Tao xác nhận là nó có đổi hướng xuống và lên. Chắc trong quá trình làm
+có sự nhầm lẫn" + "Chắc do tao tự chỉnh sửa component bằng cách đổi màu nên
+nó có sự sai này" — hành vi ĐÚNG là chevron đổi chiều down↔up theo trạng thái
+đóng/mở thật (đúng như Williams mô tả ban đầu); hiện tượng "luôn down" quan
+sát được là do chính Williams tự chỉnh sửa (đổi màu) component, không phải
+lỗi/hành vi thiết kế. Điểm còn lại (boolean `Active#4109:93` không khớp trục
+`State`) CHƯA được xác nhận rõ ràng — để ngỏ, sẽ hỏi lại.
+
+**Còn mở, KHÔNG tự đoán**: ý nghĩa boolean `Active#4109:93` trên sidebar
+(mục 4b, sidebar-research-notes.md); ý nghĩa nghiệp vụ cụ thể của 5 recipe
+BottomSheet (đã gửi link, chờ Williams xem + trả lời); mapping size Input
+theo vị trí sử dụng (không critical).
+
+---
+
+## 13/09-L — Ý nghĩa nghiệp vụ 4/5 recipe BottomSheet + tái xác nhận footer 2-nút
+
+**by**: Williams — xem 5 link preview ở 13/09-K, trả lời ý nghĩa nghiệp vụ
+từng recipe.
+**affects**: `profile.ghn/ds/bottomsheet.binding.yaml` (§ type_variant.business_meaning MỚI, § footer_note_13_09_L MỚI)
+
+**Ý nghĩa nghiệp vụ từng recipe** (nguyên văn Williams):
+- **Action item**: "chưa có usecase — cũng hầu như ít dùng tới usecase này."
+  Giữ nguyên trong hệ thống nhưng không gán business rule cụ thể.
+- **w Textfield**: "Dùng cho form tạo/filter.. Phần body là dynamic slot để
+  mày có thể customize component input cho hợp lý tùy yêu cầu PRD của PO."
+- **w Illustration**: "Cho onboarding/trạng thái trống chưa có data (dùng
+  icon no-data màu xám) — lưu ý không có nút skip."
+- **w Checkbox**: "lựa chọn filter/thêm khách hàng vào danh sách (action
+  nhiều lần thêm)."
+- **w Button**: KHÔNG được nhắc tới trong câu trả lời — còn để ngỏ, chưa hỏi
+  lại.
+
+**Footer 2-nút**: Williams tái xác nhận "bottom sheet chỉ có 2 nút là primary
+chỉ khác style filled/outline" — khớp đúng 100% với rule đã chốt trước đó ở
+OVL-B-03 (13/09-G), không cần sửa gì, chỉ củng cố thêm bằng dữ liệu Williams
+tự xem lại.
+
+**Còn mở**: ý nghĩa nghiệp vụ của recipe "w Button" — chưa hỏi Williams.
