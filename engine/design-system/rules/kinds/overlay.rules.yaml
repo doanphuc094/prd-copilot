@@ -47,6 +47,14 @@ behavioural_limits:
   - id: OVL-B-01
     rule: "Thành viên của kind này PHẢI có backdrop và chặn thao tác nền, trừ khi profile.policy khai ngoại lệ tường minh cho từng thành viên (vd Popover nhẹ có thể không chặn nền)."
     why: "Đây là ranh giới hành vi phân biệt overlay với feedback_transient."
+    backdrop_color:
+      status: "[XÁC NHẬN — Williams 13/09] \"Lớp phủ mờ cho dialog lấy màu bg/app/baseBlack cho opacity=50%\""
+      value: "`bg/app/baseBlack` @ `Opacity/O5` (50%) — cả 2 đều là token thật, xem _shared.binding.yaml § color_tokens + § spacing.opacity_scale"
+      resolved_hex:
+        light: "#000000 (Colors/Base/Black) @ 50% → rgba(0,0,0,0.5)"
+        dark: "#ffffff (Colors/Base/White) @ 50% → rgba(255,255,255,0.5) — [XÁC NHẬN bằng đo đạc thật 13/09] bg/app/baseBlack ĐẢO NGƯỢC giống bg/app/baseWhite (baseWhite Light=trắng/Dark=đen ↔ baseBlack Light=đen/Dark=trắng) — ĐÚNG như kiến trúc 'nền cơ bản đối lập' đã ghi nhận ở _shared.binding.yaml"
+      applies_to: "MỌI thành viên overlay có backdrop (Dialog, BottomSheet) — giá trị DÙNG CHUNG ở cấp kind, không tách riêng theo component, cùng cách OVL-B-03 áp dụng chung."
+      source: "[FIGMA — ĐO THẬT 13/09] Resolve trực tiếp `bg/app/baseBlack` qua use_figma trên file GHN DS gốc (zECOR8UK45lmZcpMG9aOR7) — đóng mục 'modal_overlay_background/backdrop' còn treo ở _shared.binding.yaml § color_tokens.still_not_verified."
 
   - id: OVL-B-02
     rule: "Overlay dùng để bắt buộc xác nhận hành động phá huỷ PHẢI có đúng 2 lối ra: xác nhận và huỷ bỏ — không được chỉ có 1 lối ra (không cho thoát)."

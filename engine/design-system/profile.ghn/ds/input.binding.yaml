@@ -52,8 +52,20 @@ figma_properties:
 size:
   axis_kind: ordered_scale
   scale: [sm, md, lg]
+  scale_confirmed: >
+    [XÁC NHẬN — Williams 13/09, hỏi lại "input có 3 size=sm/md/lg đúng không"]
+    ĐÚNG — 3 giá trị này đọc trực tiếp từ `variantGroupProperties.Size` của
+    chính component_set Input thật (componentKey
+    `9c400e1d93884025583c2cf3bbcaea263301cde1`, xem component.source ở trên),
+    không phải suy đoán — chỉ đúng 3 giá trị [sm, md, lg], không có giá trị
+    nào khác trong trục Size.
   source: "[FIGMA]"
-  status: "[cần verify] Chưa đo px thật (height/padding), chưa có mapping nghiệp vụ theo vị trí — khác Button đã có size.height_px + policy.size_by_position"
+  height_px:
+    sm: 36
+    source: "[FIGMA — ĐỌC THẬT 13/09-H] get_variable_defs trên node Input thật (51:211, Size=sm) — biến `Size/size-input-sm` resolve ra 36px. Biến này KHÔNG nằm trong 3 collection local của file GHN DS gốc đã khảo sát (Primitives/Color Mode/Dimensions/Breakpoints) — có thể thuộc 1 library/collection Size RIÊNG chưa xác định được tên, get_variable_defs vẫn resolve đúng giá trị dù không truy được collection gốc."
+    md: "[cần verify] Chưa đo — chỉ mới đo được sm vì demo hiện tại chỉ có field Size=sm."
+    lg: "[cần verify] Chưa đo — tương tự md."
+  status: "[XÁC NHẬN 1 PHẦN 13/09-H] Đã có số đo px thật cho sm=36px (xem height_px ở trên) — md/lg vẫn cần verify khi có field demo dùng size khác. Vẫn chưa có mapping nghiệp vụ theo vị trí (khác Button đã có policy.size_by_position)."
 
 # -----------------------------------------------------------------------------
 # BINDING: TYPE — biến thể cấu trúc field
@@ -100,6 +112,12 @@ state:
     Focused: "[cần verify] Không dùng làm điều kiện cho icon 'clear' (đã loại trừ tường minh khỏi Filled ở 12/09-N)"
     Disabled: "[cần verify] Chưa xác nhận icon phải xử lý thế nào ở state này"
   source: "[FIGMA] + [XÁC NHẬN một phần — Williams 12/09-N]"
+  color_tokens_by_state:
+    status: "[XÁC NHẬN 1 PHẦN 13/09-H] Chỉ mới đọc thật State=Filled/Destructive=False."
+    Filled_False: "border=`border/app/default` (#d4d4d8), nền=`bg/app/baseWhite` (#ffffff) — đọc get_variable_defs trên node 51:211. Xem _shared.binding.yaml § color_tokens.verified_component_bindings.input_state_filled."
+    Focused: "[cần verify] Chưa đọc — có thể dùng `border/primary/default` hoặc 1 focusRing token riêng theo kiến trúc chung, KHÔNG tự áp — cần field demo thật ở Focused để đọc."
+    Disabled: "[cần verify] Chưa đọc — có thể dùng `border/app/disabled` + `bg/app/disabled` theo kiến trúc chung, KHÔNG tự áp."
+    "Destructive=True": "[cần verify] Chưa đọc — có thể dùng `border/error/default` theo kiến trúc chung (đã thấy alias trùng text-error), KHÔNG tự áp."
 
 # -----------------------------------------------------------------------------
 # THÀNH PHẦN CON (atoms) — boolean props điều khiển hiện/ẩn

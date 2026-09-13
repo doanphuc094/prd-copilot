@@ -1434,3 +1434,110 @@ viên overlay có footer 2-nút — không tách riêng theo từng component.
 w Textfield/w Button/w Illustration/w Checkbox), tên biến thật của màu nền,
 chi tiết property con của header — chưa hỏi Williams, không nằm trong 2 yêu
 cầu round này.
+
+---
+
+## 13/09-H — Khảo sát nền tảng color/typography/spacing bằng dữ liệu Figma THẬT
+
+**by**: Williams — chọn tiếp tục khảo sát đầy đủ color/typography/spacing sau
+khi được hỏi "làm tiếp khảo sát token đầy đủ đó luôn... hay để dành sau"
+**affects**: `profile.ghn/ds/_shared.binding.yaml` (thêm mới `color_tokens`,
+`typography_ramp`; viết lại `surface`, `text_style`, `spacing`),
+`profile.ghn/ds/input.binding.yaml` (§ size.height_px, § state.color_tokens_by_state),
+`profile.ghn/ds/bottomsheet.binding.yaml` (đóng mục tên biến nền)
+
+**Phương pháp**: KHÔNG dùng file `ghn-spacing-tokens.json` gốc (chưa từng tìm
+thấy/đọc trong toàn bộ phiên làm việc) — thay vào đó đọc TRỰC TIẾP file GHN DS
+thật (fileKey `zECOR8UK45lmZcpMG9aOR7`, khác file test hay dùng để import
+component) qua `use_figma`, gọi thẳng
+`figma.variables.getLocalVariableCollectionsAsync()` — đây là nguồn thật
+CHÍNH XÁC NHẤT có thể có, không phải suy đoán hay đọc lại tài liệu cũ chưa rõ
+còn cập nhật hay không.
+
+**Phát hiện kiến trúc token 2 lớp của GHN DS** (trước đây hoàn toàn chưa biết
+tồn tại cấu trúc này):
+- `Primitives` (288 biến, TOÀN BỘ là màu — palette thô, vd Colors/Zinc/600)
+- `Color Mode` (247 biến, 2 mode Light/Dark, alias vào Primitives) — đặt tên
+  THEO VAI TRÒ: `{bg|border|icon|text}/{app|primary|secondary|magic|
+  interactive|grey|info|success|warning|error}/{default|hover|active|
+  disabled|focusRing|muted|...}`. Component THẬT bind vào lớp Color Mode
+  này (đã xác nhận bằng get_variable_defs trên node Input/BottomSheet thật).
+- `Dimensions` (82 biến, 1 mode) — Spacing (47 giá trị), Radius (23), Opacity
+  (11) — KHÔNG cần ghn-spacing-tokens.json nữa, đọc thẳng ra số thật.
+- `Breakpoints` (5 biến) — đã có sẵn từ 08/09, không đổi.
+- Typography: KHÔNG phải variable — là 27 Text Style thật đã publish
+  (`figma.getLocalTextStylesAsync()`), toàn bộ dùng font Inter.
+
+**Số liệu THẬT đã đóng vào file**:
+- Spacing scale đầy đủ: -12 đến 256, bước 2px (0-28) rồi 8px (32-128) rồi
+  4-8px không đều (132-256) — KHÔNG phải 1 grid đơn giản 4px/8px như từng
+  đoán. Phát hiện thêm: biến `Spacing/S258` giá trị THẬT là 256 (lệch tên/
+  giá trị) — ghi rõ để không tự suy giá trị từ tên biến sau này.
+- Radius scale đầy đủ (23 giá trị, tên khớp đúng giá trị).
+- Opacity scale (11 mức, đơn vị %, 0-100).
+- Typography ramp đầy đủ 27 style (Heading H1-H6 Bold/Regular, Title 1-3,
+  Subtitle 1-3, Body 1-3 + Caption, Button L/M/S, Price) — đóng hoàn toàn gap
+  "heading H1/H2/H3, body text mặc định" từng ghi `not_yet_surveyed`.
+- Màu: resolve hex thật cho các token hay dùng nhất — text-default #09090b,
+  text-muted #52525b, text-disabled #a1a1aa, text-placeholder #71717a,
+  text-error #ef4444, bg/app/baseWhite #ffffff (Light)/#000000 (Dark),
+  bg/app/subtle #fafafa — TRÙNG KHỚP CHÍNH XÁC với surface.table_header.background
+  đã xác nhận từ trước (2 nguồn độc lập, củng cố độ tin cậy).
+- Xác nhận thật (không suy đoán) 2 component binding cụ thể: BottomSheet nền
+  = `bg/app/baseWhite` (đóng gap tên biến còn treo từ 13/09-F); Input
+  (State=Filled, Destructive=False) dùng border=`border/app/default`
+  (#d4d4d8), nền=`bg/app/baseWhite`, chữ=`text/text-default` font "Content/
+  Body 2", label font "Sub Title/Subtitle 2". Input size=sm đo được chiều cao
+  thật 36px (biến `Size/size-input-sm`, thuộc 1 collection KHÔNG nằm trong 4
+  collection local của file GHN DS gốc — có thể từ 1 library Size riêng chưa
+  xác định được, giá trị vẫn resolve đúng).
+
+**Còn mở (KHÔNG tự đoán, ghi rõ trong file)**:
+- Token cho modal/backdrop overlay (lớp phủ mờ sau Dialog/BottomSheet) —
+  search hết 247 tên biến Color Mode, KHÔNG có token nào tên overlay/backdrop/
+  scrim/modal. Có thể ghép từ `bg/app/inverse` + 1 mức `Opacity/O*`, nhưng
+  CHƯA thấy component thật nào dùng tổ hợp này — không tự áp.
+- card_background, sidebar_background — chưa có component Card/Sidebar thật
+  để đọc get_variable_defs, không tự đoán token nào "nên" dùng.
+- Input ở State=Focused/Disabled/Destructive=True — chỉ mới đọc được
+  State=Filled/Destructive=False (do demo hiện tại chỉ có field ở state đó).
+- Input size=md/lg — chưa đo (demo chỉ có field size=sm).
+- grid_units_per_row — khái niệm nhắc ở schema-v1-draft.md, chưa rõ có map
+  vào base_scale_px mới tìm được hay là khái niệm riêng, chưa hỏi Williams.
+
+**Kết luận về mức độ đóng gap**: đây là khảo sát THẬT, SÂU hơn nhiều so với
+"1-2 điểm dữ liệu phát sinh tự nhiên" ở 13/09-F — đã đóng hoàn toàn phần
+NỀN TẢNG (toàn bộ scale số + toàn bộ ramp chữ + kiến trúc màu semantic), chỉ
+còn thiếu phần MAP cụ thể (component X dùng đúng token nào ở state Y) cho
+những component/state chưa có ví dụ thật để đọc — đây là việc làm DẦN khi có
+màn hình/component thật, không phải làm 1 lần cho xong.
+
+---
+
+## 13/09-I — Xác nhận Input có 3 size + màu backdrop overlay
+
+**by**: Williams — "xác nhận giúp tao input có 3 size=sm/md/lg đúng không" và
+"Lớp phủ mờ cho dialog lấy màu bg/app/baseBlack cho opacity=50%"
+**affects**: `profile.ghn/ds/input.binding.yaml` (§ size.scale_confirmed),
+`rules/kinds/overlay.rules.yaml` (§ OVL-B-01.backdrop_color MỚI),
+`profile.ghn/ds/_shared.binding.yaml` (§ color_tokens đóng mục backdrop)
+
+**1. Input — xác nhận 3 size.** Trả lời trực tiếp bằng dữ liệu đã đọc thật từ
+trước (không cần đọc lại Figma): `variantGroupProperties.Size` của chính
+component_set Input (componentKey `9c400e1d93884025583c2cf3bbcaea263301cde1`)
+CHỈ có đúng 3 giá trị `[sm, md, lg]` — không có giá trị nào khác. Đã có sẵn
+trong input.binding.yaml từ lúc đăng ký Input (12/09-N), nay ghi thêm dòng
+xác nhận rõ ràng vì Williams hỏi lại.
+
+**2. Backdrop overlay — màu + opacity.** Williams xác nhận công thức:
+`bg/app/baseBlack` @ `Opacity/O5` (50%). Đã resolve giá trị hex thật qua
+use_figma (file GHN DS gốc): `bg/app/baseBlack` = #000000 (Light) / #ffffff
+(Dark) — ĐẢO NGƯỢC giống `bg/app/baseWhite` (baseWhite Light=trắng/
+Dark=đen ↔ baseBlack Light=đen/Dark=trắng), khớp đúng kiến trúc "nền cơ bản
+đối lập" đã ghi nhận ở 13/09-H. Kết hợp `Opacity/O5`=50% (đã có số thật từ
+13/09-H) → backdrop = rgba(0,0,0,0.5) ở Light, rgba(255,255,255,0.5) ở Dark.
+
+Ghi ở cấp KIND (`OVL-B-01.backdrop_color`), áp dụng CHUNG cho mọi thành viên
+overlay có backdrop (Dialog, BottomSheet) — không tách riêng theo component,
+cùng cách tiếp cận đã dùng cho OVL-B-03. Đóng hẳn mục "modal_overlay_
+background/backdrop" từng ghi `still_not_verified` ở 13/09-H.

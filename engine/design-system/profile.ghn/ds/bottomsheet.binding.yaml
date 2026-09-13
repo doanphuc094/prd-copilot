@@ -100,15 +100,15 @@ shape:
   background:
     value: "trắng (r=1,g=1,b=1), BOUND vào 1 variable thật"
     variable_id: "VariableID:7205590b6eedf1f8d158bc77332a5eb9ca0d44f4/3123:923"
-    source: "[FIGMA — ĐO THẬT]"
+    variable_name: "bg/app/baseWhite"
+    source: "[FIGMA — ĐO THẬT + RESOLVE TÊN 13/09-H] Đã resolve ra tên thật qua get_variable_defs — đóng mục 'tên biến thật' còn treo. Xem _shared.binding.yaml § color_tokens.verified_component_bindings.bottomsheet_background."
     note: >
       Đây là 1 điểm dữ liệu thật cho khối "Surface" còn `not_yet_surveyed` ở
-      _shared.binding.yaml — CHƯA tra được TÊN biến (chỉ có variable id thô),
-      cần 1 lần đọc riêng bằng get_variable_defs hoặc mở trực tiếp panel
-      Variables trong Figma để lấy tên người-đọc-được. Ghi lại ở đây để không
-      mất, CHƯA đưa vào _shared.binding.yaml (tránh trộn dữ liệu 1 component
-      vào file dùng chung khi chưa xác nhận biến này có scope toàn hệ thống
-      hay chỉ riêng BottomSheet).
+      _shared.binding.yaml — [ĐÃ ĐÓNG 13/09-H] tên biến đã tra được qua
+      get_variable_defs (`bg/app/baseWhite`, xem source ở trên). Token này
+      cũng đã thấy dùng ở Input (nền field) — có vẻ là token DÙNG CHUNG toàn
+      hệ thống chứ không riêng BottomSheet, khớp đúng kiến trúc semantic
+      token ở _shared.binding.yaml § color_tokens.
 
 # -----------------------------------------------------------------------------
 # PADDING / SPACING NỘI DUNG — SỐ LIỆU THẬT
@@ -179,5 +179,6 @@ _pending_confirmation:
   - item: "Ý nghĩa nghiệp vụ của 5 recipe trong type_variant (Action item/w Textfield/w Button/w Illustration/w Checkbox) — khi nào dùng recipe nào, chưa hỏi."
   - item: "ĐÃ ĐÓNG — Height AUTO có cap hay không"
     resolved: "[XÁC NHẬN — Williams 13/09] Có, cap 80vh giống Dialog — xem § size.height.cap."
-  - item: "Tên biến thật (không chỉ variable id thô) của màu nền trắng — cần đọc riêng qua get_variable_defs hoặc panel Variables Figma."
+  - item: "ĐÃ ĐÓNG — Tên biến thật của màu nền trắng"
+    resolved: "[XÁC NHẬN bằng đo đạc thật 13/09-H] `bg/app/baseWhite` — xem § shape.background."
   - item: "Chi tiết property con của header (back button/title/close) — mới biết có Header Container#1154:12 (boolean tổng), chưa đọc property con chi tiết như đã làm với Dialog header."

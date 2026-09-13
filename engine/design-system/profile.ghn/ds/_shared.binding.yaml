@@ -197,8 +197,10 @@ file_level_quirks:
     finding: "Collection 'Color Mode' có 2 mode: Light / Dark"
     source: "[FIGMA] đọc 08/09"
     status: >
-      CHƯA khảo sát ảnh hưởng tới luật. Ghi lại vì component nào bind màu sẽ
-      cần biết — hiện chưa có luật nào phụ thuộc.
+      [XÁC NHẬN bằng khảo sát thật 13/09-H] Đã đọc trực tiếp toàn bộ 247 biến
+      của collection này — xem § color_tokens bên dưới cho kiến trúc đầy đủ +
+      giá trị hex thật của các token hay dùng nhất (Light/Dark). Component nào
+      bind màu giờ có thể tra cứu thật thay vì chỉ biết "có 2 mode".
 
 # -----------------------------------------------------------------------------
 # BẪY LIÊN COMPONENT — đã trả giá thật, giữ để không tái phạm
@@ -254,9 +256,90 @@ badge:
     Khi 1 màn có NHIỀU badge/chip cạnh nhau nhưng khác ý nghĩa, mỗi cái lấy
     màu theo ĐÚNG ý nghĩa riêng — KHÔNG mượn màu của badge/chip khác gần đó.
 
+# =============================================================================
+# COLOR TOKENS — khảo sát THẬT 13/09-H (Williams: "Đóng nốt các gap này đi")
+#
+# Đọc TRỰC TIẾP file GHN DS gốc (fileKey zECOR8UK45lmZcpMG9aOR7, KHÔNG phải
+# file test) qua use_figma, `figma.variables.getLocalVariableCollectionsAsync()`
+# — đây là nguồn CHÍNH XÁC NHẤT có thể có (chính file library thật), không
+# phải suy đoán hay đọc lại 1 file json cũ chưa rõ còn cập nhật hay không.
+#
+# KIẾN TRÚC 2 LỚP thật của GHN DS:
+#   Primitives (288 biến, TOÀN BỘ là màu — palette thô, vd "Colors/Zinc/600")
+#     ↓ alias
+#   Color Mode (247 biến, 2 mode Light/Dark — tên SEMANTIC theo VAI TRÒ, vd
+#     "bg/app/muted", "text/text-error") — CHÍNH các biến này được component
+#     thật BIND vào (đã xác nhận bằng get_variable_defs trên node Input/
+#     BottomSheet thật, xem § verified_component_bindings bên dưới).
+#
+# Semantic token đặt tên theo pattern: {category}/{role}/{state}
+#   category: bg (nền) | border (viền) | icon | text
+#   role: app | primary | secondary | magic | interactive | grey | info |
+#         success | warning | error
+#   state: default | hover | active | disabled | focusRing | muted |
+#          muted-hover | muted-active (không phải role nào cũng có đủ state)
+# =============================================================================
+color_tokens:
+  source: "[FIGMA — ĐỌC THẬT 13/09] fileKey zECOR8UK45lmZcpMG9aOR7 (file GHN DS gốc, không phải file test), figma.variables.getLocalVariableCollectionsAsync() + getVariableByIdAsync()"
+  full_counts: {primitives: 288, color_mode: 247}
+  resolved_values:
+    note: >
+      Đây KHÔNG phải toàn bộ 247 token — chỉ là tập token đã tra cứu cụ thể vì
+      liên quan trực tiếp tới các mục `not_yet_surveyed` cũ (text-muted, nền
+      card/modal/input theo state). Muốn tra thêm token khác, lặp lại đúng
+      phương pháp trên (danh sách đầy đủ tên đã có trong `colorModeNamesSample`
+      lúc khảo sát — không lưu hết ở đây vì quá dài, tra trực tiếp Figma khi
+      cần token mới).
+    text:
+      "text-default":     {light: "#09090b", dark: "ALIAS (chưa resolve hex dark)", primitive_light: "Colors/Zinc/950"}
+      "text-muted":        {light: "#52525b", primitive_light: "Colors/Zinc/600"}
+      "text-disabled":     {light: "#a1a1aa", primitive_light: "Colors/Zinc/400"}
+      "text-placeholder":  {light: "#71717a", primitive_light: "Colors/Zinc/500"}
+      "text-error":        {light: "#ef4444", dark: "#ef4444 (giống Light — token này KHÔNG đổi theo mode)", primitive: "Colors/Red/500"}
+      "text-error-strong": {light: "#991b1b", dark: "#991b1b (giống Light)", primitive: "Colors/Red/800"}
+    background:
+      "bg/app/baseWhite":  {light: "#ffffff", dark: "#000000 (đổi hẳn sang đen ở Dark — đúng ý nghĩa 'nền cơ bản đối lập' chứ không phải luôn trắng)", primitive_light: "Colors/Base/White"}
+      "bg/app/subtle":     {light: "#fafafa", primitive_light: "Colors/Zinc/50", cross_check: "TRÙNG KHỚP CHÍNH XÁC với surface.table_header.background (#fafafa) đã xác nhận trước — 2 nguồn độc lập ra cùng 1 giá trị, củng cố độ tin cậy"}
+      "bg/app/elevated":   {light: "#f4f4f5", primitive_light: "Colors/Zinc/100"}
+      "bg/app/disabled":   {light: "#e4e4e7", primitive_light: "Colors/Zinc/200"}
+      "bg/app/default":    {light: "#d4d4d8", primitive_light: "Colors/Zinc/300", note: "Tên 'default' nhưng KHÔNG phải trắng — là xám nhạt. 'baseWhite' mới là trắng thật."}
+      "bg/app/muted":      {light: "#52525b", primitive_light: "Colors/Zinc/600", note: "Trùng giá trị với text-muted/icon-muted/border-app-muted — 4 vai trò khác nhau CÙNG trỏ 1 primitive ở Light mode. Ghi đúng như đọc được, không tự suy diễn đây có phải lỗi thiết kế hay chủ ý."}
+      "bg/app/inverse":    {light: "#18181b", primitive_light: "Colors/Zinc/900"}
+    border:
+      "border/app/default": {light: "#d4d4d8", note: "Alias TRÙNG với bg/app/default — cùng 1 biến Color Mode dùng chung cho cả 2 role border+bg."}
+      "border/error/default": {light: "#ef4444", note: "Alias TRÙNG với text-error."}
+    backdrop:
+      "bg/app/baseBlack": {light: "#000000", dark: "#ffffff (ĐẢO NGƯỢC giống baseWhite — light=đen/dark=trắng)", primitive_light: "Colors/Base/Black"}
+      usage: "[XÁC NHẬN — Williams 13/09] Dùng cho lớp phủ mờ (backdrop) của overlay: `bg/app/baseBlack` @ `Opacity/O5` (50%) — xem rules/kinds/overlay.rules.yaml § OVL-B-01.backdrop_color, áp dụng chung cho mọi thành viên overlay (Dialog, BottomSheet)."
+    icon:
+      "icon-muted":    {light: "#52525b"}
+      "icon-disabled": {light: "#a1a1aa"}
+      "icon-placeholder": {light: "#71717a"}
+  verified_component_bindings:
+    marker: "[FIGMA — ĐỌC THẬT qua get_variable_defs trên node THẬT, không phải suy đoán token nào 'nên' dùng]"
+    bottomsheet_background: >
+      Field nền của BottomSheet (xem bottomsheet.binding.yaml § shape.background,
+      variable id 7205590b6eedf1f8d158bc77332a5eb9ca0d44f4/3123:923) — RESOLVE
+      ra tên thật: `bg/app/baseWhite`. Đã đóng mục "tên biến thật" còn treo ở
+      bottomsheet.binding.yaml § _pending_confirmation.
+    input_state_filled: >
+      Input thật (node 51:211 trong file test, State=Filled, Destructive=False)
+      — đọc qua get_variable_defs — dùng ĐÚNG các token: border =
+      `border/app/default` (#d4d4d8), nền = `bg/app/baseWhite` (#ffffff), chữ
+      = `text/text-default` (#09090b) với font "Content/Body 2", label dùng
+      font "Sub Title/Subtitle 2", icon (kể cả icon đang KHÔNG hiện) sẵn bind
+      `icon/icon-disabled` (#a1a1aa) cho 1 slot — CHƯA rõ đây là default cho
+      MỌI state hay chỉ do state hiện tại. CHỈ xác nhận được State=Filled —
+      CHƯA kiểm Focused/Disabled/Destructive=True (xem still_not_verified).
+  still_not_verified:
+    - "Input border/bg ở State=Focused, State=Disabled, và Destructive=True — mới chỉ kiểm State=Filled/Destructive=False."
+    - "sidebar_background — chưa có ví dụ component thật nào (Sidebar) để đọc get_variable_defs, chỉ có thể ĐOÁN dùng bg/app/subtle hoặc bg/app/elevated theo kiến trúc chung — KHÔNG tự áp, để trống."
+    - "card_background — tương tự, chưa có component Card thật để đọc, không tự đoán."
+  resolved_13_09_I:
+    - "ĐÃ ĐÓNG — Dialog/BottomSheet backdrop/scrim: [XÁC NHẬN — Williams 13/09] `bg/app/baseBlack` @ `Opacity/O5` (50%) — xem § backdrop ở trên + rules/kinds/overlay.rules.yaml § OVL-B-01.backdrop_color."
+
 # -----------------------------------------------------------------------------
-# SURFACE — bề mặt/khung. Chỉ 1 mục có bằng chứng render thật, phần còn lại
-# CHƯA khảo sát — không tự bịa.
+# SURFACE — bề mặt/khung. Xem thêm § color_tokens ở trên cho giá trị hex thật.
 # -----------------------------------------------------------------------------
 surface:
   table_header:
@@ -264,12 +347,66 @@ surface:
     border: "có viền dọc (stroke) phân chia cột — cả header lẫn dòng dữ liệu bên dưới"
     when_to_use: "CỐ ĐỊNH cho mọi table_card, không tuỳ biến theo màn"
     confirmed_source: "schema-v1-draft.md Mục 3a, field header_style"
+    cross_check_13_09_H: "Khớp CHÍNH XÁC với token `bg/app/subtle` (#fafafa) — xem color_tokens.resolved_values.background"
   not_yet_surveyed:
-    [card_background, modal_overlay_background, sidebar_background,
-     "input field border/background theo state (default/focus/error/disabled)"]
+    [card_background, modal_overlay_background, sidebar_background]
+  partially_surveyed:
+    item: "input field border/background theo state"
+    status: "[XÁC NHẬN 1 PHẦN 13/09-H] State=Filled/Destructive=False đã xác nhận thật (border/app/default + bg/app/baseWhite) — xem color_tokens.verified_component_bindings.input_state_filled. Focused/Disabled/Destructive=True CHƯA kiểm."
+
+# =============================================================================
+# TYPOGRAPHY RAMP — khảo sát THẬT 13/09-H, đọc trực tiếp 27 Text Style thật
+# đã publish trong file GHN DS gốc (figma.getLocalTextStylesAsync(), fileKey
+# zECOR8UK45lmZcpMG9aOR7). Font family DUY NHẤT: Inter (cả 27/27 style).
+# Đây là type ramp ĐẦY ĐỦ của cả hệ thống — không phải suy đoán/mẫu rời rạc.
+# =============================================================================
+typography_ramp:
+  source: "[FIGMA — ĐỌC THẬT 13/09] figma.getLocalTextStylesAsync(), fileKey zECOR8UK45lmZcpMG9aOR7 — 27/27 style, font family Inter"
+  font_family: Inter
+  heading_bold:
+    H1: {size: 56, line_height: 72, weight: Bold}
+    H2: {size: 44, line_height: 56, weight: Bold}
+    H3: {size: 32, line_height: 40, weight: Bold}
+    H4: {size: 26, line_height: 34, weight: Bold}
+    H5: {size: 20, line_height: 30, weight: Bold}
+    H6: {size: 18, line_height: 28, weight: Bold}
+  heading_regular:
+    note: "Tên Figma là 'Regular/Medium' nhưng style thật đọc được KHÁC NHAU theo cấp (H1=Medium, H2-H6=Regular) — ghi đúng như đọc, không tự sửa cho 'nhất quán'."
+    H1: {size: 56, line_height: 72, weight: Medium}
+    H2: {size: 44, line_height: 56, weight: Regular}
+    H3: {size: 32, line_height: 40, weight: Regular}
+    H4: {size: 26, line_height: 34, weight: Regular}
+    H5: {size: 20, line_height: 30, weight: Regular}
+    H6: {size: 18, line_height: 30, weight: Regular}
+  title:
+    "Title 1": {size: 16, line_height: 24, weight: Bold}
+    "Title 2": {size: 14, line_height: 24, weight: Bold}
+    "Title 3": {size: 12, line_height: 20, weight: Bold}
+  subtitle:
+    "Subtitle 1": {size: 16, line_height: 24, weight: "Semi Bold"}
+    "Subtitle 2": {size: 14, line_height: 24, weight: "Semi Bold", cross_check: "Khớp CHÍNH XÁC với text_style.table_header_label đã xác nhận trước (semibold, 14px) — 2 nguồn độc lập trùng khớp."}
+    "Subtitle 3": {size: 12, line_height: 20, weight: "Semi Bold"}
+  content_body:
+    "Body 1": {size: 16, line_height: 24, weight: Regular}
+    "Body 2": {size: 14, line_height: 24, weight: Regular, verified_usage: "Input organism dùng style này cho giá trị nhập (xem color_tokens.verified_component_bindings.input_state_filled)"}
+    "Body 3": {size: 12, line_height: 20, weight: Regular}
+    Caption: {size: 10, line_height: 16, weight: "Semi Bold"}
+    "Small Caption": {size: 8, line_height: 10, weight: Medium}
+  button_text:
+    L: {size: 16, line_height: 20, weight: "Semi Bold"}
+    M: {size: 14, line_height: 18, weight: "Semi Bold"}
+    S: {size: 12, line_height: 16, weight: "Semi Bold"}
+  price: {size: 20, line_height: 28, weight: Medium}
+  letter_spacing_note: >
+    Heading/Title đều dùng letter-spacing 0.2px; Title/Subtitle/Body/Button
+    đều dùng 0.1px — 2 mức letter-spacing cố định trong toàn hệ thống, không
+    phải mỗi style 1 giá trị riêng.
 
 # -----------------------------------------------------------------------------
-# TEXT STYLE theo ngữ cảnh. Chỉ 2 mục có bằng chứng thật.
+# TEXT STYLE theo ngữ cảnh cụ thể — dùng lại typography_ramp ở trên. Chỉ 2 mục
+# CŨ (trước 13/09) có bằng chứng render thật, còn lại nay đã có RAMP đầy đủ ở
+# trên nhưng CHƯA map cụ thể style nào dùng cho ngữ cảnh nào (khác với có ramp
+# hay không) — xem not_yet_mapped.
 # -----------------------------------------------------------------------------
 text_style:
   table_header_label:
@@ -277,6 +414,7 @@ text_style:
     size: 14px
     color: text-muted
     confirmed_source: "schema-v1-draft.md Mục 3a, field header_style"
+    cross_check_13_09_H: "Khớp đúng style 'Subtitle 2' trong typography_ramp.subtitle — cùng size 14px, weight Semi Bold."
   diff_view_old_value:
     style: strikethrough
     when_to_use: "Giá trị CŨ trong modal đối chiếu — PHẢI có gạch ngang, không dùng style thường"
@@ -285,15 +423,20 @@ text_style:
     style: "emphasized (nổi bật, không gạch)"
     when_to_use: "Giá trị MỚI trong modal đối chiếu — đối lập trực quan với giá trị cũ"
     confirmed_source: "schema-v1-draft.md Mục 4, field diff_view"
-  not_yet_surveyed:
-    ["mã màu thật của 'text-muted' (hiện chỉ là tên semantic)", "heading H1/H2/H3",
-     "body text mặc định", "error/helper text dưới input"]
+  color_resolved_13_09_H: "text-muted giờ có mã màu thật: #52525b (Light) — xem color_tokens.resolved_values.text"
+  not_yet_mapped:
+    status: "[KHÁC not_yet_surveyed CŨ] Ramp đầy đủ (typography_ramp) VÀ màu (color_tokens) NAY ĐÃ CÓ THẬT — còn thiếu là MAP cụ thể: màn hình/component nào dùng đúng style nào trong ramp. Đây là việc làm dần khi có màn hình thật, KHÔNG tự gán trước."
+    items:
+      ["Heading H1/H2/H3 dùng ở đâu trong sản phẩm (page title? section title?) — chưa có ví dụ thật",
+       "Body text mặc định — đã xác nhận Input dùng 'Content/Body 2', nhưng ngữ cảnh khác (bảng, card...) chưa kiểm",
+       "Error/helper text dưới input — biết màu (text-error #ef4444) nhưng chưa xác nhận SIZE/style cụ thể dùng trong Input helper message"]
 
-# -----------------------------------------------------------------------------
-# SPACING — chỉ density đã migrate (có value thật ở dạng enum). Base scale px
-# và grid_units_per_row CHƯA migrate vì CHƯA có số thật, không phải bị bỏ sót
-# — cần đọc ghn-spacing-tokens.json gốc trước.
-# -----------------------------------------------------------------------------
+# =============================================================================
+# SPACING / RADIUS / OPACITY SCALE — khảo sát THẬT 13/09-H, đọc trực tiếp
+# collection 'Dimensions' (82 biến, 1 mode duy nhất "Mode 1") trong file GHN DS
+# gốc. Đóng gap "base spacing scale (4px/8px grid hay gì)" — KHÔNG cần
+# ghn-spacing-tokens.json gốc nữa, đọc thẳng từ Figma ra số thật.
+# =============================================================================
 spacing:
   density:
     enum: [compact, comfortable]
@@ -301,6 +444,34 @@ spacing:
       Chỉ là nhãn ngữ nghĩa (compact = vận hành nội bộ, nhiều dòng/màn) — CHƯA
       có mapping ra padding/row-height thật.
     confirmed_source: "schema-v1-draft.md Mục 1"
+  base_scale_px:
+    source: "[FIGMA — ĐỌC THẬT 13/09] collection 'Dimensions', biến nhóm 'Spacing/', 1 mode duy nhất, 47 giá trị"
+    values: [-12, -8, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 32,
+             40, 48, 56, 64, 72, 80, 88, 96, 100, 104, 112, 120, 128, 132, 140,
+             148, 156, 164, 172, 180, 188, 196, 204, 212, 220, 228, 236, 242, 250, 256]
+    pattern: >
+      Bước 2px từ 0 đến 28 (grid mịn cho padding/gap nhỏ), rồi bước 8px từ 32
+      đến 128, rồi bước 4-8px không đều từ 132 đến 256 (grid cho layout lớn/
+      container). KHÔNG phải 1 grid đơn giản 4px hay 8px xuyên suốt — đây là
+      1 thang COMPOSITE, đọc đúng từ Figma, không tự làm tròn/đơn giản hoá.
+    naming_value_mismatch:
+      marker: "[GIỚI HẠN THẬT — phát hiện 13/09]"
+      finding: "Biến tên 'Spacing/S258' nhưng GIÁ TRỊ THẬT là 256 (không phải 258) — lệch tên/giá trị."
+      consequence: "KHI tra biến, LUÔN đọc giá trị thật (valuesByMode), KHÔNG suy giá trị từ tên biến — tên có thể sai, đã có ít nhất 1 trường hợp xác nhận."
+  radius_scale_px:
+    source: "[FIGMA — ĐỌC THẬT 13/09] collection 'Dimensions', biến nhóm 'Radius/', 23 giá trị"
+    values: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 40, 48, 56, 64, 128, 256]
+    note: "Tên khớp ĐÚNG giá trị (khác Spacing/S258) — R24 = 24px thật, đã kiểm toàn bộ 23/23."
+  opacity_scale:
+    source: "[FIGMA — ĐỌC THẬT 13/09] collection 'Dimensions', biến nhóm 'Opacity/', 11 giá trị"
+    values: {O0: 0, O1: 10, O2: 20, O3: 30, O4: 40, O5: 50, O6: 60, O7: 70, O8: 80, O9: 90, O10: 100}
+    unit: "phần trăm (0-100), KHÔNG phải phân số 0-1 — chia 100 khi dùng làm giá trị opacity CSS/Figma paint."
+    usage_hint: >
+      Có thể là mảnh ghép còn thiếu cho modal_overlay_background/backdrop (xem
+      color_tokens.still_not_verified) — vd bg/app/inverse + Opacity/O5 (50%)
+      — nhưng CHƯA xác nhận qua component thật nào dùng tổ hợp này, KHÔNG tự
+      áp dụng vào rule.
   not_yet_surveyed: >
-    grid_units_per_row (khái niệm cấu trúc "N-unit/hàng", chưa rõ 1 unit = bao
-    nhiêu px thật) và base spacing scale (4px/8px grid hay gì).
+    grid_units_per_row (khái niệm cấu trúc "N-unit/hàng" nhắc ở schema-v1-draft.md
+    — CHƯA rõ đây có map trực tiếp vào base_scale_px ở trên hay là 1 khái niệm
+    riêng, chưa hỏi Williams).
