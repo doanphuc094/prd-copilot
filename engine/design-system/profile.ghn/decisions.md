@@ -1813,3 +1813,210 @@ Menu"):**
 lệch chiều cao item 48/56px, logo thật Giao Hàng Nặng (vẫn chưa tải được do
 egress policy), xác nhận icon qua FA6 Pro (chưa chạy quy trình 2 bước đầy
 đủ), có nên hiện lại nút collapse/expand hay không (Freight thật đang ẩn nó).
+
+---
+
+## 13/09-P — Sửa padding trong module Sidebar (12px, không phải 0) + phát hiện quirk default sai thứ 3
+
+**by**: Williams — trỏ link node thật `22894:77044`, "Mày check lại đi sai
+rồi: khoảng cách padding là 2px là khoảng cách từ module ra ngoài
+background. Còn padding từ [text + icon] để tạo thành module là 12px ngang
+và 12px cao... Khoảng cách giữa text và icon là 12px cả icon phải và trái."
+**affects**: `profile.ghn/ds/sidebar.binding.yaml` (§ layout_override.item_internal_padding
+MỚI, § quirks.item_default_padding_wrong MỚI).
+
+Đo lại thật qua use_figma trên đúng node Williams chỉ: padding bên trong
+item = {left:12, right:12, top:12, bottom:12} (bản trước ghi nhầm 0 cho
+trái/phải — chỉ đúng phần 12px top/bottom, còn 2px trước đó là con số ĐÚNG
+nhưng khác chỗ: đó là inset của cả CONTAINER ra mép ngoài, không phải padding
+bên trong 1 item). Khoảng cách icon↔text đo được: 10px (icon trái↔label,
+bên trong nhóm nội dung) và 12px (nhóm nội dung↔icon phải/chevron) — Williams
+nói cả 2 đều 12px, ghi nhận cả số đo thật lẫn lời Williams, không tự sửa bên
+nào.
+
+**Phát hiện thêm (quirk thứ 3 dạng "default sai")**: khi tạo MỚI 1 instance
+từ chính component gốc (không phải đọc từ 1 instance thật đã đặt sẵn),
+padding mặc định ra {0,16,12,12} — LỆCH hẳn so với số thật dùng trong sidebar
+Freight production. Đã áp dụng luôn vào bản build test (set tường minh
+12/12/12/12 cho cả 9 module) — ghi lại thành rule bắt buộc trong
+`quirks.item_default_padding_wrong`: renderer/pipeline PHẢI set tường minh
+số này, không dựa vào default của component gốc.
+
+---
+
+## 13/09-Q — Sửa logo/gap/height + chốt luật dynamic-slot cho module Sidebar
+
+**by**: Williams — trỏ link node thật `22894:77037`, "Tiếp theo tao vẫn chưa
+chạy git vì có một số thông số sai" + 5 điểm sửa (logo, padding logo, gap
+logout, chiều cao dynamic, module là dynamic slot).
+**affects**: `rules/kinds/navigation.rules.yaml` (§ NAV-B-05, NAV-B-06 MỚI),
+`profile.ghn/ds/sidebar.binding.yaml` (§ layout_override.logo, §
+module_group_to_logout_gap_px MỚI, § total_height MỚI, § content_pattern MỚI,
+§ logo cập nhật status blocking).
+
+**1. Logo sai** — Williams: "logo Giaohangnhanh phải thay bằng logo
+GiaoHangNang". Đã biết từ trước (chưa tải được asset thật do egress
+policy), nay Williams nhắc lại rõ ràng đây là SAI cần sửa — nâng mức độ
+cảnh báo trong binding (status blocking, không chỉ ghi chú nhẹ).
+
+**2. Padding logo→mép ngoài** — Williams: "Khoảng cách padding từ logo tới
+background ngoài là 18 tuy nhiên tao thay bằng 16px". Số CHUẨN = 18px, số
+16px chỉ là Williams tự thay tạm trong file hiện tại — dùng 18px làm chuẩn
+khi build mới, không copy nguyên 16px.
+
+**3. Gap module-list → Đăng xuất** — Williams: "Khoảng cách từ group module
+đến module đăng xuất cách nhau 24px". Đo lại thật qua get_metadata (node
+22894:77037): Container kết thúc y=496, "Đăng xuất" bắt đầu y=520 → gap=24px,
+khớp đúng. Ghi thành field riêng `module_group_to_logout_gap_px` (khác với
+logo_to_module_list_gap_px dù trùng số 24 — 2 khoảng cách độc lập).
+
+**4. Chiều cao Sidebar KHÔNG cố định** — Williams: "Chiều cao mặc định của 1
+side bar là 1 viewport (1080 height) tuy nhiên nếu màn hình dài show full
+thông tin thì đi kéo đến hết vùng màn hình" (kèm ví dụ node 22688:89818).
+Đọc lại thật: trang đó cao 1800px, sidebar "Left Menu Freight" trong CÙNG
+trang cũng đo được height=1800px — xác nhận đúng 100%. Ghi thành rule kind
+mới `NAV-B-05`.
+
+**5. Module + logo là DYNAMIC SLOT** — Williams giải thích bối cảnh lớn hơn:
+đang xây "agent render UI tổng thể", Sidebar chỉ là 1 phần — phần module bên
+trong + logo phải THAY ĐỔI theo từng portal (hiện có 2 hệ thống thật: B2B
+Portal, TMS). Khi PO yêu cầu portal MỚI: generate module theo ĐÚNG PRD của
+portal đó, KHÔNG giữ nguyên module cũ của B2B Portal làm mặc định — nhưng
+LUÔN phải có sẵn trạng thái "backlog" (rỗng) cho module chưa có yêu cầu cụ
+thể, và khi build module mới phải theo dữ liệu PO/Designer đưa, không tự
+bịa từ module cũ. CHỈ giữ lại phần CẤU TRÚC (padding, active/chevron, spacing
+— tức NAV-B-01..05). Ghi thành rule kind mới `NAV-B-06` — đây là rule GHI ĐÈ
+quan trọng: toàn bộ nội dung module cụ thể trong `sidebar-research-notes.md`
+từ nay chỉ có giá trị tham khảo cấu trúc, không phải data mặc định.
+
+**Còn mở**: logo thật (vẫn chưa tải được), numberBadge/Menu name (chưa hỏi),
+chênh lệch chiều cao item 48/56px (chưa hỏi), xác nhận icon qua FA6 Pro.
+**Williams vẫn CHƯA chạy git** — vòng 13/09-O đã commit rồi (`ed12afc`), cần
+gộp vòng 13/09-P + 13/09-Q vào 1 lần commit khi Williams sẵn sàng.
+
+---
+
+## 13/09-R — Sửa cơ chế nút collapse/expand (vị trí thật) + xác nhận thêm chiều upload asset cũng bị chặn
+
+**by**: Williams — upload ảnh logo thật trực tiếp vào chat + "Tao chưa update
+git tao đợi mày sửa lại sidebar, nhưng trước khi sửa tao muốn lưu ý thêm là
+icon collapse sidebar nằm ở trên bên phải ở menu chứ không ở ngay trong menu
+(tham khảo: node 22894:77061)".
+**affects**: `rules/kinds/navigation.rules.yaml` (§ NAV-B-01, sửa toàn bộ
+cơ chế + thêm _pending_confirmation mới), `profile.ghn/ds/sidebar.binding.yaml`
+(§ component.expander MỚI, § logo cập nhật blocking_reason).
+
+**1. Nút collapse/expand — SAI cơ chế trong bản ghi trước**: Bản build test
+(và bản ghi NAV-B-01 cũ) dùng variant `Type=collapse/expand` CÓ SẴN trên
+chính atom "Left menu items (Base)" làm nút toggle — đặt thành 1 thanh nằm
+trong luồng dọc, ngay dưới logo. Williams chỉ ra đây SAI vị trí. Khảo sát
+thật qua `use_figma` trên node `22894:77061` (file B2B Portal) xác nhận nút
+toggle THẬT trong production là 1 component HOÀN TOÀN RIÊNG: "Left menu /
+Sidebar_expander" (componentSetKey `ebc03f0b359b90e24854d55607679c7931cd788b`,
+biến thể `Style=[Collapse,Expand]×State=[Normal,Hover]`), đặt TUYỆT ĐỐI
+(absolute) ở góc TRÊN-PHẢI toàn khối sidebar — tọa độ thật `x=283, y=21,
+width=32, height=32` trong khung rộng 300px (tràn mép phải 15px). Đây là 1
+nút NỔI, KHÔNG nằm trong luồng danh sách module.
+
+Đã SỬA trực tiếp trên canvas test (file `uFbbdvWYC1dg3AjdnHCgxk`): gỡ thanh
+toggle sai (`85:2170`), import component set `Sidebar_expander` thật, tạo
+instance mới (`95:1941`, Style=Collapse/State=Normal) với
+`layoutPositioning='ABSOLUTE'` đặt đúng `x=283,y=21` — khớp tọa độ thật.
+
+Ghi lại thành correction trong `NAV-B-01` + block `component.expander` mới
+trong `sidebar.binding.yaml`. Còn mở 1 câu hỏi CHƯA hỏi Williams: variant
+`Type=collapse/expand` vẫn tồn tại trên atom gốc — chưa rõ nó có mục đích
+dùng riêng nào khác hay chỉ là phần thừa/không dùng.
+
+**2. Logo thật — vẫn CHƯA gắn được, xác nhận thêm chiều upload cũng bị
+chặn**: Williams upload ảnh logo PNG thật (320×72, đúng 2x kích thước slot
+160×36) trực tiếp vào chat. Thử gắn vào Figma qua tool
+`mcp__Figma__upload_assets` — lấy được `submitUrl` dạng
+`https://mcp.figma.com/mcp/upload/.../submit`, nhưng `curl -X POST` tới URL
+đó THẤT BẠI với `curl: (56) CONNECT tunnel failed, response 403` /
+`mcp.figma.com:443 — connect_rejected (organization policy)` — giống hệt lỗi
+khi tải XUỐNG `www.figma.com` đã gặp trước đó. Xác nhận: cả 2 CHIỀU (tải
+xuống VÀ tải lên asset qua Figma) đều bị egress policy tổ chức chặn, không
+chỉ riêng chiều tải xuống như ghi nhận trước. Không thử bypass thêm (đúng
+quy tắc không retry/bypass 403). Đã style lại ô logo trong bản test thành
+placeholder rõ ràng (viền nét đứt + label giải thích lý do chưa gắn được),
+KHÔNG còn dùng nhầm logo mặc định GHN DS ("GiaoHangNhanh") nữa.
+
+**Còn mở**: logo thật vẫn chưa gắn được vào Figma qua bất kỳ kênh nào trong
+phiên này — cần Williams tự dán logo vào file thật, hoặc thử lại ở 1 phiên
+có quyền mạng khác. numberBadge/Menu name (chưa hỏi), chênh lệch chiều cao
+item 48/56px (chưa hỏi), xác nhận icon qua FA6 Pro, ý nghĩa variant
+Type=collapse/expand của atom (chưa hỏi, MỚI phát sinh vòng này) — tất cả
+vẫn còn mở, chưa hỏi Williams.
+**Williams vẫn CHƯA chạy git** — cần gộp 3 vòng chưa commit: 13/09-P (item
+padding) + 13/09-Q (logo/gap/height/dynamic-slot) + 13/09-R (sửa cơ chế
+expander + xác nhận chặn upload) vào 1 lần commit.
+
+---
+
+## 13/09-S — Chốt variant collapse/expand của atom là KHÔNG dùng + sửa vị trí item "Đăng xuất" trong bản build test
+
+**by**: Williams — trả lời câu hỏi mở từ 13/09-R ("variant Type=collapse/expand
+có dùng vào việc gì khác không"): "không dùng" + yêu cầu "Mày điều chỉnh
+sidebar ở figma trước khi tao update git".
+**affects**: `rules/kinds/navigation.rules.yaml` (§ NAV-B-01, đóng
+_pending_confirmation), `profile.ghn/ds/sidebar.binding.yaml` (§
+module_group_to_logout_gap_px, thêm build_fix_13_09_S).
+
+**1. Variant Type=collapse/expand của atom — ĐÃ ĐÓNG, xác nhận KHÔNG dùng**:
+Williams xác nhận đây chỉ là phần thừa của atom, không phải cơ chế toggle
+thật. Cơ chế toggle thật DUY NHẤT là component "Sidebar_expander" (đã ghi ở
+13/09-R). Ghi rule cứng: renderer/pipeline KHÔNG BAO GIỜ tạo instance ở
+variant này.
+
+**2. Rà lại bản build test trước khi Williams chạy git — phát hiện 1 lỗi
+thật**: Đối chiếu canvas test với chính binding đã ghi (`module_group_to_
+logout_gap_px`), phát hiện bản build test (từ vòng 13/09-O) đặt item "Đăng
+xuất" làm item THỨ 9 nằm ngay BÊN TRONG Container — tức đang được đối xử
+như 1 module bình thường, không tách riêng như tài liệu đã mô tả đúng từ
+13/09-Q ("Đăng xuất" nằm NGOÀI Container, cách 24px). Đây là lỗi build,
+không phải lỗi tài liệu.
+
+Đã sửa trực tiếp trên canvas (file `uFbbdvWYC1dg3AjdnHCgxk`): gỡ instance
+"Đăng xuất" (`86:1969`) ra khỏi Container (còn lại đúng 8 module), tạo 1
+frame riêng "Logout wrap" (`98:1896`, padding trái/phải 2px giống Container)
+chứa nó, thêm làm con thứ 3 của "SidebarMenu" (sau Container) — nhờ
+itemSpacing=24 sẵn có của SidebarMenu, khoảng cách tự động đúng 24px, đo lại
+xác nhận: Container kết thúc y=444, "Logout wrap" bắt đầu y=468 → gap=24px
+khớp chính xác. Sidebar tổng chiều cao tự điều chỉnh theo (auto-height) từ
+492px lên 516px.
+
+**Còn mở**: logo thật (chưa gắn được — chờ Williams tự dán hoặc phiên mạng
+khác), numberBadge/Menu name (chưa hỏi), chênh lệch chiều cao item 48/56px
+(chưa hỏi), xác nhận icon qua FA6 Pro.
+**Williams xác nhận sẽ chạy git SAU vòng sửa này** — gộp 4 vòng: 13/09-P
+(item padding) + 13/09-Q (logo/gap/height/dynamic-slot) + 13/09-R (sửa cơ
+chế expander + xác nhận chặn upload) + 13/09-S (đóng variant thừa + sửa vị
+trí "Đăng xuất" trong build test) vào 1 lần commit.
+
+---
+
+## 13/09-T — Logo thật SVG đã có sẵn trên máy Williams, đẩy vào repo làm nguồn chuẩn
+
+**by**: Williams — "Trong thư mục download của máy này có logo svg với tên
+là Logo_Nặng nhờ mày đẩy lên git khi cần gọi qua figma thì sao".
+**affects**: `profile.ghn/ds/assets/logo/Logo_Nang.svg` (file MỚI, nhị phân),
+`profile.ghn/ds/sidebar.binding.yaml` (§ logo.asset_in_repo MỚI).
+
+File `Logo_Nặng.svg` (160×36 viewBox — khớp chính xác kích thước slot logo
+đã định) đã có sẵn trong thư mục Downloads trên máy Williams — không phải
+tải về từ Figma nên KHÔNG bị egress policy chặn. Đã copy nguyên vẹn vào repo
+tại `profile.ghn/ds/assets/logo/Logo_Nang.svg` qua device bridge (không qua
+mạng bị chặn).
+
+Lưu ý quan trọng đã ghi rõ trong binding: việc có file này trong git KHÔNG
+tự động gắn được vào chính file Figma trong phiên hiện tại — bước gắn ảnh
+vào Figma vẫn đi qua đúng con đường mạng bị chặn (mcp.figma.com). File này
+trong repo chỉ đóng vai trò NGUỒN CHUẨN version-controlled cho:
+(1) Williams tự kéo/dán trực tiếp vào Figma (không bị chặn mạng phía
+Williams), hoặc
+(2) 1 lần chạy pipeline render Figma trong tương lai ở môi trường không bị
+chặn egress figma.com, đọc thẳng file này từ repo.
+
+**Còn mở**: vẫn cần Williams (hoặc 1 phiên khác không bị chặn mạng) tự gắn
+file này vào file Figma thật/test để logo thật sự hiển thị đúng trên canvas.

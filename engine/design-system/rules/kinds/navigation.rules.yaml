@@ -31,20 +31,58 @@ undisableable: []
 # =============================================================================
 behavioural_limits:
   - id: NAV-B-01
+    status: "[SỬA 13/09-R — Williams] Bản trước ghi SAI cơ chế toggle — xem correction bên dưới."
     rule: >
       Nút thu gọn/mở rộng (collapse/expand) là DUY NHẤT cho CẢ khối điều
       hướng — KHÔNG lặp lại theo từng module/item. Đây là 1 control ở cấp
-      NAVIGATION, không phải thuộc tính của từng item.
+      NAVIGATION, không phải thuộc tính của từng item. Về mặt VỊ TRÍ: nút
+      này là 1 nút NỔI (floating), đặt TUYỆT ĐỐI (absolute) ở góc TRÊN-PHẢI
+      của toàn khối sidebar — KHÔNG nằm trong luồng dọc của danh sách
+      module/menu, KHÔNG ngay dưới logo.
+    component_used: >
+      [SỬA 13/09-R] Component RIÊNG, TÁCH BIỆT khỏi atom "Left menu items
+      (Base)" — tên "Left menu / Sidebar_expander", componentSetKey
+      `ebc03f0b359b90e24854d55607679c7931cd788b`, biến thể
+      `Style=[Collapse (default), Expand]` × `State=[Normal (default),
+      Hover]`. Bên trong chỉ gồm 1 nền bo góc + icon "Icon / regular /
+      grip-dots-vertical".
+    position_real:
+      x_px: 283
+      y_px: 21
+      width_px: 32
+      height_px: 32
+      note: >
+        Đo trên node 22894:77061 thật (frame "Left Menu Freight" rộng
+        300px) — nút tràn ra ngoài mép phải 15px (283+32=315 > 300), nằm
+        ngang hàng khoảng logo (y=21). layoutPositioning phải set 'ABSOLUTE'
+        khi implement, KHÔNG nằm trong auto-layout flow của SidebarMenu.
+    correction_note: >
+      [SỬA 13/09-R] Bản ghi TRƯỚC ĐÂY (13/09-J) hiểu NHẦM cơ chế: component
+      atom "Left menu items (Base)" CÓ 1 variant riêng
+      `Type=collapse/expand` (tách biệt khỏi Type=main menu/sub menu) — bản
+      cũ coi đây LÀ nút toggle thật của Sidebar. Williams chỉ rõ (node
+      22894:77061): "icon collapse sidebar nằm ở trên bên phải ở menu chứ
+      không ở ngay trong menu" — nghĩa là nút toggle THẬT trong sản xuất là
+      component "Sidebar_expander" ở trên, KHÔNG phải variant
+      Type=collapse/expand của atom. CHƯA hỏi Williams variant
+      Type=collapse/expand đó có dùng cho mục đích nào khác không hay chỉ
+      là phần thừa/không dùng của atom.
+    unused_variant_confirmed: >
+      [ĐÃ ĐÓNG — Williams 13/09-S] Xác nhận variant `Type=collapse/expand`
+      trên atom "Left menu items (Base)" KHÔNG dùng vào việc gì — phần thừa
+      của atom, không phải cơ chế toggle thật. Cơ chế toggle thật DUY NHẤT
+      là component "Sidebar_expander" mô tả ở trên. Renderer/pipeline KHÔNG
+      BAO GIỜ được tạo instance ở variant Type=collapse/expand này.
     source: >
-      [XÁC NHẬN qua khảo sát thật 13/09-J, không phải suy đoán] Component DS
-      gốc có variant Type=collapse/expand RIÊNG, tách biệt hoàn toàn khỏi
-      variant Type=main menu/sub menu — xác nhận đây là 1 khái niệm độc lập,
-      không phải chevron của từng item (xem NAV-B-03).
+      [XÁC NHẬN — Williams 13/09-R, kèm khảo sát thật qua use_figma trên
+      node 22894:77061, file B2B Portal] "icon collapse sidebar nằm ở trên
+      bên phải ở menu chứ không ở ngay trong menu".
     real_world_note: >
-      Trong file B2B Portal (Freight thật), instance toggle này đang bị ẨN
-      (hidden=true) — tức Freight KHÔNG hiển thị control này ở màn hình hiện
-      tại, dù component hỗ trợ sẵn. Không suy diễn đây là quy tắc cấm dùng —
-      chỉ là lựa chọn hiện tại của 1 màn hình cụ thể.
+      Trong file B2B Portal (Freight thật) tại thời điểm khảo sát 13/09-J,
+      có 1 instance liên quan đang bị ẨN (hidden=true) trên 1 màn hình cụ
+      thể — không suy diễn đây là quy tắc cấm dùng, chỉ là lựa chọn hiện tại
+      của 1 màn hình cụ thể; cơ chế/vị trí thật của nút vẫn là
+      Sidebar_expander như mô tả ở trên.
 
   - id: NAV-B-02
     rule: >
@@ -86,6 +124,50 @@ behavioural_limits:
       (`Type=main menu`).
     source: "[XÁC NHẬN qua khảo sát thật 13/09-J + build test 13/09-O — cấu trúc component xác nhận sub menu variant không có slot icon trái]"
 
+  - id: NAV-B-05
+    rule: >
+      Chiều cao TOÀN BỘ khối navigation KHÔNG cố định 1 số duy nhất — mặc
+      định = chiều cao 1 viewport (1080px), nhưng PHẢI tự kéo dài hơn nếu
+      nội dung trang chính (page content) cao hơn 1 viewport, để sidebar
+      luôn phủ hết chiều cao thật của trang (không bị cắt cụt giữa chừng
+      khi trang dài phải cuộn).
+    source: >
+      [XÁC NHẬN — Williams 13/09-Q] "Chiều cao mặc định của 1 side bar là 1
+      viewport (1080 height) tuy nhiên nếu màn hình dài show full thông tin
+      thì đi kéo đến hết vùng màn hình" — kèm ví dụ thật (node 22688:89818,
+      file B2B Portal): trang có nội dung dài 1800px, sidebar "Left Menu
+      Freight" cũng đo được height=1800px, KHÔNG dừng ở 1080px.
+
+  - id: NAV-B-06
+    rule: >
+      Danh sách module bên trong navigation (VÀ logo) là 1 DYNAMIC SLOT —
+      nội dung KHÁC NHAU theo từng portal/hệ thống (hiện đã có 2 sidebar
+      thật khác nhau: B2B Portal và TMS). Khi dựng navigation cho 1 portal
+      MỚI, PHẢI generate module theo ĐÚNG yêu cầu dữ liệu thật của PRD/
+      Designer đưa ra cho portal đó — TUYỆT ĐỐI KHÔNG giữ lại/copy nguyên
+      danh sách module của B2B Portal (hay bất kỳ portal có sẵn nào khác)
+      làm nội dung mặc định. CHỈ giữ lại phần CẤU TRÚC (atom, padding,
+      hành vi active/chevron, spacing — tức NAV-B-01..05) — không giữ DATA.
+      Khi portal mới CHƯA có yêu cầu module cụ thể nào, PHẢI luôn có sẵn 1
+      trạng thái "backlog" (rỗng/placeholder, chưa gán module thật) thay vì
+      tự ý điền module của portal khác vào cho có nội dung.
+    source: >
+      [XÁC NHẬN — Williams 13/09-Q] "đây tao xây dựng agent render UI tổng
+      thể nên ngoài side bar này vùng group module bên trong và logo có thể
+      thay đổi được tao tạm gọi là dynamic slot. Nếu PO yêu cầu 1 portal mới
+      thì mày phải generate ra module theo tiêu chí PRD không giữ các module
+      cũ của B2B Portal (hiện tại thì đang có 2 sidebar cho 2 hệ thống là B2B
+      Portal với TMS) - tuy nhiên mày phải luôn có backlog cho 1 module mới
+      chưa có gì và mày phải xây dựng module mới theo yêu cầu dữ liệu của PO
+      /Designer đưa ra chứ không phải data từ module cũ. Chỉ giữ lại phần
+      cấu trúc."
+    consequence: >
+      Toàn bộ danh sách module cụ thể ghi trong sidebar-research-notes.md
+      (Quản lý khách hàng, Quản lý đơn hàng, v.v.) chỉ có giá trị THAM KHẢO
+      cấu trúc/hành vi (bao nhiêu icon, có sub-menu hay không, độ dài text
+      điển hình) — KHÔNG phải danh sách module mặc định để tái sử dụng cho
+      portal khác.
+
 # =============================================================================
 # _pending_confirmation — CHƯA CHỐT
 # =============================================================================
@@ -93,3 +175,4 @@ _pending_confirmation:
   - item: "Ý nghĩa boolean 'numberBadge#1128:50' trên item — chưa hỏi Williams, tạm để tắt (false) mặc định khi build."
   - item: "Chênh lệch chiều cao item 48px vs 56px quan sát được trong sidebar Freight thật — chưa rõ nguyên nhân, chưa hỏi Williams."
   - item: "Ý nghĩa nghiệp vụ boolean 'Menu name#1128:62' — chưa hỏi."
+  - item: "[ĐÃ ĐÓNG 13/09-S] Variant Type=collapse/expand của atom — Williams xác nhận KHÔNG dùng, xem NAV-B-01.unused_variant_confirmed."
