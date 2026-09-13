@@ -1,0 +1,156 @@
+# =============================================================================
+# sidebar.binding.yaml — GIÁ TRỊ DS RIÊNG CỦA SIDEBAR (lớp C)
+#
+# Chỉ chứa thứ RIÊNG của Sidebar. Thứ dùng chung nằm ở ds/_shared.binding.yaml.
+# version: 1.0-draft
+# =============================================================================
+
+meta:
+  component: Sidebar
+  layer: ds-binding-component
+  version: 1.0-draft
+  created: "2026-09-13"
+  shared: profile.ghn/ds/_shared.binding.yaml
+  status: >
+    [XÁC NHẬN — Williams 13/09-O] Đăng ký thành component chính thức sau khi
+    build thử + Williams duyệt: "Build sidebar riêng test thử mày đã hiểu
+    chưa trước khi đăng kí chính thức" → duyệt qua các vòng sửa (padding,
+    Active default quirk) → "Thôi không theo atom của design system nữa theo
+    component này luôn ghi đè" ("Do atom của design system không có
+    padding") — nghĩa là: layout/spacing dùng giá trị OVERRIDE của GHN
+    Freight (xem § layout_override), KHÔNG dùng nguyên trạng default của
+    chính component thư viện GHN DS gốc (component gốc dùng padding
+    16/48/24px không khớp thực tế Freight dùng). Xem decisions.md § 13/09-O.
+
+component:
+  atom:
+    name: "Left menu /Left menu items (Base)"
+    type_note: "COMPONENT_SET — atom 'module', dùng lặp lại nhiều lần trong danh sách điều hướng"
+    component_key: "dbf4cf146de9387afd495867be9e17dc2a20d9cb"
+    library_key: "lk-250e103acf2b45b04608ee560ea1a546cd58015985b5b548800febe7e720fb83abfcf9e680931bb089ee0468c5b18d7a350dafbcc8d16f038ef58c80ab5cce1c"
+  container:
+    name: "Left Menu"
+    type_note: "COMPONENT_SET — khung toàn bộ sidebar (logo + danh sách module + social) — CHỈ dùng tham khảo cấu trúc, KHÔNG dùng nguyên layout/padding mặc định của nó, xem § layout_override"
+    component_key: "a9dabbc7e2f8b7a636175adf12016dad23645d71"
+    library_key: "lk-250e103acf2b45b04608ee560ea1a546cd58015985b5b548800febe7e720fb83abfcf9e680931bb089ee0468c5b18d7a350dafbcc8d16f038ef58c80ab5cce1c"
+  source: "[FIGMA] search_design_system + figma.importComponentSetByKeyAsync qua use_figma, đọc 13/09-J, dựng thử + đo lại 13/09-O"
+
+# -----------------------------------------------------------------------------
+# figma_properties — tên property thật trên atom "Left menu items (Base)"
+# -----------------------------------------------------------------------------
+figma_properties:
+  type: "Type"                          # variant — [main menu, sub menu, collapse, expand]
+  state: "State"                        # variant — [Default, Active] (chỉ áp cho main menu/sub menu)
+  active: "Active#4109:93"              # boolean — [XÁC NHẬN 13/09-O] defaultValue THẬT là true trên component gốc — xem § quirks.active_default_true
+  right_icon: "Right icon#4109:96"      # boolean — có/không có chevron bên phải (item có sub-menu hay không)
+  number_badge: "numberBadge#1128:50"   # boolean — [cần verify] ý nghĩa nghiệp vụ chưa hỏi, tạm để false
+  menu_name: "Menu name#1128:62"        # boolean — [cần verify] ý nghĩa nghiệp vụ chưa hỏi
+  source: "[FIGMA] componentPropertyDefinitions, đọc 13/09-J + xác nhận lại 13/09-O"
+
+# -----------------------------------------------------------------------------
+# QUIRKS — hành vi component gốc KHÔNG khớp trực giác, phải xử lý ở renderer
+# -----------------------------------------------------------------------------
+quirks:
+  active_default_true:
+    status: "[ĐÃ ĐÓNG — Williams 13/09-O]"
+    finding: >
+      `componentPropertyDefinitions["Active#4109:93"].defaultValue === true`
+      trên chính component gốc — nghĩa là bất kỳ instance mới nào (dù chọn
+      variant State=Default) đều tự động BẬT thanh accent cam bên phải trừ
+      khi renderer set tường minh `Active#4109:93 = false`.
+      Lần build thử đầu tiên (13/09-O) đã dính đúng quirk này: MỌI dòng đều
+      hiện thanh cam, kể cả dòng không active.
+    resolution: "[XÁC NHẬN — Williams] \"Thanh cam chỉ hiện khi ở trạng thái active không active mặc định ẩn đi\" — renderer PHẢI set `Active#4109:93=false` cho MỌI item không phải là item đang active, KHÔNG được dựa vào default của component."
+  chevron_direction_must_be_real:
+    status: "[ĐÃ ĐÓNG — Williams 13/09-N]"
+    finding: >
+      Sidebar Freight thật (file B2B Portal) quan sát thấy MỌI item có
+      sub-menu đều hiện `chevron-down`, kể cả khi sub-menu đang mở — trông
+      giống 1 quirk mặc định sai của component (giống các quirk default-sai
+      từng gặp ở Dialog/BottomSheet).
+    resolution: "[XÁC NHẬN — Williams] \"Okay là do tao làm ẩu không bấm active mà đổi màu đè lên component nên nó mất đi bản chất của component gốc\" (áp dụng chung cho cả quirk Active lẫn quirk chevron) — component gốc hành xử ĐÚNG (chevron đổi hướng thật theo đóng/mở), sai lệch quan sát được là do Williams tự chỉnh sửa thủ công trên file Freight, KHÔNG PHẢI lỗi hệ thống. Renderer dùng đúng rule NAV-B-03, không cần né tránh gì thêm."
+
+# -----------------------------------------------------------------------------
+# LAYOUT OVERRIDE — GHN Freight KHÔNG dùng nguyên default của component "Left
+# Menu" thư viện gốc (padding 16/48/24px) — Williams: "Do atom của design
+# system không có padding" → "Thôi không theo atom của design system nữa
+# theo component này luôn ghi đè". Số liệu dưới đây đo THẬT từ file B2B
+# Portal (Freight production, fileKey s2NE6ikwLnsZSUp97RBfof, node
+# 22894:77036) — đây là NGUỒN CHUẨN cho Sidebar của Freight, không phải bản
+# demo generic của thư viện GHN DS.
+# -----------------------------------------------------------------------------
+layout_override:
+  status: "[XÁC NHẬN — Williams 13/09-O]"
+  total_width:
+    value: 300
+    unit: px
+    fixed: true
+    source: "[FIGMA — ĐO THẬT] node 22894:77036 'Left Menu Freight', width=300 cố định — khớp đúng với chính component gốc (component gốc cũng width=300 khi Type=Web), Williams xác nhận lại: 'sidebar max width chỉ là 300px'."
+  outer_padding:
+    value: 0
+    note: >
+      KHÔNG dùng padding 16/48/24px như mặc định của component 'Left Menu'
+      gốc — sidebar Freight thật không có outer padding, nội dung (logo,
+      danh sách module) chiếm gần trọn 300px, chỉ có inset nhỏ ở cấp
+      container (xem module_list_inset bên dưới).
+  logo:
+    left_inset_px: 16
+    height_px: 36
+    note: "Logo instance thật lùi 16px từ mép trái, cao 36px — số liệu này TRÙNG với mặc định của component gốc (phần này KHÔNG override)."
+  logo_to_module_list_gap_px: 24
+  module_list_inset:
+    left_px: 2
+    right_px: 2
+    item_spacing_px: 0
+    note: >
+      Mỗi module thật rộng 296px (300 - 2 - 2), các dòng nằm SÁT NHAU (không
+      có gap giữa các dòng — khoảng cách 48px/dòng đã bao gồm padding trong
+      của chính item, không phải gap của container).
+  item_height_px:
+    default: 48
+    variant_seen: 56
+    status: "[cần verify] Có vài item quan sát được cao 56px thay vì 48px trong sidebar Freight thật — chưa rõ nguyên nhân (numberBadge? nội dung dài hơn?), chưa hỏi Williams."
+  social_footer:
+    present_in_generic_demo: true
+    present_in_freight_real: false
+    decision: "[XÁC NHẬN — build test 13/09-O] Sidebar Freight KHÔNG dùng phần 'Connect with us' + social icons có sẵn trong demo generic của component gốc — đã bỏ hẳn khi build test, không đăng ký phần này."
+
+# -----------------------------------------------------------------------------
+# LOGO — chưa có asset thật
+# -----------------------------------------------------------------------------
+logo:
+  status: "[GIỚI HẠN THẬT — chưa xong]"
+  current_placeholder: "Logo mặc định của GHN DS (GiaoHangNhanh) — dùng tạm khi build test 13/09-O vì chưa tải được asset thật."
+  real_asset_reference: "node 22894:77039 ('Logo'), file B2B Portal (s2NE6ikwLnsZSUp97RBfof) — logo 'GHN' + wordmark 'GiaoHang NẶNG' + tagline 'Hàng Nặng Ký, Giá Nhẹ Vi'. Không tải được về do egress policy chặn figma.com trong phiên này — xem sidebar-research-notes.md § 6."
+
+# -----------------------------------------------------------------------------
+# ICON — dùng đúng cơ chế FA6 ligature như Input/Button (xem
+# _shared.binding.yaml § icon mechanism chung, form_input.rules.yaml)
+# -----------------------------------------------------------------------------
+icon:
+  glyph_mechanism: >
+    Icon glyph set bằng cách ghi TÊN ligature FA6 vào `characters` của TEXT
+    con lồng trong instance "font awesome / Base" (icon trái) hoặc
+    "font awesome / base" (chevron phải) — giống Input/Button, không phải 1
+    property biến thể riêng.
+  confirmed_icons_used_in_freight_real:
+    status: "[FIGMA — ĐỌC THẬT từ sidebar Freight thật 13/09-J, CHƯA qua bước xác nhận FA6 Pro đầy đủ]"
+    list: [user, boxes-stacked, house-night, map-location-dot, truck-field,
+           file-lines, file-invoice-dollar, clipboard-list-check,
+           square-fragile, arrow-right-from-bracket, chevron-down, chevron-up]
+    note: >
+      Chưa chạy quy trình xác nhận 2 bước đầy đủ (offline FA6 Free catalog +
+      Williams tự xác nhận qua FA6 Pro plugin) như đã làm cho icon
+      Button/Input — cần làm khi bắt đầu build màn hình thật dùng các icon
+      này.
+
+# -----------------------------------------------------------------------------
+# _pending_confirmation
+# -----------------------------------------------------------------------------
+_pending_confirmation:
+  - item: "Ý nghĩa boolean numberBadge#1128:50 — chưa hỏi, tạm mặc định false."
+  - item: "Ý nghĩa boolean Menu name#1128:62 — chưa hỏi."
+  - item: "Chênh lệch chiều cao item 48px vs 56px — chưa rõ nguyên nhân, chưa hỏi."
+  - item: "Logo thật Giao Hàng Nặng — chưa có asset, đang dùng placeholder GHN DS gốc."
+  - item: "Icon dùng trong Sidebar chưa qua bước xác nhận FA6 Pro đầy đủ (chỉ mới đọc tên từ Figma)."
+  - item: "Nút collapse/expand — component hỗ trợ nhưng sidebar Freight thật hiện đang ẨN nó, chưa hỏi Williams có nên hiện lại không."

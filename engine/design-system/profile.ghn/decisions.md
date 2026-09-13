@@ -1748,3 +1748,68 @@ Sai lệch quan sát được trong bản Freight thật đều là do Williams 
 customize thủ công, không phải vấn đề của hệ thống thiết kế. Không còn điểm
 nào chưa khớp — sẵn sàng để Williams quyết định đăng ký Sidebar thành
 component chính thức khi cần.
+
+---
+
+## 13/09-O — Đăng ký Sidebar chính thức, sau khi build test + Williams duyệt
+
+**by**: Williams — "Build sidebar riêng test thử mày đã hiểu chưa trước khi
+đăng kí chính thức", rồi qua các vòng sửa: "Thanh cam chỉ hiện khi ở trạng
+thái active không active mặc định ẩn đi", "mày check lại sidebar max width
+chỉ là 300px và nó có padding ở từng module" (kèm link node
+22894:77036), cuối cùng: "Thôi không theo atom của design system nữa theo
+component này luôn ghi đè" / "Do atom của design system không có padding".
+**affects**: MỚI `rules/kinds/navigation.rules.yaml`, MỚI
+`rules/components/sidebar.rules.yaml`, MỚI `profile.ghn/ds/sidebar.binding.yaml`,
+`manifest.yaml` (§ component_kinds.navigation MỚI, § components.Sidebar MỚI).
+
+**Quá trình build test (trong file Figma test uFbbdvWYC1dg3AjdnHCgxk, dùng
+đúng component thật của DS — atom "Left menu items (Base)" + container "Left
+Menu"):**
+
+1. **Bản đầu** — tự dựng 1 frame auto-layout tay, KHÔNG dùng padding thật của
+   component gốc → Williams chỉ ra: "Không có padding gì hết vậy? Logo không
+   có". Sai vì tự bỏ qua cấu trúc layout thật của component.
+2. **Sửa lần 1** — dùng lại đúng component "Left Menu" thật (detach để chỉnh
+   sửa nội dung), áp padding mặc định của nó (16/48/24px). Cùng lúc Williams
+   phát hiện + báo: "Thanh cam chỉ hiện khi ở trạng thái active không active
+   mặc định ẩn đi" — dẫn tới phát hiện quirk thật: property `Active#4109:93`
+   có `defaultValue=true` ngay trên component gốc, nên mọi instance mới đều
+   tự bật thanh accent trừ khi renderer set tường minh `false`. Đã sửa: set
+   `Active=false` cho mọi item không active.
+3. Williams gửi thêm link sidebar Freight thật (node 22894:77036) + báo:
+   "sidebar max width chỉ là 300px và nó có padding ở từng module" — đo lại
+   bằng dữ liệu thật thay vì dùng mặc định generic của thư viện: outer
+   padding thật = 0 (KHÔNG phải 16/48/24 như component gốc), width cố định
+   300px, module list chỉ inset 2px mỗi bên, gap logo→danh sách module thật
+   = 24px. Đã sửa lại đúng theo số đo thật, bỏ luôn phần "Connect with us"
+   (social icons) vì sidebar Freight thật không có.
+4. Williams xác nhận nốt cơ chế chevron: "Okay là do tao làm ẩu không bấm
+   active mà đổi màu đè lên component nên nó mất đi bản chất của component
+   gốc" — đóng hẳn quirk chevron đã ghi ở 13/09-N.
+5. Williams chốt: **"Thôi không theo atom của design system nữa theo
+   component này luôn ghi đè"** ("Do atom của design system không có
+   padding") — nghĩa là: layout/spacing của Sidebar dùng giá trị OVERRIDE
+   riêng của GHN Freight (đo thật từ file B2B Portal), KHÔNG dùng nguyên
+   default của chính component thư viện GHN DS gốc. Đây là quyết định kiến
+   trúc chính thức, ghi vào `sidebar.binding.yaml § layout_override`.
+
+**Đăng ký chính thức:**
+- Kind MỚI `navigation` (`rules/kinds/navigation.rules.yaml`) với 4 rule:
+  NAV-B-01 (collapse/expand là 1 control duy nhất cho cả sidebar), NAV-B-02
+  (chỉ 1 item Active tại 1 thời điểm — kèm quirk `defaultValue=true` phải xử
+  lý tường minh), NAV-B-03 (chevron đổi hướng THẬT theo đóng/mở), NAV-B-04
+  (sub-item không có icon trái). Chỉ 1 members_active (Sidebar) — dưới
+  ngưỡng `kind_needs_3_members`, chấp nhận tạm theo tiền lệ 08/09-D.
+- Component MỚI `Sidebar` (`profile.ghn/ds/sidebar.binding.yaml`) — ghi rõ
+  layout_override (300px width, 0 outer padding, 2px module-list inset,
+  24px logo→list gap, không có social footer), 2 quirk đã đóng (Active
+  default, chevron), và các mục còn `[cần verify]` (numberBadge, Menu name,
+  chênh lệch chiều cao 48/56px, logo thật, xác nhận icon qua FA6 Pro, có nên
+  hiện lại nút collapse/expand hay không).
+- `manifest.yaml` cập nhật: `component_kinds.navigation` + `components.Sidebar`.
+
+**Còn mở, KHÔNG tự đoán**: numberBadge, Menu name (ý nghĩa nghiệp vụ), chênh
+lệch chiều cao item 48/56px, logo thật Giao Hàng Nặng (vẫn chưa tải được do
+egress policy), xác nhận icon qua FA6 Pro (chưa chạy quy trình 2 bước đầy
+đủ), có nên hiện lại nút collapse/expand hay không (Freight thật đang ẩn nó).

@@ -102,6 +102,13 @@ component_kinds:
     requires_axes: [icon_slots]
     status: "[XÁC NHẬN — Williams 12/09] Rule icon đầu tiên (FRMIN-B-01, FRMIN-B-02) đã chốt qua chat, xem rules/kinds/form_input.rules.yaml + decisions.md § 12/09-N. Input đăng ký thành components: chính thức § 12/09-N (Williams: 'Đăng ký ngay') — xem components.Input bên dưới. Vẫn chỉ 1 members_active, dưới ngưỡng cảnh báo guardrails.kind_needs_3_members — chấp nhận tạm thời, cùng khuôn feedback_transient lúc mới có 2 (xem 08/09-D)."
 
+  navigation:
+    file: rules/kinds/navigation.rules.yaml
+    about: "Điều hướng chính của ứng dụng (menu cấp cao, có thể thu gọn/mở rộng, có active state)"
+    members_active: [Sidebar]
+    members_planned: []
+    status: "[XÁC NHẬN — Williams 13/09-O] Kind MỚI, phát sinh từ khảo sát + build test Sidebar (xem profile.ghn/ds/sidebar-research-notes.md, decisions.md § 13/09-J..O). Chỉ 1 members_active, dưới ngưỡng cảnh báo guardrails.kind_needs_3_members — chấp nhận tạm thời, cùng tiền lệ form_input/overlay lúc mới bắt đầu (xem 08/09-D)."
+
 # -----------------------------------------------------------------------------
 # COMPONENT
 # -----------------------------------------------------------------------------
@@ -179,6 +186,17 @@ components:
     status: "[XÁC NHẬN — Williams 13/09, 'Đóng nốt các gap này đi'] Đăng ký chính thức qua dữ liệu Figma thật (component_set, không phải component đơn như Dialog) — xem decisions.md § 13/09-F. Số liệu width=375px cố định (khớp đúng mobile reference 375px của OVL-B-04), height AUTO/hug theo nội dung (quan sát thật 210px–812px, KHÔNG có cap nhân tạo như Dialog) đã đóng phần 'còn mở' trong dialog.binding.yaml § _pending_confirmation."
     axes:
       content_pattern: {kind: enum}
+
+  Sidebar:
+    kinds: [navigation]
+    rules: rules/components/sidebar.rules.yaml       # gần rỗng — xem file
+    binding: profile.ghn/ds/sidebar.binding.yaml
+    policy_scope: sidebar
+    status: "[XÁC NHẬN — Williams 13/09-O] Đăng ký chính thức sau khi build test trong Figma (file uFbbdvWYC1dg3AjdnHCgxk) được Williams duyệt qua nhiều vòng sửa (padding, Active-default quirk) — xem decisions.md § 13/09-O. Layout dùng giá trị OVERRIDE riêng của GHN Freight (KHÔNG dùng nguyên default của component thư viện gốc) — xem sidebar.binding.yaml § layout_override. Logo thật (Giao Hàng Nặng) và vài mục nhỏ (numberBadge, chênh lệch chiều cao 48/56px) vẫn [cần verify]."
+    axes:
+      type:   {kind: closed_role_set}
+      state:  {kind: closed_role_set}
+      icon:   {kind: icon_slots}
 
 # -----------------------------------------------------------------------------
 # GIÁ TRỊ DÙNG CHUNG — mọi component đều nạp

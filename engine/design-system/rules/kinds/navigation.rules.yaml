@@ -1,0 +1,95 @@
+# =============================================================================
+# navigation.rules.yaml — LOẠI: ĐIỀU HƯỚNG CHÍNH CỦA ỨNG DỤNG
+#
+# Thành viên:
+#   đang dùng:  Sidebar
+#   dự kiến:    (chưa có — 1 thành viên, dưới ngưỡng guardrails.kind_needs_3_members,
+#                chấp nhận tạm thời cùng tiền lệ form_input/overlay lúc mới có
+#                1-2 thành viên — xem decisions.md § 08/09-D)
+#
+# TRẠNG THÁI FILE NÀY: [MỚI 13/09-O] Kind mới, phát sinh từ khảo sát Sidebar
+# (xem profile.ghn/ds/sidebar-research-notes.md) + build thử để Williams xác
+# nhận hiểu đúng trước khi đăng ký chính thức — Williams: "Build sidebar riêng
+# test thử mày đã hiểu chưa trước khi đăng kí chính thức".
+#
+# Đọc _core.rules.yaml trước.
+# version: 1.0-draft
+# =============================================================================
+
+meta:
+  kind: navigation
+  layer: kind
+  portable: true
+  version: 1.0-draft
+  requires: [_core.rules.yaml]
+  status: "[XÁC NHẬN — Williams 13/09-O] Đăng ký chính thức sau khi Williams duyệt bản build test — xem decisions.md § 13/09-O."
+
+undisableable: []
+
+# =============================================================================
+# GIỚI HẠN HÀNH VI CỦA LOẠI
+# =============================================================================
+behavioural_limits:
+  - id: NAV-B-01
+    rule: >
+      Nút thu gọn/mở rộng (collapse/expand) là DUY NHẤT cho CẢ khối điều
+      hướng — KHÔNG lặp lại theo từng module/item. Đây là 1 control ở cấp
+      NAVIGATION, không phải thuộc tính của từng item.
+    source: >
+      [XÁC NHẬN qua khảo sát thật 13/09-J, không phải suy đoán] Component DS
+      gốc có variant Type=collapse/expand RIÊNG, tách biệt hoàn toàn khỏi
+      variant Type=main menu/sub menu — xác nhận đây là 1 khái niệm độc lập,
+      không phải chevron của từng item (xem NAV-B-03).
+    real_world_note: >
+      Trong file B2B Portal (Freight thật), instance toggle này đang bị ẨN
+      (hidden=true) — tức Freight KHÔNG hiển thị control này ở màn hình hiện
+      tại, dù component hỗ trợ sẵn. Không suy diễn đây là quy tắc cấm dùng —
+      chỉ là lựa chọn hiện tại của 1 màn hình cụ thể.
+
+  - id: NAV-B-02
+    rule: >
+      Tại một thời điểm, CHỈ ĐÚNG 1 item (module cấp cao nhất, hoặc 1
+      sub-item của nó nếu user đang ở trong 1 trang con) được đánh dấu
+      Active — hiện thanh nhấn (accent bar) bên phải + đổi màu chữ/icon
+      sang màu nhấn. TẤT CẢ item khác PHẢI tắt Active.
+    quirk_must_handle: >
+      [PHÁT HIỆN THẬT 13/09-O — KHÔNG PHẢI Ý ĐỊNH THIẾT KẾ, LÀ QUIRK KỸ THUẬT]
+      Property `Active#4109:93` trên chính component gốc có
+      `defaultValue: true` — nghĩa là MỌI instance mới tạo ra (kể cả khi chọn
+      variant State=Default) đều tự động BẬT thanh accent trừ khi renderer
+      TỰ TAY set `Active#4109:93 = false` một cách tường minh. Đây là nguyên
+      nhân gốc của quirk "mọi dòng đều hiện thanh cam" gặp phải khi build thử
+      lần đầu (xem decisions.md § 13/09-O) — không phải lỗi component DS,
+      nhưng renderer/pipeline BẮT BUỘC phải set rõ giá trị này cho MỌI item,
+      không được dựa vào default.
+    source: "[XÁC NHẬN — Williams 13/09-O] \"Thanh cam chỉ hiện khi ở trạng thái active không active mặc định ẩn đi\""
+
+  - id: NAV-B-03
+    rule: >
+      Item có sub-item con hiện 1 icon chevron bên phải, ĐỔI HƯỚNG thật theo
+      trạng thái: `chevron-down` = đang ĐÓNG (sub-item ẩn), `chevron-up` =
+      đang MỞ (sub-item hiện thật bên dưới, lồng ngay sau item cha). Chevron
+      KHÔNG phải icon tĩnh/mặc định — phải phản ánh đúng trạng thái thật.
+      Item KHÔNG có sub-item thì KHÔNG hiện chevron nào (tắt hẳn slot, không
+      để trống chờ).
+    source: >
+      [XÁC NHẬN — Williams 13/09-K/N] Ban đầu quan sát sidebar Freight thật
+      thấy MỌI item có sub-menu đều hiện chevron-down kể cả khi đang mở —
+      Williams xác nhận đây là lỗi do TỰ TAY chỉnh sửa thủ công (đổi màu đè
+      lên component thay vì dùng đúng property), KHÔNG PHẢI hành vi đúng của
+      hệ thống — hành vi ĐÚNG là đổi hướng thật như rule này mô tả.
+
+  - id: NAV-B-04
+    rule: >
+      Sub-item (cấp con, `Type=sub menu`) KHÔNG BAO GIỜ có icon bên trái —
+      chỉ có text. Icon bên trái CHỈ dành cho item cấp cao nhất
+      (`Type=main menu`).
+    source: "[XÁC NHẬN qua khảo sát thật 13/09-J + build test 13/09-O — cấu trúc component xác nhận sub menu variant không có slot icon trái]"
+
+# =============================================================================
+# _pending_confirmation — CHƯA CHỐT
+# =============================================================================
+_pending_confirmation:
+  - item: "Ý nghĩa boolean 'numberBadge#1128:50' trên item — chưa hỏi Williams, tạm để tắt (false) mặc định khi build."
+  - item: "Chênh lệch chiều cao item 48px vs 56px quan sát được trong sidebar Freight thật — chưa rõ nguyên nhân, chưa hỏi Williams."
+  - item: "Ý nghĩa nghiệp vụ boolean 'Menu name#1128:62' — chưa hỏi."

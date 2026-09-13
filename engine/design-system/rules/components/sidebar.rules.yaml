@@ -1,0 +1,17 @@
+# =============================================================================
+# sidebar.rules.yaml — luật RIÊNG của Sidebar (gần rỗng — hành vi nằm ở kind)
+#
+# Mọi hành vi chung của Sidebar nằm ở rules/kinds/navigation.rules.yaml
+# (NAV-B-01..04). File này chỉ tồn tại theo đúng pattern kiến trúc (mỗi
+# component có 1 file component-rules, dù rỗng) — KHÔNG thêm luật ở đây trừ
+# khi Sidebar có suy luận thật sự độc quyền, không áp dụng chung cho
+# navigation kind.
+#
+# version: 1.0-draft
+# =============================================================================
+
+meta:
+  component: Sidebar
+  layer: component
+  rules_live_at: "rules/kinds/navigation.rules.yaml"
+  version: 1.0-draft
