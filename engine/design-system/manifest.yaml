@@ -82,9 +82,9 @@ component_kinds:
   overlay:
     file: rules/kinds/overlay.rules.yaml
     about: "Nổi lên trên nội dung, chiếm focus"
-    members_active: []
-    members_planned: [Dialog, AlertDialog, BottomSheet, Popover, ContextMenu]
-    status: "[KHUNG SƯỜN — viết 12/09, chờ Williams review] Chưa đọc được cấu trúc Dialog thật trong Figma (thiếu node-id) — xem file § _pending_confirmation"
+    members_active: [Dialog]
+    members_planned: [AlertDialog, BottomSheet, Popover, ContextMenu]
+    status: "[XÁC NHẬN — Williams 12/09] Anatomy (Header/Body slot/Footer) + recipe 'form' đã duyệt từ 12/09-F/G/I/J/L. Dialog đăng ký thành components: chính thức § 12/09-R — xem components.Dialog bên dưới. AlertDialog định nghĩa theo nghiệp vụ (§ alert_dialog_trigger trong file kind), chưa có binding riêng."
 
   feedback_transient:
     file: rules/kinds/feedback_transient.rules.yaml
@@ -161,6 +161,15 @@ components:
       destructive: {kind: closed_role_set}
       state:       {kind: closed_role_set}
       icon:        {kind: icon_slots}
+
+  Dialog:
+    kinds: [overlay]
+    rules: rules/components/dialog.rules.yaml       # gần rỗng — xem file
+    binding: profile.ghn/ds/dialog.binding.yaml
+    policy_scope: dialog
+    status: "[XÁC NHẬN — Williams 12/09] Đăng ký chính thức, xem decisions.md § 12/09-R. Quirk quan trọng: bản mặc định của component gốc dùng Button set CŨ (Type=Grey) — KHÔNG dùng làm chuẩn, xem dialog.binding.yaml § quirks."
+    axes:
+      content_pattern: {kind: enum}
 
 # -----------------------------------------------------------------------------
 # GIÁ TRỊ DÙNG CHUNG — mọi component đều nạp

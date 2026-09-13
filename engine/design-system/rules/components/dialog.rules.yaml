@@ -1,0 +1,53 @@
+# =============================================================================
+# dialog.rules.yaml — LUẬT RIÊNG CỦA DIALOG
+#
+# Giống Button/Input: file này GẦN RỖNG. Toàn bộ anatomy/footer/content_pattern/
+# invariants của Dialog đã nằm ở rules/kinds/overlay.rules.yaml — Dialog chỉ
+# khai 1 kind, không có hành vi độc quyền nào cần viết riêng.
+#
+# version: 1.0-draft
+# =============================================================================
+
+meta:
+  component: Dialog
+  layer: component
+  version: 1.0-draft
+  kinds: [overlay]
+  requires: [_core.rules.yaml, kinds/overlay.rules.yaml]
+  binding: profile.ghn/ds/dialog.binding.yaml
+  status: "[XÁC NHẬN — Williams 12/09] Đăng ký component chính thức, xem decisions.md § 12/09-R"
+
+rules: []
+invariants: []
+
+# -----------------------------------------------------------------------------
+# BẢN ĐỒ: luật của Dialog hiện nằm ở đâu
+# -----------------------------------------------------------------------------
+rules_live_at:
+  anatomy:
+    where: kinds/overlay.rules.yaml
+    ids: [anatomy.header, anatomy.body, anatomy.footer]
+  footer_emphasis:
+    where: kinds/overlay.rules.yaml
+    ids: [OVL-B-03]
+  content_pattern:
+    where: kinds/overlay.rules.yaml
+    ids: [content_pattern.known_recipes.confirmation, content_pattern.known_recipes.form]
+  exit_action:
+    where: kinds/overlay.rules.yaml
+    ids: [OVL-B-01, OVL-B-02, OVL-INV-01]
+  alert_dialog_trigger:
+    where: "kinds/overlay.rules.yaml § alert_dialog_trigger — LƯU Ý: AlertDialog định nghĩa theo NGHIỆP VỤ, không phải 1 component Figma riêng — chưa có binding riêng, dùng chung componentKey với Dialog cho tới khi có nhu cầu khác"
+  universal:
+    where: "_core.rules.yaml § universal_a11y + § axis_invariants"
+    ids: [A11Y-INV-01, A11Y-01, A11Y-02]
+
+# -----------------------------------------------------------------------------
+# NẾU SAU NÀY FILE NÀY PHÌNH LÊN
+# -----------------------------------------------------------------------------
+growth_warning:
+  guardrail: "manifest.yaml § guardrails.component_file_stays_small (> 5 rule → cảnh báo)"
+  test_before_adding: >
+    Trước khi thêm luật vào đây, trả lời: "AlertDialog/BottomSheet/Popover/
+    ContextMenu có cần luật này không?" Nếu CÓ dù chỉ 1 cái → nó thuộc kind
+    overlay, không thuộc đây.
