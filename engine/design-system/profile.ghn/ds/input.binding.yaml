@@ -122,12 +122,12 @@ icon:
     `characters` của TEXT child lồng trong instance "font awesome / Base" (vd
     characters = "chevron-down") — không phải 1 property biến thể riêng.
   verified_examples:
-    - field: "Số tiền" (demo render 12/09)
-      leading: "money-bill"
-      trailing: "clear (State=Filled)"
-    - field: "Diễn giải" (demo render 12/09)
-      leading: "align-left"
-      trailing: "clear (State=Filled)"
+    - field: "Số tiền" (demo render 12/09, sửa 13/09)
+      leading: "money-bill — [XÁC NHẬN — Williams 13/09] ĐẠT phép thử FRMIN-B-03 (đoán đúng ra field tiền), giữ nguyên"
+      trailing: "circle-xmark (vai 'clear', State=Filled) — [XÁC NHẬN — Williams 13/09] tồn tại thật trong FA6 Pro plugin (Williams tự kiểm tra, xem decisions.md § 13/09-E)."
+    - field: "Diễn giải" (demo render 12/09, SỬA 13/09 theo FRMIN-B-03)
+      leading: "[ĐÃ BỎ — 13/09] KHÔNG có icon trái nữa. Trước đó là align-left, bỏ theo FRMIN-B-03 (XÁC NHẬN — Williams \"Okay sửa đi\"): align-left chỉ nói chung chung 'đây là ô text', không đoán ra được kiểu dữ liệu cụ thể — xem rules/kinds/form_input.rules.yaml § FRMIN-B-03 và decisions.md § 13/09-E."
+      trailing: "circle-xmark (vai 'clear', State=Filled) — [XÁC NHẬN — Williams 13/09] tồn tại thật trong FA6 Pro plugin (Williams tự kiểm tra, xem decisions.md § 13/09-E)."
   source: "[FIGMA] + [XÁC NHẬN — Williams 12/09-N]"
 
 # -----------------------------------------------------------------------------

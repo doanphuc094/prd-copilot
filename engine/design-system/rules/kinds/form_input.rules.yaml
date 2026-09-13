@@ -32,13 +32,19 @@ undisableable: []
 behavioural_limits:
   - id: FRMIN-B-01
     rule: >
-      Icon TRÁI (leading icon): LUÔN dùng để diễn giải/bổ sung Ý NGHĨA NGỮ
-      CẢNH của field đó — vd field số tiền → icon tiền (money-bill), field
-      diễn giải/mô tả tự do → icon văn bản (align-left). Đây là icon MANG
-      NGHĨA, chọn theo ngữ cảnh nghiệp vụ của field cụ thể — KHÔNG phải 1
-      icon trang trí cố định giống nhau cho mọi field, và KHÔNG phải icon
-      demo/leftover copy từ ví dụ khác (vd icon phong bì của field "Email"
-      mẫu gốc không được giữ lại khi field thật là "Số tiền"/"Diễn giải").
+      Icon TRÁI (leading icon), KHI ĐƯỢC DÙNG (xem FRMIN-B-03 cho việc có
+      dùng hay không): dùng để diễn giải/bổ sung Ý NGHĨA NGỮ CẢNH của field
+      đó — vd field số tiền → icon tiền (money-bill). Đây là icon MANG NGHĨA,
+      chọn theo ngữ cảnh nghiệp vụ của field cụ thể — KHÔNG phải 1 icon trang
+      trí cố định giống nhau cho mọi field, và KHÔNG phải icon demo/leftover
+      copy từ ví dụ khác (vd icon phong bì của field "Email" mẫu gốc không
+      được giữ lại khi field thật là "Số tiền").
+    correction_2026-09-13: >
+      [CẬP NHẬT 13/09] Bản gốc (12/09) viết "LUÔN dùng" — ngụ ý MỌI field đều
+      phải có icon trái. Williams làm rõ thêm: icon trái là TÙY CHỌN, không
+      bắt buộc — xem FRMIN-B-03 (MỚI) cho tiêu chí khi nào dùng/không dùng.
+      Rule này (FRMIN-B-01) chỉ còn nói: NẾU có dùng icon trái thì nó phải
+      mang nghĩa thật, không phải bắt buộc phải luôn có.
     source: >
       [XÁC NHẬN — Williams 12/09] "Đối với icon quy luật (thêm diễn giải ý
       nghĩa bên trái...)"
@@ -70,13 +76,16 @@ behavioural_limits:
       State=Focused) — nghĩa là icon "clear" hiện khi field ĐANG CÓ GIÁ TRỊ,
       không cần đang được focus/thao tác trực tiếp.
     icon_literal_mapping: >
-      [cần verify — chưa qua plugin FA6 Pro] "clear" ở trên là tên VAI (bằng
-      tiếng Việt/nghĩa), KHÔNG phải tên ligature FA6 thật — không có icon nào
-      tên literal "clear" trong catalog FA6. Ligature dùng thật: `xmark`
-      (đối chiếu `metadata/icon-families.json` gói `@fortawesome/
-      fontawesome-free`, cùng phương pháp đã dùng cho "Bộ lọc"→`filter`, xem
-      decisions.md 12/09-A). Cần 1 người xác nhận qua đúng plugin FA6 Pro
-      trước khi coi là chuẩn cuối cùng, giống kỷ luật icon Button.
+      [XÁC NHẬN — Williams 13/09, đổi từ đề xuất ban đầu] "clear" ở trên là
+      tên VAI (bằng tiếng Việt/nghĩa), KHÔNG phải tên ligature FA6 thật —
+      không có icon nào tên literal "clear" trong catalog FA6. Ligature dùng
+      THẬT: `circle-xmark` (bản viên tròn có dấu X — Williams chọn thay cho
+      đề xuất ban đầu `xmark` phẳng). Đối chiếu `metadata/icon-families.json`
+      gói `@fortawesome/fontawesome-free`, cùng phương pháp đã dùng cho "Bộ
+      lọc"→`filter` (xem decisions.md 12/09-A) — `circle-xmark` tồn tại thật
+      trong catalog. Vẫn cần 1 người xác nhận qua đúng plugin FA6 Pro trước
+      khi coi là chuẩn cuối cùng, giống kỷ luật icon Button — xem
+      decisions.md § 13/09-D.
     verified_against_render: >
       [SỬA 12/09-P — bản trước SAI] Bản viết đầu tiên của mục này ghi "áp thử
       2 field demo Số tiền/Diễn giải... khớp đúng rule" — CLAIM NÀY SAI, viết
@@ -88,7 +97,41 @@ behavioural_limits:
       có icon trái mang nghĩa) và FRMIN-B-02 (icon phải không phải "clear").
       ĐÃ SỬA trong file test 12/09-P: bật `iconLeft` = money-bill/align-left,
       sửa `iconClear` từ money-bill/align-left thành `xmark` (giữ bật, đúng vì
-      State=Filled). Xem decisions.md § 12/09-P cho đầy đủ.
+      State=Filled). Xem decisions.md § 12/09-P cho đầy đủ. [CẬP NHẬT 13/09]
+      `xmark` sau đó đổi thành `circle-xmark` theo yêu cầu Williams — xem
+      § icon_literal_mapping ở trên và decisions.md § 13/09-D.
+
+  - id: FRMIN-B-03
+    status: "[XÁC NHẬN — Williams 13/09] \"Okay sửa đi\" — đã áp dụng thật lên render Figma demo (xem consequence_on_current_render + decisions.md § 13/09-E)."
+    rule: >
+      Icon TRÁI (leading icon) KHÔNG bắt buộc phải có ở mọi field — chỉ dùng
+      khi field đó đại diện cho 1 KIỂU DỮ LIỆU có icon quy ước, được nhận
+      diện rộng rãi (tiền, ngày tháng, số điện thoại, email, phần trăm, địa
+      điểm, v.v.). Nếu field là văn bản tự do/mô tả chung chung (không có 1
+      kiểu dữ liệu cụ thể gắn với 1 icon quy ước) → KHÔNG dùng icon trái,
+      thà để trống còn hơn gắn icon chỉ mang tính trang trí — vi phạm tinh
+      thần FRMIN-B-01 (icon phải MANG NGHĨA, không phải trang trí).
+    decision_test: >
+      Phép thử nhanh: che nhãn (label) của field lại, chỉ nhìn icon — icon
+      đó có giúp đoán ĐÚNG loại dữ liệu CỤ THỂ field đang hỏi không (vd nhìn
+      money-bill đoán ra "đây là field tiền")? Nếu CÓ → dùng icon trái. Nếu
+      icon chỉ truyền đạt được "đây là 1 ô nhập text" một cách chung chung
+      (vd align-left dùng cho bất kỳ field mô tả/free-text nào) mà KHÔNG chỉ
+      ra được kiểu dữ liệu cụ thể → KHÔNG dùng icon trái cho field đó.
+    consequence_on_current_render: >
+      Áp phép thử vào 2 field demo: "Số tiền" ĐẠT phép thử (icon money-bill
+      đoán đúng ra field tiền) → GIỮ nguyên icon trái money-bill. "Diễn giải"
+      KHÔNG đạt phép thử (align-left chỉ nói "đây là ô text", không nói được
+      đây là mô tả/diễn giải cụ thể gì) → đã BỎ icon trái của field "Diễn
+      giải" (tắt `iconLeft#705:0` qua use_figma trên instance
+      `I51:212;67:17577`, giữ nguyên `iconClear#489:0`=circle-xmark). [ĐÃ ÁP
+      DỤNG thật lên file test 13/09 — xem decisions.md § 13/09-E, đã chụp lại
+      screenshot xác nhận].
+    source: >
+      [ĐỀ XUẤT 13/09, CHƯA XÁC NHẬN] Trả lời yêu cầu của Williams: "Tuy nhiên
+      input có thể có lúc xài icon có lúc không cần xài tao cần mày đề xuất
+      tạo ra được quy tắc nào có thể xài icon, khi nào không cần xài icon".
+      Xem decisions.md § 13/09-D.
 
 # =============================================================================
 # _pending_confirmation — CHƯA CHỐT
@@ -107,3 +150,7 @@ _pending_confirmation:
       chevron hay clear? FRMIN-B-02 liệt kê 3 case như loại trừ nhau nhưng
       chưa rõ thứ tự ưu tiên khi 2 điều kiện cùng đúng lúc (dropdown + có
       giá trị). Chưa hỏi.
+  - item: >
+      [ĐÃ ĐÓNG — 13/09] FRMIN-B-03 đã được Williams xác nhận và áp dụng: field
+      "Diễn giải" đã bỏ icon trái align-left trên render Figma. Xem
+      decisions.md § 13/09-E.

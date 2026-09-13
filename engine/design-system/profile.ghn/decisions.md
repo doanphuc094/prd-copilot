@@ -1093,6 +1093,14 @@ viết thành 1 rule chính thức ở `rules/kinds/overlay.rules.yaml` (icon he
 Dialog luôn phải khớp ngữ cảnh, không giữ leftover từ ví dụ docs) hay để mỗi
 lần escalate riêng — CHƯA tự quyết định phạm vi rule ở đây.
 
+**[ĐÃ ĐÓNG — 13/09]**: Williams xác nhận dùng `receipt`. Đây là lựa chọn NỘI
+DUNG cho riêng ví dụ "Thêm phiếu chi phí" (icon đại diện đối tượng nghiệp vụ
+cụ thể, giống cách chọn icon trái cho từng field Input ở FRMIN-B-01) — KHÔNG
+khái quát hoá thành 1 rule chung cho mọi Dialog (mỗi Dialog khác sẽ cần icon
+khác theo đúng nội dung của nó, escalate từng lần khi gặp, không đoán trước).
+`receipt` VẪN cần qua bước xác nhận FA6 Pro (step_2_human_confirm) trước khi
+coi là chuẩn cuối cùng — xem mục icon verification bên dưới.
+
 ---
 
 ## 12/09-R — Dialog đăng ký thành `components:` chính thức; xác nhận lại quirk Button cũ trong bản mặc định
@@ -1233,3 +1241,93 @@ thao tác critical mà AlertDialog đại diện. Ghi thành `OVL-B-04`. Ngưỡ
 breakpoint cụ thể để chuyển đổi CHƯA xác nhận — tạm đề xuất dùng
 `_shared.binding.yaml § breakpoints.sm` (640px) làm mặc định, cần Williams
 duyệt lại. BottomSheet bản thân vẫn CHƯA đăng ký component/binding riêng.
+
+---
+
+## 13/09-D — Đổi icon "clear" sang circle-xmark + đề xuất rule FRMIN-B-03 (icon trái khi nào dùng/không dùng)
+
+**by**: Williams — quote nguyên văn: *"Okay đúng (có một điểm nhỏ là icon
+xmark có thể thay bằng icon xmark-circle được không?). Tuy nhiên input có
+thể có lúc xài icon có lúc không cần xài tao cần mày đề xuất tạo ra được quy
+tắc nào có thể xài icon, khi nào không cần xài icon"*
+**affects**: `rules/kinds/form_input.rules.yaml` (§ FRMIN-B-02.icon_literal_
+mapping, § FRMIN-B-02.verified_against_render, thêm mới § FRMIN-B-03),
+`profile.ghn/ds/input.binding.yaml` (§ icon.verified_examples)
+
+**1. Icon "clear" — XÁC NHẬN đổi ligature literal từ `xmark` sang
+`circle-xmark`.** Tên VAI ("clear") không đổi, chỉ đổi tên ligature FA6 thật
+đứng sau vai đó. Đối chiếu `metadata/icon-families.json` gói
+`@fortawesome/fontawesome-free@6.7.2` — `circle-xmark` tồn tại thật trong
+catalog Free (cùng phương pháp đã dùng để xác nhận `filter`, `receipt`, v.v.
+không phải tên bịa). Đã áp dụng trực tiếp lên 2 field demo ("Số tiền", "Diễn
+giải") qua `use_figma` (sửa `characters` của text node trong slot
+`iconClear#489:0`). **Vẫn cần bước 2 (con người)**: Williams tự mở đúng
+plugin FA6 Pro trong Figma để xác nhận `circle-xmark` có thật trong bộ Pro đã
+import vào file GHN DS thật và đúng ngữ cảnh — Claude chỉ xác nhận được tên
+này tồn tại trong catalog Free, không thay được bước xác nhận này.
+
+**2. FRMIN-B-03 (MỚI, ĐỀ XUẤT — CHƯA XÁC NHẬN) — quy tắc khi nào field nên/
+không nên có icon trái.** Bối cảnh: rule cũ FRMIN-B-01 (12/09) viết theo
+kiểu "LUÔN dùng" icon trái, ngụ ý mọi field đều cần — Williams chỉ ra thực tế
+không phải field nào cũng cần icon, cần 1 quy tắc rõ ràng để quyết định.
+
+Đề xuất (viết trong `form_input.rules.yaml § FRMIN-B-03`, trạng thái
+`[ĐỀ XUẤT 13/09 — CHƯA Williams xác nhận]`):
+- Chỉ dùng icon trái khi field đại diện cho 1 KIỂU DỮ LIỆU có icon quy ước,
+  được nhận diện rộng rãi (tiền, ngày tháng, số điện thoại, email, phần
+  trăm, địa điểm...).
+- Field văn bản tự do/mô tả chung chung (không gắn với 1 kiểu dữ liệu cụ
+  thể) → KHÔNG dùng icon trái.
+- **Phép thử quyết định**: che nhãn field lại, chỉ nhìn icon — icon đó có
+  giúp đoán ĐÚNG kiểu dữ liệu CỤ THỂ field đang hỏi không? Đạt → dùng icon.
+  Icon chỉ nói được "đây là ô nhập text" một cách chung chung (không chỉ ra
+  kiểu dữ liệu cụ thể) → không dùng icon.
+- FRMIN-B-01 được sửa lại tương ứng: bỏ chữ "LUÔN dùng", đổi thành "KHI ĐƯỢC
+  DÙNG (xem FRMIN-B-03)... phải mang nghĩa thật".
+
+**Hệ quả trực tiếp lên demo hiện tại (CHƯA áp dụng, chỉ mới ghi nhận)**:
+- "Số tiền" — ĐẠT phép thử (money-bill đoán đúng ra field tiền) → giữ icon
+  trái.
+- "Diễn giải" — KHÔNG đạt phép thử (align-left chỉ nói chung chung "đây là ô
+  text", không nói được đây là trường mô tả/diễn giải gì cụ thể) → theo rule
+  đề xuất này thì NÊN bỏ icon trái của field "Diễn giải".
+
+Hệ quả này CHƯA được áp vào render Figma thật — chờ Williams xác nhận (hoặc
+chỉnh sửa) rule FRMIN-B-03 trước khi Claude sửa field "Diễn giải".
+
+**Còn mở**: FRMIN-B-03 là ĐỀ XUẤT, chưa xác nhận. Nếu Williams đồng ý, cần
+báo lại để: (a) đổi status trong file thành XÁC NHẬN, (b) áp dụng thật lên
+Figma (tắt icon trái của "Diễn giải").
+
+---
+
+## 13/09-E — Xác nhận FRMIN-B-03 + FA6 Pro confirm circle-xmark, áp dụng thật lên demo
+
+**by**: Williams — "Okay sửa đi rồi tao chạy git push một lần luôn" (xác nhận
+rule FRMIN-B-03) và "Icon xmark-circle đã có thật" (xác nhận `circle-xmark`
+tồn tại thật trong plugin FA6 Pro, đã tự kiểm tra trong Figma)
+**affects**: `rules/kinds/form_input.rules.yaml` (§ FRMIN-B-03, chuyển ĐỀ
+XUẤT → XÁC NHẬN), `profile.ghn/ds/input.binding.yaml` (§ icon.verified_
+examples, cả 2 field)
+
+**1. `circle-xmark` — ĐÃ QUA BƯỚC 2 (xác nhận người)**. Williams tự mở đúng
+plugin FA6 Pro trong Figma và xác nhận icon `circle-xmark` (Williams gọi là
+"xmark-circle") có thật, đã import vào file GHN DS. Vậy quy trình 2 bước xác
+nhận icon (1. Claude tự tra catalog FA6 Free để loại tên bịa, 2. người tự mở
+FA6 Pro xác nhận đúng bộ + đúng ngữ cảnh) đã ĐÓNG cho icon này.
+
+**2. FRMIN-B-03 — XÁC NHẬN, đã áp dụng thật lên demo.** Williams đồng ý rule
+đề xuất ở 13/09-D (phép thử: che nhãn, chỉ nhìn icon — đoán được kiểu dữ
+liệu cụ thể thì dùng, không thì bỏ). Đã thực thi trên file test
+(`uFbbdvWYC1dg3AjdnHCgxk`, page "Page 1"):
+- Field "Số tiền" (instance `51:211`): GIỮ nguyên icon trái `money-bill`
+  (đạt phép thử).
+- Field "Diễn giải" (instance `51:212`): TẮT `iconLeft#705:0` trên nested
+  instance `I51:212;67:17577` (trước đó icon là `align-left`, không đạt
+  phép thử) — qua `use_figma`, đã chụp screenshot xác nhận field giờ chỉ còn
+  label + icon phải `circle-xmark`, không còn icon trái.
+
+**Còn mở**: FRMIN-B-03 mới áp dụng cho 2 field demo hiện có (form_input mới
+có 1 thành viên: Input). Khi Textarea/Select/Combobox/Datepicker được đăng
+ký sau này, cần áp lại đúng phép thử này cho field cụ thể của từng loại,
+không tự suy rộng ra business logic khác.
