@@ -283,6 +283,35 @@ discipline:
       tên chỉ xác nhận component TỒN TẠI, không xác nhận property/path đúng.
     then: "Kết luận về hình ảnh chỉ rút ra sau khi đọc lại state THẬT đã render."
 
+  po_ready_gate:
+    status: "[XÁC NHẬN — Williams 14/09, tự đặt theo yêu cầu Williams sau sự cố sidebar/logo/pagination]"
+    rule: >
+      Trước khi đưa BẤT KỲ bản vẽ nào cho Williams với ý định để show PO/dev,
+      PHẢI tự chạy gate này trước — KHÔNG được để Williams là người phát hiện
+      lỗi trước tao:
+        1. Tra decisions.md + mọi *.binding.yaml liên quan đến phần đang vẽ.
+           Có bản đã [XÁC NHẬN] trước đó (component, layout, wording) thì DÙNG
+           LẠI bản đó, KHÔNG dựng mới từ component raw.
+        2. Đọc lại TỪNG dòng text thật sự hiển thị trên bản vẽ (kể cả text mặc
+           định của component import) — sai ngôn ngữ / sai thương hiệu / để
+           placeholder là lỗi KHÔNG được phép lọt, không phải lỗi thẩm mỹ.
+        3. Nếu có bất thường không giải thích được (dữ liệu thiếu, node biến
+           mất, hành vi lạ) — BÁO NGAY dạng "tao thấy X, chưa rõ vì sao",
+           KHÔNG được tự kết luận nguyên nhân khi chưa hỏi.
+        4. Làm ĐÚNG - ĐỦ - KỸ, không làm ẩu, không làm cho có-kết-quả-để-đưa-ra
+           là xong việc. Áp dụng cho MỌI task, không riêng bản đưa PO — "làm
+           cho xong việc" không phải tiêu chí hoàn thành.
+    why: >
+      Sự cố 14/09: bỏ qua sidebar.binding.yaml đã duyệt trước, dùng logo/
+      pagination mặc định sai ngôn ngữ, và kết luận vội "do lỗi rollback của
+      tao" khi thực ra là Williams tự xoá — cả 2 loại lỗi (bỏ qua luật cũ +
+      kết luận không có căn cứ) đều là vi phạm discipline.never_guess, chỉ là
+      ở lớp QUY TRÌNH thay vì lớp GIÁ TRỊ THIẾT KẾ.
+    escalate_is_a_correct_answer: >
+      Nói "tao chưa làm đúng-đủ-kỹ phần này, cần thêm thời gian" là câu trả
+      lời ĐÚNG, không phải thất bại — giống never_guess ở giá trị thiết kế.
+      Mất mặt vì tự nhận chưa xong còn ít hơn mất mặt vì PO tự phát hiện lỗi.
+
 # -----------------------------------------------------------------------------
 # 6. ĐẦU VÀO CẢM ỨNG — mục duy nhất được phép có số
 #
