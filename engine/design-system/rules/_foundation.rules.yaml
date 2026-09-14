@@ -1,28 +1,33 @@
 # =============================================================================
 # _foundation.rules.yaml — LUẬT DÙNG NỀN TẢNG TOKEN (typography/color/spacing)
 #
-# [ĐỀ XUẤT — Claude 13/09-U, CHƯA duyệt] File MỚI, do Williams yêu cầu:
-# "Okay mày phải có rule cho foundation token hãy vào portal b2b xem cách tao
-# dựng kiến trúc component rồi đề xuất 1 bộ rule cho foundation token".
+# [XÁC NHẬN — Williams 14/09-B, "Okay tao đồng ý"] File MỚI, do Williams yêu
+# cầu: "Okay mày phải có rule cho foundation token hãy vào portal b2b xem
+# cách tao dựng kiến trúc component rồi đề xuất 1 bộ rule cho foundation
+# token". Kiến trúc file (1 layer riêng, portable, always-load song song
+# _core/_composition) đã được Williams duyệt — ĐÃ đăng ký vào manifest.yaml
+# § rule_layers (xem entry `foundation`).
 #
-# Đây là bản ĐỀ XUẤT dựa trên khảo sát THẬT trang "🔵 Layout structure" +
-# 1 màn hình thật đã dựng đầy đủ (Sprint 62 — trang danh sách đơn hàng có
-# Sidebar) trong file B2B Portal (s2NE6ikwLnsZSUp97RBfof) — xem
-# profile.ghn/ds/foundation-layout-research.md cho toàn bộ bằng chứng/node-id.
-# CHƯA đăng ký vào manifest.yaml § rule_layers — cần Williams duyệt trước.
+# Nội dung dựa trên khảo sát THẬT trang "🔵 Layout structure" + nhiều màn
+# hình thật đã dựng đầy đủ (order-list Sprint 62, form tạo mới Sprint 55,
+# chi tiết KH Sprint 66 revamp) trong file B2B Portal (s2NE6ikwLnsZSUp97RBfof)
+# — xem profile.ghn/ds/foundation-layout-research.md cho toàn bộ bằng
+# chứng/node-id. Từng rule con vẫn có thể mang tag [ĐỀ XUẤT] riêng nếu chưa
+# đủ bằng chứng/chưa hỏi Williams — kiến trúc file đã duyệt KHÔNG có nghĩa
+# mọi rule con bên trong đã duyệt, xem status từng mục.
 #
 # Cùng nguyên tắc lớp với _core.rules.yaml: file này PORTABLE — không chứa
 # số cụ thể của GHN (px/hex/tên biến GHN). Số thật nằm ở
 # profile.ghn/ds/_shared.binding.yaml § layout_roles/verified_usage (lớp C).
 #
-# version: 0.1-đề xuất
+# version: 0.2
 # =============================================================================
 
 meta:
   layer: foundation
   portable: true
-  version: 0.1-đề xuất
-  status: "[ĐỀ XUẤT — Claude 13/09-U] Chưa đăng ký vào manifest.yaml § rule_layers, chờ Williams duyệt."
+  version: 0.2
+  status: "[XÁC NHẬN — Williams 14/09-B] Kiến trúc file đã duyệt, đăng ký chính thức vào manifest.yaml § rule_layers. Rule con bên trong vẫn có thể ở trạng thái [ĐỀ XUẤT] riêng — xem status từng mục."
   requires: [_core.rules.yaml]
   evidence_base: >
     profile.ghn/ds/foundation-layout-research.md — khảo sát thật trang
@@ -193,7 +198,7 @@ spacing_role:
       evidence_tier: 2
       evidence: "[BẰNG CHỨNG THẬT 13/09-U] xem research note § 3 — 2 số đo thật khác nhau cho 2 ngữ cảnh này trên cùng 1 màn."
     - id: FND-SPC-03
-      status: "[ĐỀ XUẤT 13/09-Z, phản chứng duy nhất đã loại bỏ 14/09-A — Claude, theo yêu cầu Williams, VẪN CHƯA đăng ký chính thức, chờ Williams gật đầu cuối]"
+      status: "[XÁC NHẬN — Williams 14/09-B] Đề xuất 13/09-Z, phản chứng duy nhất đã loại bỏ 14/09-A, ĐĂNG KÝ CHÍNH THỨC cùng toàn bộ file này qua manifest.yaml."
       name: "Khoảng cách theo KHOẢNG CÁCH NGỮ NGHĨA, không theo trục bố trí"
       rule: >
         Đây là luật THỐNG NHẤT thay thế cách nghĩ "vai spacing theo hướng
@@ -315,12 +320,15 @@ color_role:
         cho mọi backdrop overlay, KHÔNG phải nguồn (3) (component thật render
         `bg/app/inverse` #18181b @ 50%) và KHÔNG phải nguồn (1) (annotation
         "30%"). `rules/kinds/overlay.rules.yaml § OVL-B-01.backdrop_color`
-        đã sẵn khớp giá trị này từ trước, không cần sửa. LƯU Ý CÒN MỞ: component
-        overlay THẬT trong file B2B Portal (node 10016:7629) HIỆN CHƯA khớp
-        quyết định này (đang render `bg/app/inverse`, không phải
-        `bg/app/baseBlack`) — đây là quyết định về QUY TẮC/RULE ENGINE, chưa
-        rõ có cần sửa lại component thật trong Figma cho khớp hay để nguyên
-        (component cũ, không rework) — [cần verify], chưa hỏi Williams.
+        đã sẵn khớp giá trị này từ trước, không cần sửa. [ĐÃ ĐÓNG 14/09-B —
+        Williams: "Không cần sửa lại đâu mày ghi nhớ luật cho các thiết kế
+        sau là được"] Component overlay THẬT trong file B2B Portal (node
+        `10016:7629`) VẪN đang render `bg/app/inverse` (KHÔNG khớp quyết
+        định này) — Williams xác nhận KHÔNG cần sửa lại component cũ đó
+        trong Figma, chỉ cần rule engine NHỚ ĐÚNG `bg/app/baseBlack` @ 50%
+        cho các thiết kế MỚI về sau. Đây là 1 điểm lệch giữa component thật
+        (cũ, không rework) và rule chính thức (mới) — ghi nhận rõ, không
+        coi component đó là tiền lệ đúng nữa.
     - id: FND-CLR-02
       rule: >
         Token effect/shadow (đổ bóng) là 1 loại token RIÊNG, ngang hàng với
@@ -372,13 +380,13 @@ ux_foundations:
     von_restorff_effect:
       definition: "The one that differs from the rest is most likely to be remembered, when similar objects are present."
       used_for: "[CHƯA gắn — liên quan trực tiếp tới hệ thống 'emphasis rank' đã có ở _core.rules.yaml/_composition.rules.yaml (CMP-FTR-01: đúng 1 nút mức nhấn cao nhất) — đáng đối chiếu, để dành khi rà lại các luật emphasis cũ, KHÔNG tự sửa luật cũ ở đây."]
-  status: "[ĐỀ XUẤT — CHƯA duyệt] Đây là bản đầu, mới trích 9 nguyên lý liên quan trực tiếp — lawsofux.com có tổng cộng nhiều nguyên lý hơn (vd Fitts's Law đã có tương đương ở _core.rules.yaml § touch_input, Hick's Law, Jakob's Law...), chưa khảo sát hết, thêm dần khi có rule cần."
+  status: "[ĐỀ XUẤT — nội dung 9 nguyên lý CHƯA rà lại từng cái, nhưng đã nằm trong file đã duyệt kiến trúc 14/09-B] Đây là bản đầu, mới trích 9 nguyên lý liên quan trực tiếp — lawsofux.com có tổng cộng nhiều nguyên lý hơn (vd Fitts's Law đã có tương đương ở _core.rules.yaml § touch_input, Hick's Law, Jakob's Law...), chưa khảo sát hết, thêm dần khi có rule cần."
 
 _pending_confirmation:
-  - item: "Toàn bộ file này là ĐỀ XUẤT — chưa hỏi Williams có đồng ý kiến trúc 'file _foundation.rules.yaml riêng, portable, always-load giống _core/_composition' hay muốn gộp nội dung này vào chỗ khác."
-  - item: "[ĐÃ ĐÓNG 13/09-X] Xung đột overlay/backdrop (FND-CLR-01) — Williams chọn `bg/app/baseBlack` @ 50%. Còn 1 điểm nhỏ mở: component thật (node 10016:7629) hiện chưa khớp quyết định này, chưa hỏi có cần sửa lại component hay để nguyên."
+  - item: "[ĐÃ ĐÓNG 14/09-B — Williams: \"Okay tao đồng ý\"] Kiến trúc file 'riêng, portable, always-load giống _core/_composition' đã được Williams duyệt — ĐĂNG KÝ CHÍNH THỨC vào manifest.yaml § rule_layers."
+  - item: "[ĐÃ ĐÓNG 14/09-B — Williams: \"Không cần sửa lại đâu mày ghi nhớ luật cho các thiết kế sau là được\"] Xung đột overlay/backdrop (FND-CLR-01) — nguồn chuẩn `bg/app/baseBlack` @ 50%. Component thật (node 10016:7629) KHÔNG cần sửa lại — chỉ rule engine ghi nhớ đúng cho thiết kế mới."
   - item: "[ĐÃ ĐÓNG 13/09-Y] spacing_role — đã khảo sát thêm 2 màn (form tạo mới, chi tiết) theo yêu cầu Williams, 3/4 vai giữ nguyên qua cả 3 màn."
-  - item: "[ĐỀ XUẤT 13/09-Z, CHƯA đăng ký chính thức] FND-SPC-03 — mô hình thống nhất intra_group_gap(12px)/inter_block_gap(16px) theo khoảng cách ngữ nghĩa (Law of Proximity), giải thích được xung đột 12-vs-16 đã phát hiện ở 13/09-Y. Phản chứng duy nhất (24px) đã loại bỏ ở 14/09-A — còn thiếu đúng 1 bước: Williams gật đầu cuối cùng cho mô hình này."
+  - item: "[ĐÃ ĐÓNG 14/09-B] FND-SPC-03 — mô hình thống nhất intra_group_gap(12px)/inter_block_gap(16px) theo khoảng cách ngữ nghĩa (Law of Proximity), giải thích được xung đột 12-vs-16 đã phát hiện ở 13/09-Y, phản chứng duy nhất (24px) đã loại bỏ ở 14/09-A — đăng ký chính thức cùng cả file ở 14/09-B."
   - item: "[ĐÃ ĐÓNG 14/09-A] Giá trị 24px ở panel phải màn order-list — Williams xác nhận UI đó đã outdate, loại khỏi bằng chứng, không áp dụng cho build mới."
   - item: "Effect/shadow token — mới phát hiện, chưa khảo sát đủ (chỉ mới thấy 1 token 'Shadows/md')."
   - item: "[ĐÃ ĐÓNG 13/09-W] page_background_role — ngưỡng đã xác nhận: 2 khối trở lên là nhiều. Xem FND-BG-01/02."

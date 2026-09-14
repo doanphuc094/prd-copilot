@@ -48,7 +48,7 @@ behavioural_limits:
     rule: "Thành viên của kind này PHẢI có backdrop và chặn thao tác nền, trừ khi profile.policy khai ngoại lệ tường minh cho từng thành viên (vd Popover nhẹ có thể không chặn nền)."
     why: "Đây là ranh giới hành vi phân biệt overlay với feedback_transient."
     backdrop_color:
-      status: "[XÁC NHẬN — Williams 13/09, tái xác nhận 13/09-X] \"Lớp phủ mờ cho dialog lấy màu bg/app/baseBlack cho opacity=50%\" — tái xác nhận sau khi 13/09-U phát hiện component overlay thật (node 10016:7629, B2B Portal) render ra bg/app/invers thay vì baseBlack; Williams vẫn chọn baseBlack làm nguồn chuẩn. Xem _shared.binding.yaml § color_tokens.backdrop.resolved_13_09_X."
+      status: "[XÁC NHẬN — Williams 13/09, tái xác nhận 13/09-X, 14/09-B] \"Lớp phủ mờ cho dialog lấy màu bg/app/baseBlack cho opacity=50%\" — tái xác nhận sau khi 13/09-U phát hiện component overlay thật (node 10016:7629, B2B Portal) render ra bg/app/invers thay vì baseBlack; Williams vẫn chọn baseBlack làm nguồn chuẩn. [14/09-B] Williams xác nhận KHÔNG cần sửa lại component thật đó trong Figma — component cũ giữ nguyên, rule này áp dụng cho thiết kế MỚI. Xem _shared.binding.yaml § color_tokens.backdrop.resolved_13_09_X."
       value: "`bg/app/baseBlack` @ `Opacity/O5` (50%) — cả 2 đều là token thật, xem _shared.binding.yaml § color_tokens + § spacing.opacity_scale"
       resolved_hex:
         light: "#000000 (Colors/Base/Black) @ 50% → rgba(0,0,0,0.5)"

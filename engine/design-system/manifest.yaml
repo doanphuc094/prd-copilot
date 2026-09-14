@@ -35,6 +35,11 @@ rule_layers:
     file: rules/_core.rules.yaml
     always: true
     provides: [axis_kinds, discipline, universal_a11y, touch_input, contracts]
+  - id: foundation
+    file: rules/_foundation.rules.yaml
+    always: true
+    provides: [typography_role, spacing_role, page_background_role, color_role, ux_foundations]
+    status: "[XÁC NHẬN — Williams 14/09-B, \"Okay tao đồng ý\"] Layer MỚI — luật dùng nền tảng token (typography/spacing/color/page-background), portable, KHÔNG chọn theo kind/component như 'kinds'/'component' bên dưới — áp dụng cho MỌI component, giống core/composition. Phát sinh từ khảo sát B2B Portal thật (xem profile.ghn/ds/foundation-layout-research.md), đăng ký sau khi đóng hết điểm mở — xem decisions.md § 13/09-U..14/09-B."
   - id: kinds
     dir: rules/kinds
     selected_by: "components.<name>.kinds"

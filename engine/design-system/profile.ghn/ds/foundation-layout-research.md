@@ -235,10 +235,14 @@ opacity"*. Nguồn CHUẨN CHÍNH THỨC cho overlay/backdrop = **`bg/app/baseBl
 @ 50% opacity** (nguồn (2)) — KHÔNG phải nguồn (3) (component thật render
 `bg/app/invers`) và KHÔNG phải nguồn (1) (annotation "30%"). Xem
 `_foundation.rules.yaml § FND-CLR-01.resolved_13_09_X` và
-`_shared.binding.yaml § color_tokens.backdrop.resolved_13_09_X`. Còn 1 điểm
-nhỏ CÒN MỞ: component thật (node `10016:7629`) hiện chưa khớp quyết định này
-(đang render `bg/app/invers`, không phải `bg/app/baseBlack`) — chưa hỏi
-Williams có cần sửa lại component trong Figma cho khớp hay để nguyên.
+`_shared.binding.yaml § color_tokens.backdrop.resolved_13_09_X`.
+
+**[ĐÃ ĐÓNG 14/09-B — Williams]**: "Không cần sửa lại đâu mày ghi nhớ luật
+cho các thiết kế sau là được" — component overlay thật (node `10016:7629`)
+GIỮ NGUYÊN (không rework), vẫn render `bg/app/invers`, không khớp quyết
+định trên — nhưng rule engine (FND-CLR-01, OVL-B-01) ghi nhớ đúng
+`bg/app/baseBlack` cho mọi thiết kế MỚI từ nay. Component cũ không còn là
+tiền lệ đúng để tham chiếu.
 
 ## 5. Phát hiện thêm — token MỚI chưa từng khảo sát
 
@@ -325,9 +329,9 @@ trực tiếp tới các rule đã viết ở trên — đầy đủ trong
 - **[ĐÃ ĐÓNG 13/09-Y]** Spacing đã khảo sát thêm 2 màn (form tạo mới, chi
   tiết) — 3/4 vai giữ nguyên, coi là quy luật hệ thống. Còn 1 điểm phát
   sinh MỚI chưa đóng: xem bullet gutter ngang bên dưới.
-- **[ĐÃ ĐÓNG 13/09-X]** Xung đột overlay/backdrop (§ 4) — Williams chọn
-  `bg/app/baseBlack` @ 50%. Còn 1 điểm nhỏ: component thật (node
-  `10016:7629`) chưa khớp quyết định, chưa hỏi có cần sửa lại component.
+- **[ĐÃ ĐÓNG 13/09-X, 14/09-B]** Xung đột overlay/backdrop (§ 4) — Williams
+  chọn `bg/app/baseBlack` @ 50%. Component thật (node `10016:7629`) KHÔNG
+  cần sửa lại — Williams: "ghi nhớ luật cho các thiết kế sau là được".
 - Effect Style — mới thấy 1 token, chưa khảo sát toàn bộ danh sách effect
   style thật của file GHN DS gốc.
 - **[ĐÃ ĐÓNG 13/09-Y]** `bg/primary/default` (#ff5200) — XÁC NHẬN là token
@@ -335,9 +339,11 @@ trực tiếp tới các rule đã viết ở trên — đầy đủ trong
   #ff5200).
 - **[ĐÃ ĐÓNG 13/09-Y]** `section_title` = Title 1 cho màn build MỚI — màn
   Sprint 62 (H6 cũ) Williams xác nhận KHÔNG cần rework, giữ nguyên.
-- **[ĐỀ XUẤT 13/09-Z, CHƯA duyệt]** Gutter ngang 12 vs 16 — đã có đề xuất
-  giải quyết bằng mô hình `intra_group_gap`(12)/`inter_block_gap`(16) theo
-  khoảng cách ngữ nghĩa (xem § 3, FND-SPC-03) — CHƯA hỏi Williams có đồng ý
-  mô hình này không.
+- **[ĐÃ ĐÓNG 14/09-B]** Gutter ngang 12 vs 16 — mô hình
+  `intra_group_gap`(12)/`inter_block_gap`(16) (FND-SPC-03) đã đăng ký chính
+  thức cùng toàn bộ `_foundation.rules.yaml`.
 - **[ĐÃ ĐÓNG 14/09-A]** Giá trị 24px ở panel phải màn order-list — Williams
   xác nhận UI đó đã outdate, loại khỏi bằng chứng cho spacing_role.
+- **[ĐÃ ĐÓNG 14/09-B — Williams: "Okay tao đồng ý"]** Kiến trúc file
+  `rules/_foundation.rules.yaml` (layer riêng, portable, always-load) đã
+  duyệt — ĐĂNG KÝ CHÍNH THỨC vào `manifest.yaml § rule_layers`.

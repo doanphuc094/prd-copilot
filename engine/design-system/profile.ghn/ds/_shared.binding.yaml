@@ -330,10 +330,14 @@ color_tokens:
         trước đó) — KHÔNG dùng `bg/app/invers` (nguồn (3), component thật)
         và KHÔNG dùng "30%" (nguồn (1), annotation). Giá trị "usage" ở trên
         và `rules/kinds/overlay.rules.yaml § OVL-B-01.backdrop_color` đều đã
-        sẵn khớp quyết định này, không cần sửa. CÒN MỞ: component overlay
-        thật (node 10016:7629) hiện đang render `bg/app/invers`, chưa khớp
-        quyết định — chưa hỏi Williams có cần sửa lại component trong Figma
-        cho khớp hay để nguyên [cần verify].
+        sẵn khớp quyết định này, không cần sửa.
+      resolved_14_09_B: >
+        [ĐÃ ĐÓNG — Williams 14/09-B: "Không cần sửa lại đâu mày ghi nhớ luật
+        cho các thiết kế sau là được"] Component overlay thật (node
+        `10016:7629`) VẪN đang render `bg/app/invers`, KHÔNG khớp quyết định
+        `resolved_13_09_X` — Williams xác nhận KHÔNG rework component cũ đó,
+        chỉ cần rule engine (FND-CLR-01 + OVL-B-01) nhớ đúng `bg/app/
+        baseBlack` cho thiết kế MỚI. Component đó không còn là tiền lệ đúng.
     icon:
       "icon-muted":    {light: "#52525b"}
       "icon-disabled": {light: "#a1a1aa"}

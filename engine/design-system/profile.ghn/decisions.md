@@ -2330,3 +2330,38 @@ không còn dữ liệu nào mâu thuẫn nữa.
 **Còn mở**: FND-SPC-03 vẫn ở trạng thái ĐỀ XUẤT — còn thiếu đúng 1 bước là
 Williams gật đầu chính thức để đăng ký vào `manifest.yaml` cùng với toàn
 bộ `_foundation.rules.yaml`.
+
+---
+
+## 14/09-B — Đăng ký chính thức `_foundation.rules.yaml` vào manifest.yaml + đóng nốt việc overlay component
+
+**by**: Williams — trả lời 2 điểm mở cuối cùng của vòng foundation-token:
+"1. Okay tao đồng ý" (kiến trúc file); "2. Không cần sửa lại đâu mày ghi
+nhớ luật cho các thiết kế sau là được" (component overlay thật).
+**affects**: `manifest.yaml` (§ rule_layers — thêm entry `foundation`),
+`rules/_foundation.rules.yaml` (meta.status, FND-SPC-03.status,
+FND-CLR-01.resolved_13_09_X, đóng toàn bộ `_pending_confirmation`),
+`rules/kinds/overlay.rules.yaml` (OVL-B-01.backdrop_color — thêm ghi chú
+14/09-B), `profile.ghn/ds/_shared.binding.yaml` (§ color_tokens.backdrop —
+thêm `resolved_14_09_B`), `profile.ghn/ds/foundation-layout-research.md`
+(đóng toàn bộ "Việc CÒN MỞ" liên quan).
+
+**1. Kiến trúc file `_foundation.rules.yaml` — DUYỆT**: đăng ký thành 1
+rule_layer MỚI trong `manifest.yaml`, `always: true`, portable, đứng song
+song `core`/`composition` (áp dụng cho MỌI component, không chọn theo
+kind). Toàn bộ nội dung bên trong (typography_role, spacing_role — gồm cả
+FND-SPC-03 mới đề xuất ở 13/09-Z, page_background_role, color_role,
+ux_foundations) coi như đã qua vòng duyệt kiến trúc này — status từng rule
+con vẫn giữ nguyên các mốc `[XÁC NHẬN]`/`[ĐỀ XUẤT]` đã ghi trước đó cho
+minh bạch nguồn gốc, KHÔNG đổi thành "duyệt" hàng loạt mà thiếu bằng
+chứng.
+
+**2. Component overlay thật (node `10016:7629`) — KHÔNG rework**: Williams
+xác nhận giữ nguyên component cũ (vẫn render `bg/app/invers`, không khớp
+quyết định `bg/app/baseBlack` ở 13/09-X) — chỉ cần rule engine ghi nhớ
+đúng cho thiết kế MỚI. Component đó không còn là tiền lệ đúng để tham
+chiếu khi build màn mới.
+
+**Kết quả**: toàn bộ vòng foundation-token (13/09-U → 14/09-B) đã ĐÓNG
+HẾT các điểm mở đã hỏi Williams. `_foundation.rules.yaml` chính thức có
+hiệu lực trong pipeline compile từ nay.
