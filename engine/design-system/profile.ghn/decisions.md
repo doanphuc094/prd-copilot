@@ -2457,3 +2457,103 @@ phải nhóm giá trị thiết kế như `never_guess`/`evidence_tiers`.
 **Còn mở**: các lỗi cụ thể liệt kê ở §14/09-C (pagination sai ngôn ngữ,
 sidebar raw, logo sai, top bar giả) CHƯA được sửa lại trong file TEST —
 để sau, ưu tiên đăng ký luật trước.
+
+---
+
+## 14/09-E — Áp `po_ready_gate` sửa lỗi UI file TEST (logo/sidebar/pagination/icon/button/frame)
+
+**by**: Claude, theo lệnh "Okay cho mày sửa lỗi lại UI giá xăng dầu" của Williams.
+
+**Đã sửa trong file TEST (`uFbbdvWYC1dg3AjdnHCgxk`, node `107:1838`)**:
+- Logo: thay `logo_GHR` sai bằng logo thật GHN Freight (`Logo_Nang.svg`,
+  nhúng qua `figma.createNodeFromSvg()` để né chặn mạng `figma.com`), đặt
+  `x=18,y=18` theo `sidebar.binding.yaml`.
+- Sidebar: reposition 7 item `x=2,width=296` (trước sai `x=0,width=300`),
+  bắt đầu `y=78`, tách "Đăng xuất" xuống `y=438`; set cứng padding
+  `{12,12,12,12}` và `Active#4109:93=false` trên mọi item trừ item đang
+  active (component mặc định sai cả 2 giá trị này).
+- Pagination: "Previous"/"Next" → "Đầu trang"/"Cuối trang".
+- Icon sidebar: TỰ KẾT LUẬN SAI trước đó rằng "toàn bộ icon bị chặn vì
+  thiếu Font Awesome 6 Pro" (generalize từ 1 lỗi Avatar không liên quan,
+  chưa tra kỹ) — Williams hỏi lại "Rồi icon đâu?", tra lại mới phát hiện
+  icon LEADING trên sidebar dùng font `Font Awesome 6 Free` (load được),
+  chỉ icon TRAILING (chevron mở nhóm) mới thật sự gắn `Font Awesome 6
+  Pro` (không load được). Đã set 6 icon leading + 1 chevron bằng FA6 Free
+  Solid (tạm thay Pro), chụp ảnh xác nhận lên đúng hình. 2 icon
+  (`house`, `location-dot`) là suy diễn thay thế do binding doc ghi
+  `house-night`/`map-location-dot` không có bản Free tương đương — CHƯA
+  qua xác nhận người, còn mở.
+- Button toolbar: cả nút "Lọc" và "Xóa lọc" để nguyên default component
+  (bật icon CẢ HAI bên `iconLeft=iconRight=true`) — vi phạm
+  `BTN-INV-12`. Đã sửa: "Lọc" giữ 1 icon phải, "Xóa lọc" bỏ hết icon.
+  **[SỬA LẠI Ở §14/09-F — xem bên dưới, giá trị này SAI so với bản thật]**
+- Vị trí nút: lệch tâm dọc 11px so với ô ngày cạnh bên — đã canh lại.
+- Frame: đổi từ auto-hug (606px cao) sang `FIXED 1728×1080` theo yêu cầu
+  Williams.
+
+**Chưa sửa, đã báo rõ cho Williams** (không giấu): font heading, chi
+tiết "table bị lỗi", vị trí breadcrumb, spacing — vì `semantic.json` +
+`_shared.binding.yaml` lúc đó CHƯA có type scale/spacing scale xác nhận
+đủ để sửa mà không đoán. Williams đưa link file B2B PORTAL thật để khảo
+sát → xem §14/09-F.
+
+---
+
+## 14/09-F — Khảo sát typography thật từ file B2B PORTAL, phát hiện xung đột `table_header_label`
+
+**by**: Claude, theo yêu cầu "Đây tuy nhiên tao cần mày khảo sát file tao
+làm và viết rule cho typography để sử dụng sau này" — Williams đưa link
+`https://www.figma.com/design/s2NE6ikwLnsZSUp97RBfof/B2B-PORTAL?node-id=16525-73662`.
+
+**Đã khảo sát** (đọc trực tiếp node thật, không đoán): frame
+`16525:73666` "[Giá xăng dầu] Danh sách" — CHÍNH LÀ màn sản xuất thật của
+đúng feature đang làm, kích thước `1728×1080` (xác nhận luôn giả thiết
+frame cố định ở §14/09-E là đúng).
+
+**Phát hiện quan trọng #1 — map được 5 style thật vào `typography_ramp`
+có sẵn trong `_shared.binding.yaml`** (ramp này đã tồn tại từ 13/09, chỉ
+thiếu phần MAP ngữ cảnh → style, xem `not_yet_mapped` cũ):
+- Tiêu đề trang ("Thông tin giá xăng dầu", trong component `Accordin /
+  Accordin header (Base)`) = **H5 Bold** (20/30/Bold) — khớp thêm 1 bằng
+  chứng độc lập cho `heading_bold.H5.verified_usage_13_09_U`.
+- Text ô dữ liệu bảng = **Body 1** (16/24/Regular).
+- Link ("Xem hướng dẫn") và caption phụ ("Page instruction") = CÙNG
+  **Body 2** (14/24/Regular), chỉ khác MÀU (xanh dương vs xám muted).
+- Label nút toolbar ("Bộ lọc") = **button_text.L** (16/20/Semi Bold).
+- Đã ghi `verified_usage_14_09_W` vào từng mục tương ứng trong
+  `_shared.binding.yaml`.
+
+**Phát hiện quan trọng #2 — XUNG ĐỘT THẬT, CHƯA TỰ CHỐT**: header bảng
+5/5 ô đọc trực tiếp ra **16px/Bold** (khớp `title."Title 1"`), nhưng
+`text_style.table_header_label` đang ghi **14px/Semibold** (khớp
+`subtitle."Subtitle 2"`), nguồn cũ là văn bản mô tả (schema-v1-draft.md)
++ 1 lần đối chiếu ramp với chính văn bản đó (13/09-H) — KHÔNG phải đọc
+trực tiếp 1 bảng render thật độc lập như lần này. Có 2 khả năng: (a)
+schema-v1-draft.md đúng Ý ĐỊNH, bảng thật bị lệch do build nhầm style
+(có tiền lệ — xem phát hiện #3), hoặc (b) 16px/Bold (Title 1) mới là
+chuẩn cập nhật thật, văn bản cũ lỗi thời. KHÔNG tự chọn — đã ghi cả 2
+nguồn + lý do nghi ngờ vào `text_style.table_header_label.conflict_14_09_W`,
+cần Williams chốt trước khi renderer dùng.
+
+**Phát hiện quan trọng #3 — bằng chứng phụ, không phải kết luận**: 2 ô
+cột "Giá gồm VAT" ở 2 dòng khác nhau trong CHÍNH bảng thật này đọc ra
+14px thay vì 16px như 4 ô còn lại cùng cột — nhiều khả năng là lỗi
+gõ tay/override sót ngay trong file gốc của Williams, không phải 1 biến
+thể style hợp lệ. Dùng làm bằng chứng cho khả năng (a) ở phát hiện #2.
+
+**Phát hiện quan trọng #4 — NGOÀI phạm vi typography, báo riêng vì đáng
+kể, CHƯA sửa gì**: màn `16525:73666` KHÔNG dùng Breadcrumb — tiêu đề đến
+từ component `Accordin / Accordin header (Base)` (variant Align=Left)
+đứng một mình, khác hẳn giả định "breadcrumb luôn có" ở
+`schema-v1-draft.md § page_header.breadcrumb`. Nút lọc thật tên "Bộ lọc"
+(không phải "Lọc"), `Type=Grey` (không phải Primary như đã build ở
+§14/09-E), icon TRÁI "filter" FA6 Pro (không phải chevron phải), và
+KHÔNG thấy nút "Xóa lọc" độc lập nào trong toolbar — nghi ngờ nó nằm
+trong panel lọc mở ra khi bấm "Bộ lọc" (chưa xác minh được nội dung panel
+đó, node `16527:77253` "[Giá xăng dầu]- Filter" tồn tại nhưng chưa dò kỹ
+được bên trong). Đây là phát hiện MỚI, đủ lớn để ảnh hưởng bản build ở
+§14/09-E (Type=Primary + chevron phải cho "Lọc" tại đó SAI so với bản
+thật) — CHƯA tự sửa lại, chờ Williams xác nhận phạm vi cần sửa tiếp.
+
+**affects**: `profile.ghn/ds/_shared.binding.yaml § typography_ramp`,
+`§ text_style.table_header_label`, `§ not_yet_mapped`.

@@ -442,6 +442,7 @@ typography_ramp:
       weight: Bold
       naming_value_mismatch: "[PHÁT HIỆN THẬT 13/09-U] Tên biến Figma ghi '(20, 32, 700)' nhưng lineHeight resolve THẬT là 30 (không phải 32) — cùng dạng lỗi tên/giá trị đã gặp ở Spacing/S258 (xem spacing.base_scale_px.naming_value_mismatch). Luôn đọc giá trị resolve thật, không suy từ tên biến."
       verified_usage_13_09_U: "[ĐỀ XUẤT] Dùng cho component 'Page Heading' — vai page_title DUY NHẤT của 1 trang thật (node 10014:15770, file B2B Portal). Xem foundation-layout-research.md § 2 + rules/_foundation.rules.yaml § typography_role.FND-TYP-01/02."
+      verified_usage_14_09_W: "[FIGMA — ĐỌC THẬT 14/09, Williams đưa link] Khớp CHÍNH XÁC với text 'Thông tin giá xăng dầu' — tiêu đề trong component 'Accordin / Accordin header (Base)' (variant Align=Left), vai page_title của màn '[Giá xăng dầu] Danh sách' (node I16525:73694;645:23441, fileKey s2NE6ikwLnsZSUp97RBfof — file B2B PORTAL thật, KHÔNG phải file style-guide zECOR8UK45lmZcpMG9aOR7). Củng cố thêm bằng chứng cho verified_usage_13_09_U: page_title = H5 Bold, dù component bọc ngoài khác nhau (Page Heading vs Accordion header) — 2 màn độc lập cùng dùng H5 cho vai title cấp trang."
     H6:
       size: 18
       line_height: 28
@@ -476,6 +477,15 @@ typography_ramp:
         toán") — cả 4 CÙNG dùng Title 1. Đây là style ĐÚNG cho section_title
         khi build mới — xem rules/_foundation.rules.yaml § typography_role
         (FND-TYP-01, sửa 13/09-V) + heading_bold.H6.correction_13_09_V.
+      verified_usage_14_09_W: >
+        [FIGMA — ĐỌC THẬT 14/09, Williams đưa link] Cả 5 ô header bảng thật
+        trên màn '[Giá xăng dầu] Danh sách' (node 16525:76940/76941/76942/
+        77063/77071, fileKey s2NE6ikwLnsZSUp97RBfof) đều đọc ra ĐÚNG 16px/
+        Bold/line-height 24 — khớp CHÍNH XÁC Title 1, KHÔNG khớp giá trị 14px/
+        Semibold đang ghi ở text_style.table_header_label (= Subtitle 2).
+        ĐÂY LÀ XUNG ĐỘT THẬT giữa 2 nguồn — xem
+        text_style.table_header_label.conflict_14_09_W bên dưới, CHƯA tự
+        chọn nguồn nào đúng, cần Williams xác nhận.
     "Title 2": {size: 14, line_height: 24, weight: Bold}
     "Title 3": {size: 12, line_height: 20, weight: Bold}
   subtitle:
@@ -483,13 +493,26 @@ typography_ramp:
     "Subtitle 2": {size: 14, line_height: 24, weight: "Semi Bold", cross_check: "Khớp CHÍNH XÁC với text_style.table_header_label đã xác nhận trước (semibold, 14px) — 2 nguồn độc lập trùng khớp."}
     "Subtitle 3": {size: 12, line_height: 20, weight: "Semi Bold"}
   content_body:
-    "Body 1": {size: 16, line_height: 24, weight: Regular}
-    "Body 2": {size: 14, line_height: 24, weight: Regular, verified_usage: "Input organism dùng style này cho giá trị nhập (xem color_tokens.verified_component_bindings.input_state_filled)"}
+    "Body 1":
+      size: 16
+      line_height: 24
+      weight: Regular
+      verified_usage_14_09_W: "[FIGMA — ĐỌC THẬT 14/09, Williams đưa link] Text ô dữ liệu bảng (vd '1', '14/04/2026 10:27', 'Dầu DO 0,05S-II' — node 16525:76947/76950/76953...) trên màn '[Giá xăng dầu] Danh sách', fileKey s2NE6ikwLnsZSUp97RBfof — khớp đúng 16px/Regular/line24. LƯU Ý: 2 ô cột 'Giá gồm VAT' ở 2 dòng khác nhau (16525:77081, 16527:77103) đọc ra 14px thay vì 16px — nhiều khả năng là lỗi gõ tay/override sót trong chính file thật của Williams (không nhất quán ngay trong cùng 1 bảng), KHÔNG coi là style thứ 2 hợp lệ — dùng Body 1 (16px) làm chuẩn vì chiếm đa số (4/6 ô đọc được)."
+    "Body 2":
+      size: 14
+      line_height: 24
+      weight: Regular
+      verified_usage: "Input organism dùng style này cho giá trị nhập (xem color_tokens.verified_component_bindings.input_state_filled)"
+      verified_usage_14_09_W: "[FIGMA — ĐỌC THẬT 14/09, Williams đưa link] Cùng size/weight/line-height nhưng 2 vai KHÁC NHAU chỉ phân biệt bằng MÀU, cùng trên màn '[Giá xăng dầu] Danh sách': (a) link 'Xem hướng dẫn' (node 16525:73700) — màu xanh dương #3B82F6-ish; (b) caption phụ 'Page instruction' (node 16525:73699) — màu xám #6B7280-ish (khớp text-muted). Cả 2 node đang `hidden=true` trên biến thể màn hiện tại (không hiện mặc định), nhưng cấu trúc vẫn tồn tại thật trong file — không phải suy đoán."
     "Body 3": {size: 12, line_height: 20, weight: Regular}
     Caption: {size: 10, line_height: 16, weight: "Semi Bold"}
     "Small Caption": {size: 8, line_height: 10, weight: Medium}
   button_text:
-    L: {size: 16, line_height: 20, weight: "Semi Bold"}
+    L:
+      size: 16
+      line_height: 20
+      weight: "Semi Bold"
+      verified_usage_14_09_W: "[FIGMA — ĐỌC THẬT 14/09, Williams đưa link] Label nút 'Bộ lọc' trong toolbar màn '[Giá xăng dầu] Danh sách' (node I16525:73697;814:46665;781:14364, fileKey s2NE6ikwLnsZSUp97RBfof) — khớp đúng 16px/Semi Bold/line20. Nút này Type=Grey, Style=Outline Round, Size=sm, icon TRÁI (filter, FA6 Pro) — KHÔNG có icon phải, khác với TEST file trước đó (đã tự set nhầm cả 2 bên + Type=Primary) — xem decisions.md entry liên quan cùng ngày."
     M: {size: 14, line_height: 18, weight: "Semi Bold"}
     S: {size: 12, line_height: 16, weight: "Semi Bold"}
   price: {size: 20, line_height: 28, weight: Medium}
@@ -511,6 +534,25 @@ text_style:
     color: text-muted
     confirmed_source: "schema-v1-draft.md Mục 3a, field header_style"
     cross_check_13_09_H: "Khớp đúng style 'Subtitle 2' trong typography_ramp.subtitle — cùng size 14px, weight Semi Bold."
+    conflict_14_09_W: >
+      [XUNG ĐỘT THẬT — CHƯA TỰ CHỌN, cần Williams xác nhận] Đọc trực tiếp 5/5
+      ô header bảng trên màn '[Giá xăng dầu] Danh sách' (node 16525:76940/
+      76941/76942/77063/77071, fileKey s2NE6ikwLnsZSUp97RBfof — file B2B
+      PORTAL thật, Williams tự đưa link 14/09) ra 16px/Bold/line24 — khớp
+      Title 1, KHÔNG khớp 14px/Semibold (Subtitle 2) đang ghi ở trên. Nguồn
+      14px/Semibold đến từ 2 chỗ: (a) schema-v1-draft.md — văn bản mô tả,
+      không phải đọc trực tiếp node; (b) typography_ramp cross-check 13/09-H —
+      đối chiếu ramp với chính schema-v1-draft.md, không phải với 1 bảng
+      RENDER thật độc lập. Nguồn 16px/Bold lần này là ĐỌC TRỰC TIẾP node thật
+      trên đúng màn hình đang bàn tới trong hội thoại — độ tin cậy cao hơn về
+      mặt bằng chứng, nhưng KHÔNG tự kết luận đây là giá trị "đúng hơn": có
+      thể (a) schema-v1-draft.md ghi đúng Ý ĐỊNH thiết kế còn bảng thật bị
+      lệch do ai đó áp nhầm style khi build (giống lỗi 14px/16px lẫn lộn ở
+      Body 1.verified_usage_14_09_W ngay phía trên — file thật của Williams
+      có tiền lệ bị lệch style ngay trong chính nó), hoặc (b) schema-v1-draft.md
+      đã cũ, 16px/Bold (Title 1) mới là chuẩn cập nhật thật. CẦN Williams chốt
+      trước khi renderer dùng giá trị nào làm chuẩn tiếp — xem
+      decisions.md entry cùng ngày.
   diff_view_old_value:
     style: strikethrough
     when_to_use: "Giá trị CŨ trong modal đối chiếu — PHẢI có gạch ngang, không dùng style thường"
@@ -523,9 +565,15 @@ text_style:
   not_yet_mapped:
     status: "[KHÁC not_yet_surveyed CŨ] Ramp đầy đủ (typography_ramp) VÀ màu (color_tokens) NAY ĐÃ CÓ THẬT — còn thiếu là MAP cụ thể: màn hình/component nào dùng đúng style nào trong ramp. Đây là việc làm dần khi có màn hình thật, KHÔNG tự gán trước."
     items:
-      ["Heading H1/H2/H3 dùng ở đâu trong sản phẩm (page title? section title?) — chưa có ví dụ thật",
-       "Body text mặc định — đã xác nhận Input dùng 'Content/Body 2', nhưng ngữ cảnh khác (bảng, card...) chưa kiểm",
-       "Error/helper text dưới input — biết màu (text-error #ef4444) nhưng chưa xác nhận SIZE/style cụ thể dùng trong Input helper message"]
+      ["Error/helper text dưới input — biết màu (text-error #ef4444) nhưng chưa xác nhận SIZE/style cụ thể dùng trong Input helper message",
+       "[MỚI 14/09] table_header_label — XUNG ĐỘT CHƯA CHỐT giữa 14px/Semibold (Subtitle 2, nguồn cũ schema-v1-draft.md) và 16px/Bold (Title 1, đọc thật từ màn '[Giá xăng dầu] Danh sách') — xem text_style.table_header_label.conflict_14_09_W, cần Williams chốt.",
+       "[MỚI 14/09] Đã đóng: page_title dùng H5 Bold (Accordion header), table row/body text dùng Body 1, link + caption phụ đều dùng Body 2 (khác màu), button label toolbar dùng button_text.L — xem verified_usage_14_09_W ở từng mục ramp tương ứng."]
+    resolved_14_09_W: >
+      2 item cũ trong danh sách này ("Heading H1/H2/H3 dùng ở đâu" và "Body
+      text mặc định ngữ cảnh khác chưa kiểm") đã có bằng chứng thật từ màn
+      '[Giá xăng dầu] Danh sách' (fileKey s2NE6ikwLnsZSUp97RBfof, Williams
+      đưa link 14/09) — xem verified_usage_14_09_W ở heading_bold.H5,
+      title."Title 1", content_body."Body 1"/"Body 2", button_text.L.
 
 # =============================================================================
 # SPACING / RADIUS / OPACITY SCALE — khảo sát THẬT 13/09-H, đọc trực tiếp
