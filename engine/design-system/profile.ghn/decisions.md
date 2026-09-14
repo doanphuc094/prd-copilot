@@ -2020,3 +2020,313 @@ chặn egress figma.com, đọc thẳng file này từ repo.
 
 **Còn mở**: vẫn cần Williams (hoặc 1 phiên khác không bị chặn mạng) tự gắn
 file này vào file Figma thật/test để logo thật sự hiển thị đúng trên canvas.
+
+---
+
+## 13/09-U — Đề xuất bộ rule Foundation Token, dựa trên khảo sát kiến trúc thật ở B2B Portal
+
+**by**: Williams — "Okay mày phải có rule cho foundation token hãy vào
+portal b2b xem cách tao dựng kiến trúc component rồi đề xuất 1 bộ rule cho
+foundation token".
+**affects**: `rules/_foundation.rules.yaml` (FILE MỚI, [ĐỀ XUẤT] — chưa đăng
+ký vào manifest.yaml § rule_layers), `profile.ghn/ds/foundation-layout-
+research.md` (FILE MỚI, ghi chứng cứ thô), `profile.ghn/ds/_shared.binding.yaml`
+(nhiều mục mới, tất cả đánh dấu [ĐỀ XUẤT] — CHƯA phải giá trị đã duyệt).
+
+**Phương pháp**: Đọc trực tiếp trang "🔵 Layout structure" (nodeId 1:2, tài
+liệu DS nội bộ Williams tự viết annotation) + 1 trang thật đã dựng đầy đủ
+(danh sách đơn hàng có Sidebar, nodeId gốc 10014:11448) trong file B2B Portal
+qua `get_metadata`/`use_figma`/`get_variable_defs` — không suy đoán, mọi số
+đều trích từ node-id cụ thể.
+
+**Phát hiện chính**:
+1. **Typography có vai trò theo VỊ TRÍ, không theo tên style**: Page Title
+   thật dùng H5 (không phải H1-H3 như có thể đoán), Sub-heading/tiêu đề card
+   dùng H6 — lệch đúng 1 bậc. Tiêu đề card và "Page Sub Heading" DÙNG CHUNG
+   1 style — tức đây là CÙNG 1 vai chữ, không phải 2 vai riêng.
+2. **Naming/value mismatch MỚI**: style "Heading/Bold/H5 Bold" có tên ghi
+   line-height 32 nhưng giá trị resolve thật là 30 — cùng dạng lỗi đã gặp ở
+   `Spacing/S258`.
+3. **Spacing có ít nhất 4 vai khác nhau** trên cùng 1 trang (lề khối nội
+   dung 24px, padding trong card 16px, gap giữa 2 card 16px, gap header→body
+   trong 1 card 12px, nhịp xếp dọc trong 1 nhóm mục 24px, gutter 2 cột
+   16px) — KHÔNG phải 1 số spacing dùng chung cho mọi ngữ cảnh "khoảng cách
+   dọc".
+4. **XUNG ĐỘT 3 NGUỒN cho overlay/backdrop, CHƯA TỰ CHỌN**: annotation text
+   ghi "opacity 30%"; Williams xác nhận miệng trước đó (13/09 cũ) là
+   `bg/app/baseBlack @ 50%`; component overlay THẬT render ra
+   `bg/app/invers` (#18181b, tên Figma thiếu chữ "e") @ 50%. Đã ghi rõ cả 3
+   nguồn vào binding, KHÔNG tự sửa xác nhận cũ của Williams — cần Williams
+   quyết định nguồn chuẩn.
+5. **Phát hiện token màu mới chưa từng khảo sát**: `bg/primary/default`
+   (#ff5200, cam GHN — có thể là màu thương hiệu chính nhưng chưa xác nhận),
+   cùng các token success/grey/inverse khác.
+6. **Loại token hoàn toàn mới, chưa từng khảo sát ở 13/09-H**: Effect/Shadow
+   style (`Shadows/md`, 2 lớp drop-shadow) — 13/09-H chỉ khảo sát 4
+   collection biến + Text Style, CHƯA khảo sát Effect Style của file GHN DS
+   gốc.
+
+**Đề xuất kiến trúc**: file MỚI `rules/_foundation.rules.yaml` — cùng lớp
+"portable, always-load" như `_core.rules.yaml`/`_composition.rules.yaml`,
+nhưng CHƯA đăng ký vào `manifest.yaml § rule_layers` vì đây là ĐỀ XUẤT, chưa
+duyệt. File chứa nguyên tắc TỔNG QUÁT (typography_role theo vị trí ramp,
+spacing_role theo vai cấu trúc, color_role về nguyên tắc xử lý xung đột
+nguồn) — không chứa số cụ thể của GHN (số nằm ở `_shared.binding.yaml`,
+đúng nguyên tắc phân lớp A/C đã có).
+
+**Giới hạn đã ghi rõ, KHÔNG tự vượt qua**:
+- Spacing role chỉ dựa trên 1 màn hình — cần khảo sát thêm trước khi coi là
+  quy luật chắc.
+- Xung đột overlay/backdrop — để nguyên, chờ Williams quyết, KHÔNG tự chọn
+  nguồn "đáng tin hơn".
+- Effect Style — mới có 1 điểm dữ liệu, chưa khảo sát đầy đủ.
+- Toàn bộ file `_foundation.rules.yaml` + các mục mới trong
+  `_shared.binding.yaml` đều đánh dấu [ĐỀ XUẤT] — CHƯA coi là đã duyệt, CHƯA
+  đăng ký vào manifest.yaml, chờ Williams review.
+
+**Còn mở, chưa hỏi**: `grid_units_per_row` (từ trước, vẫn treo); kiến trúc
+file `_foundation.rules.yaml` có đúng ý Williams không hay muốn tổ chức khác;
+nguồn chuẩn cho overlay/backdrop; xác nhận `bg/primary/default` có phải màu
+thương hiệu chính.
+
+---
+
+## 13/09-V — Sửa luật breadcrumb: nên có ở MỌI trang, không loại trừ trang 1 cấp
+
+**by**: Williams — comment review trên `foundation-layout-research.md`,
+highlight đúng đoạn quote annotation cũ về breadcrumb: "Nên có breadcrumb ở
+mọi trang".
+**affects**: `profile.ghn/ds/foundation-layout-research.md` (§ 1, thêm
+correction note ngay sau quote annotation cũ).
+
+Annotation cũ trên trang "🔵 Layout structure" (node 1:2, do Williams tự viết
+trước đây) ghi: "Không cần sử dụng [breadcrumb] trong các trang chỉ có 1 cấp
+đơn giản (VD: Home, Dashboard,...)". Williams review lại, ĐẢO NGƯỢC phần loại
+trừ này: xác nhận thật ra NÊN có breadcrumb ở MỌI trang, không có ngoại lệ cho
+trang 1-cấp-đơn-giản — annotation cũ ở điểm này coi như lỗi thời, KHÔNG phải
+căn cứ dùng được nữa.
+
+Giữ nguyên quote gốc trong research note (đúng nguyên tắc không tự sửa trích
+dẫn nguyên văn), chỉ thêm ghi chú SỬA ngay sau. Đây là luật navigation/page-
+header, không thuộc phạm vi foundation token (typography/color/spacing) —
+**còn mở**: chưa xác định nơi ở chính thức của luật này (có thể
+`rules/_composition.rules.yaml` § mới, hoặc 1 mục riêng cho page header —
+cần bàn thêm với Williams, không tự quyết định cấu trúc file).
+
+---
+
+## 13/09-V2 — Sửa section_title thành Title 1 + thêm luật nền trang (1 vs nhiều khối) + gắn UX foundation (lawsofux.com)
+
+*[Sửa nhãn 13/09: entry này ban đầu cũng ghi "13/09-V", trùng với entry breadcrumb ở trên — đổi thành "V2" để tránh trùng nhãn, KHÔNG đổi nội dung. Theo nguyên tắc decisions.md append-only, chỉ sửa nhãn, không xoá/viết lại nội dung cũ.]*
+
+**by**: Williams — 3 việc trong 1 lượt: (1) review comment trên
+`_foundation.rules.yaml` line 43, trỏ node 17740:214100, yêu cầu "Chỉnh lại
+dùng dạng title 1"; (2) yêu cầu bổ sung UX Hierarchy có căn cứ học thuật;
+(3) yêu cầu bổ sung luật nền trang xám/trắng, trỏ 2 node thật (21219:13371
+nền xám, 16525:73666 nền trắng), đề xuất tham khảo lawsofux.com cho UX
+foundation.
+**affects**: `rules/_foundation.rules.yaml` (sửa typography_role, thêm
+page_background_role MỚI, thêm ux_foundations MỚI), `profile.ghn/ds/
+_shared.binding.yaml` (sửa typography_ramp.title/heading_bold, thêm
+color_tokens.resolved_values.background.page_background MỚI),
+`profile.ghn/ds/foundation-layout-research.md` (sửa § 2, thêm § 6, § 7).
+
+**1. Sửa section_title — Title 1, không phải H6**: Đọc lại `get_variable_defs`
+trên 4 node ĐỘC LẬP cùng 1 trang mới hơn (Sprint 66 revamp): 17740:214102,
+21219:13375, 21219:13407, 21219:13417 — cả 4 CÙNG dùng `Title/Title 1`
+(16px Bold). Bản đề xuất đầu (13/09-U) từng ghi section_title = H6 (18px)
+dựa trên 1 trang CŨ hơn (Sprint 62) — SAI theo Williams. Đã sửa: section_title
+thật dùng NHÓM Title (không phải Heading lùi 1 bậc như nghĩ ban đầu). Giữ
+lại quan sát H6 cũ làm ghi chú lịch sử, không xoá.
+
+**2. Thêm luật nền trang — 1 khối = trắng, nhiều khối = xám**: Đối chiếu
+2 trang thật: node 21219:13371 (nhiều card độc lập) canvas fill
+`#f4f4f5` = `bg/app/elevated`, từng card con vẫn trắng; node 16525:73666
+(1 bảng duy nhất) canvas fill trắng, bind CÙNG variable id đã xác nhận là
+`bg/app/baseWhite`. Rule mới: `page_background_role` (FND-BG-01/02) trong
+`_foundation.rules.yaml` — còn mở: chưa rõ ngưỡng chính xác bao nhiêu khối
+tính là "nhiều".
+
+**3. Gắn UX foundation từ lawsofux.com**: Đọc trực tiếp lawsofux.com, trích
+nguyên văn 9 nguyên lý liên quan (Law of Common Region, Law of Proximity,
+Chunking, Cognitive Load, Law of Prägnanz, + 4 nguyên lý ghi lại chưa gắn
+rule cụ thể: Similarity, Uniform Connectedness, Aesthetic-Usability Effect,
+Von Restorff Effect). Gắn trực tiếp 5 nguyên lý đầu vào `why_ux_foundation`
+của `typography_role`/`spacing_role`/`page_background_role` — để agent hiểu
+LÝ DO nền tảng, không chỉ đọc "phải làm vậy".
+
+**Còn mở**: ngưỡng chính xác cho page_background (bao nhiêu khối = nhiều);
+có cần rework các màn cũ (Sprint 62) đang dùng H6 sai theo Title 1 mới hay
+không; nơi ở chính thức của luật breadcrumb (Williams: đề xuất SAU khi xong
+foundation token); 4 nguyên lý UX ghi lại nhưng chưa gắn rule cụ thể.
+
+---
+
+## 13/09-W — Chốt ngưỡng page_background: 2 khối trở lên là nhiều
+
+**by**: Williams — "2 khối trở lên là nhiều".
+**affects**: `rules/_foundation.rules.yaml` (FND-BG-01/02, đóng caveat cũ),
+`profile.ghn/ds/_shared.binding.yaml` (§ page_background status),
+`profile.ghn/ds/foundation-layout-research.md` (đóng mục "còn mở" § 6).
+
+Đóng nốt điểm mở duy nhất còn lại của `page_background_role` (13/09-V):
+ngưỡng chính xác để coi 1 trang là "nhiều khối" (→ dùng nền xám
+`bg/app/elevated`) là **2 khối độc lập trở lên** — đúng 1 khối thì dùng
+thẳng `bg/app/baseWhite`, không qua lớp xám trung gian. Cả FND-BG-01 và
+FND-BG-02 giờ đã có `check` tường minh (đếm `independent_content_blocks`).
+
+Với việc này, toàn bộ nội dung đề xuất `_foundation.rules.yaml` từ vòng
+13/09-U đến nay không còn điểm mở nào thuộc phạm vi đã hỏi — còn lại đúng
+2 việc lớn hơn cần Williams quyết định trước khi đăng ký chính thức vào
+`manifest.yaml`: (1) đồng ý kiến trúc file `_foundation.rules.yaml` riêng
+hay không, (2) chọn nguồn chuẩn cho xung đột overlay/backdrop (FND-CLR-01).
+
+---
+
+## 13/09-X — Chốt nguồn overlay/backdrop: bg/app/baseBlack @ 50% opacity
+
+**by**: Williams — trích lại đúng đoạn nguồn (3) trong
+`foundation-layout-research.md § 4` ("Component overlay THẬT đã render
+trong file: `bg/app/inverse` (#18181b) @ 50%...") rồi quyết định: "tao
+quyết định là nguồn bg/app/baseBlack - 50% opacity".
+**affects**: `rules/_foundation.rules.yaml` (FND-CLR-01, thêm
+`resolved_13_09_X`), `profile.ghn/ds/_shared.binding.yaml` (§
+color_tokens.backdrop, thêm `resolved_13_09_X`), `profile.ghn/ds/
+foundation-layout-research.md` (đóng § 4), `rules/kinds/overlay.rules.yaml`
+(OVL-B-01.backdrop_color, thêm ghi chú tái xác nhận).
+
+Đóng xung đột 3 nguồn đã ghi ở 13/09-U: annotation nói 30%, Williams xác
+nhận miệng trước đó là baseBlack@50%, component thật render bg/app/inverse
+@50%. Williams CHỌN nguồn (2) — **`bg/app/baseBlack` @ 50% opacity** — làm
+chuẩn chính thức, KHÔNG đổi theo component thật. Giá trị này TRÙNG với
+`usage`/OVL-B-01 đã ghi từ 13/09 ban đầu, nên không cần sửa giá trị nào,
+chỉ cần đóng dấu xác nhận lại sau khi phát hiện xung đột.
+
+**Còn mở (nhỏ, không chặn)**: component overlay thật trong file B2B Portal
+(node `10016:7629`) hiện đang render `bg/app/inverse`, CHƯA khớp quyết định
+này — chưa hỏi Williams có cần sửa lại component đó cho khớp hay để nguyên
+(có thể là design cũ chưa cập nhật, hoặc do phase build test, hoặc cứ để
+default primitive khác đi mà không ảnh hưởng rule engine).
+
+---
+
+## 13/09-Y — Xác nhận bg/primary/default là màu thương hiệu chính; không rework Sprint 62; khảo sát spacing thêm 2 màn
+
+**by**: Williams — 3 yêu cầu cùng lúc: (1) "`bg/primary/default`... đi xác
+nhận đi"; (2) về việc Sprint 62 dùng H6 cũ cho section_title — "không cần
+rà lại sửa đâu chỉ lưu ý rule cho tương lai thôi"; (3) về spacing mới khảo
+sát 1 màn — "mày khảo sát đi".
+**affects**: `rules/_foundation.rules.yaml` (đóng `_pending_confirmation`
+liên quan `bg/primary/default` và section_title rework; cập nhật
+`spacing_role.roles_observed_13_09_U` thành đã xác nhận qua 3 màn),
+`profile.ghn/ds/_shared.binding.yaml` (§ color_tokens.resolved_values_13_09_U.primary,
+§ spacing.layout_roles_observed — thêm cross-check 2 màn mới),
+`profile.ghn/ds/foundation-layout-research.md` (đóng mục liên quan trong
+"Việc CÒN MỞ", thêm bằng chứng § 3).
+
+**1. `bg/primary/default` = #ff5200 — XÁC NHẬN là màu thương hiệu chính**:
+`search_design_system` + `get_variable_defs` trên B2B Portal cho thấy: (a)
+tồn tại RIÊNG 1 ramp primitive đầy đủ `Colors/GHN_Primary/{50,200,300,400,
+600,700,800,900}` trong collection Primitives — không phải 1 biến cam lẻ
+loi; (b) 3 vai semantic ĐỘC LẬP đều cùng trỏ về **#ff5200**: `bg/primary/
+default`, `icon/icon-primary`, `text/text-primary` (đọc trên node
+`10014:11448`) — 3 nguồn độc lập ra cùng 1 giá trị củng cố đây đúng là màu
+brand chính, không phải 1 trong nhiều biến cam ngẫu nhiên. Đóng điểm mở này.
+
+**2. Section_title Sprint 62 (H6 cũ) — KHÔNG rework**: Williams xác nhận
+không cần rà lại/sửa các màn Sprint 62 đang dùng H6 cho section_title theo
+chuẩn Title 1 mới — giữ nguyên các màn cũ, chỉ áp dụng Title 1 cho màn XÂY
+MỚI. `FND-TYP-01` đã đúng theo nghĩa "quy tắc cho build mới", không cần sửa
+gì thêm ở rule, chỉ đóng điểm mở này.
+
+**3. Khảo sát spacing thêm 2 màn thật**: Đọc `get_metadata` trên
+"🔵 Tạo mới KH - Sprint 55" (node `13863:34452`, màn FORM tạo khách hàng
+mới) và "Sprint 66 - Revamp trang quản lý KH" (`21219:13347`, màn CHI TIẾT
+khách hàng) — CỘNG THÊM màn order-list đã khảo sát ở 13/09-U, tổng cộng 3
+màn khác kiểu (list, form tạo mới, chi tiết nhiều khối). Kết quả — 3 vai
+spacing CỦNG CỐ nhất quán trên cả 3 màn:
+  - Lề nội dung cách sidebar = **24px** (Page Heading x=24 ở cả 3 màn).
+  - Padding trong 1 card/section = **16px** (nội dung bắt đầu x=16 trong mọi
+    card đã đo).
+  - Khoảng cách GIỮA 2 khối/card xếp CHỒNG DỌC = **16px** (đo được ở cả 3
+    màn: order-list card-to-card; form 2 card xếp dọc; trang chi tiết giữa
+    các nhóm accordion).
+  - Khoảng cách giữa các dòng/field XẾP DỌC BÊN TRONG 1 card = **12px**
+    (header→body ở order-list; field-to-field trong form; label:value
+    row-to-row ở trang chi tiết) — mở rộng phát hiện cũ (trước chỉ ghi
+    "header→body=12"), giờ xác nhận đây là vai chung "nhịp độ NỘI BỘ trong
+    1 khối", không riêng gì header→body.
+
+  **Phát hiện MỚI, CHƯA khớp — ghi lại KHÔNG tự gộp**: ở trang chi tiết
+  khách hàng (node `21219:13372`), 2 card xếp CẠNH NHAU cùng hàng ngang
+  ("Thông tin chung" 807px + "Giấy phép kinh doanh" 561px) có gutter đo
+  được = **12px** — KHÁC với gutter 16px đã ghi ở 13/09-U cho cặp "nội dung
+  chính ↔ panel phải" của màn order-list. Đây là 2 ngữ cảnh khác nhau (2
+  card cùng hàng vs nội-dung-chính↔panel-phụ) nên CÓ THỂ là 2 vai riêng
+  thật sự (không phải lỗi đo) — nhưng CHƯA đủ dữ liệu để kết luận, cần hỏi
+  Williams hoặc khảo sát thêm trước khi đưa vào rule cụ thể.
+
+**Còn mở**: gutter ngang 12px vs 16px (mục trên) — chưa hỏi Williams; vẫn
+chưa khảo sát toàn bộ Effect/Shadow style; xung đột overlay/backdrop đã
+đóng ở 13/09-X nhưng component thật (node 10016:7629) vẫn chưa sửa khớp.
+
+---
+
+## 13/09-Z — [ĐỀ XUẤT, CHƯA duyệt] Luật thống nhất cho gutter 12 vs 16: khoảng cách theo khoảng cách NGỮ NGHĨA, không theo trục bố trí
+
+**by**: Williams — "mày đề xuất luật thống nhất dựa trên ux law về spacing
+mày đã học đi", trả lời cho điểm mở gutter 12px-vs-16px ghi ở 13/09-Y.
+**affects**: `rules/_foundation.rules.yaml` (spacing_role — thêm
+`resolved_13_09_Z`, `not_yet_resolved_13_09_Z`, rule mới `FND-SPC-03`),
+`profile.ghn/ds/_shared.binding.yaml` (§ spacing.layout_roles_observed —
+thêm `resolved_13_09_Z`), `profile.ghn/ds/foundation-layout-research.md`
+(§ 3 — thêm phần recompute cây cha-con + kết luận).
+
+Đọc lại CHÍNH XÁC cây cha-con quanh 2 điểm dữ liệu tưởng mâu thuẫn (qua
+`get_metadata` chi tiết trên node `21227:13923`): 2 card đo gutter 12px là
+CON của CÙNG 1 accordion "Thông tin chung" (cùng cha `21219:13372`); cặp
+"nội dung chính ↔ panel phải" đo gutter 16px là 2 VÙNG ĐỘC LẬP của trang.
+Đồng thời phát hiện: 2 accordion ĐỘC LẬP kế tiếp nhau (không cùng nhóm)
+cũng đo gap dọc = 16px, còn bên TRONG 1 accordion (header→content, hay
+card→card kế tiếp CÙNG accordion) đều đo 12px.
+
+**Đề xuất (FND-SPC-03)**: đây KHÔNG phải 2 vai ngang/dọc riêng biệt mà là
+1 quy luật DUY NHẤT theo khoảng cách ngữ nghĩa (Law of Proximity + Law of
+Common Region): `intra_group_gap` = 12px (2 phần tử là con của CÙNG 1
+nhóm, bất kể xếp cạnh hay xếp chồng) và `inter_block_gap` = 16px (2 khối
+ĐỘC LẬP không cùng nhóm, bất kể xếp cạnh hay xếp chồng). Trục bố trí
+(ngang/dọc) KHÔNG quyết định giá trị — quan hệ nhóm trong cây nội dung
+mới quyết định. Mô hình này giải thích TRỌN VẸN cả 2 điểm dữ liệu ban đầu.
+
+**Chưa giải quyết được**: giá trị 24px ở panel phải màn order-list (4
+khối icon+label+value, cùng 1 nhóm nhưng đo 24px chứ không phải 12px như
+mô hình dự đoán) — không suy đoán nguyên nhân, để hỏi Williams riêng,
+KHÔNG tự gộp vào rule.
+
+**Còn mở**: (1) Williams có đồng ý mô hình 2 mức `intra_group_gap`/
+`inter_block_gap` này không — FND-SPC-03 vẫn ở trạng thái ĐỀ XUẤT, chưa
+đăng ký chính thức; (2) giá trị 24px ở panel phải chưa giải thích được.
+
+---
+
+## 14/09-A — Đóng phản chứng 24px: UI panel phải đã outdate, loại khỏi bằng chứng spacing
+
+**by**: Williams — gửi link node panel phải (`10014:15233`) để check, xem
+lại rồi kết luận: "UI này đã outdate bỏ qua".
+**affects**: `rules/_foundation.rules.yaml` (spacing_role —
+`not_yet_resolved_13_09_Z` đổi thành đã đóng, FND-SPC-03.caveat đã đóng,
+đóng 2 mục trong `_pending_confirmation`), `profile.ghn/ds/
+_shared.binding.yaml` (§ spacing.resolved_13_09_Z.not_yet_resolved đã
+đóng), `profile.ghn/ds/foundation-layout-research.md` (đóng mục "Việc CÒN
+MỞ" về giá trị 24px).
+
+Đóng điểm mở cuối cùng còn treo ở `FND-SPC-03` (13/09-Z): giá trị 24px đo
+ở panel phải màn order-list — component/UI này đã OUTDATE theo xác nhận
+của Williams, LOẠI KHỎI bằng chứng cho `spacing_role`, KHÔNG dùng làm tiền
+lệ cho build mới. Đây là phản chứng DUY NHẤT của mô hình 2 mức
+`intra_group_gap`(12px)/`inter_block_gap`(16px) — sau khi loại bỏ, mô hình
+không còn dữ liệu nào mâu thuẫn nữa.
+
+**Còn mở**: FND-SPC-03 vẫn ở trạng thái ĐỀ XUẤT — còn thiếu đúng 1 bước là
+Williams gật đầu chính thức để đăng ký vào `manifest.yaml` cùng với toàn
+bộ `_foundation.rules.yaml`.

@@ -312,12 +312,42 @@ color_tokens:
       "border/info/default": {light: "#3b82f6", note: "[MỚI 13/09-K] Xanh dương — đọc thật trên Input State=Focused. LƯU Ý: KHÔNG có token 'focus'/'focusRing' riêng, Focused dùng CHUNG màu info."}
     backdrop:
       "bg/app/baseBlack": {light: "#000000", dark: "#ffffff (ĐẢO NGƯỢC giống baseWhite — light=đen/dark=trắng)", primitive_light: "Colors/Base/Black"}
-      usage: "[XÁC NHẬN — Williams 13/09] Dùng cho lớp phủ mờ (backdrop) của overlay: `bg/app/baseBlack` @ `Opacity/O5` (50%) — xem rules/kinds/overlay.rules.yaml § OVL-B-01.backdrop_color, áp dụng chung cho mọi thành viên overlay (Dialog, BottomSheet)."
+      usage: "[XÁC NHẬN — Williams 13/09, tái xác nhận 13/09-X sau khi phát hiện xung đột] Dùng cho lớp phủ mờ (backdrop) của overlay: `bg/app/baseBlack` @ `Opacity/O5` (50%) — xem rules/kinds/overlay.rules.yaml § OVL-B-01.backdrop_color, áp dụng chung cho mọi thành viên overlay (Dialog, BottomSheet)."
+      conflict_13_09_U: >
+        [PHÁT HIỆN THẬT 13/09-U — 3 NGUỒN XUNG ĐỘT, xem resolved_13_09_X bên
+        dưới cho quyết định cuối] Đọc trực tiếp instance "overlay" thật (node
+        10016:7629, file B2B Portal) qua use_figma: opacity=0.5 (khớp
+        Opacity/O5 ở trên) nhưng MÀU resolve thật là `bg/app/invers`
+        (#18181b, tên Figma ghi thiếu chữ "e" — nguyên văn "invers"), KHÔNG
+        phải `bg/app/baseBlack` (#000000) như dòng "usage" ở trên đã ghi theo
+        xác nhận miệng của Williams. Thêm 1 nguồn thứ 3: annotation text trên
+        trang "🔵 Layout structure" (node 1:2) ghi "overlay màu đen, opacity
+        30%" — KHÁC cả 2 nguồn kia về opacity. 3 nguồn KHÔNG khớp nhau — xem
+        profile.ghn/ds/foundation-layout-research.md § 4 cho đầy đủ.
+      resolved_13_09_X: >
+        [XÁC NHẬN — Williams 13/09-X] Williams quyết định nguồn CHUẨN CHÍNH
+        THỨC là `bg/app/baseBlack` @ 50% opacity (nguồn (2) — xác nhận miệng
+        trước đó) — KHÔNG dùng `bg/app/invers` (nguồn (3), component thật)
+        và KHÔNG dùng "30%" (nguồn (1), annotation). Giá trị "usage" ở trên
+        và `rules/kinds/overlay.rules.yaml § OVL-B-01.backdrop_color` đều đã
+        sẵn khớp quyết định này, không cần sửa. CÒN MỞ: component overlay
+        thật (node 10016:7629) hiện đang render `bg/app/invers`, chưa khớp
+        quyết định — chưa hỏi Williams có cần sửa lại component trong Figma
+        cho khớp hay để nguyên [cần verify].
     icon:
       "icon-muted":    {light: "#52525b"}
       "icon-disabled": {light: "#a1a1aa"}
       "icon-placeholder": {light: "#71717a"}
       "icon-error":    {light: "#ef4444", note: "[MỚI 13/09-K] đọc thật trên Input Destructive=True — dùng cho icon cảnh báo trước 'Error message'."}
+  resolved_values_13_09_U:
+    status: "[ĐỀ XUẤT — Claude, dựa trên get_variable_defs THẬT trên trang danh sách đơn hàng có Sidebar, file B2B Portal — CHƯA hỏi Williams xác nhận từng token]"
+    primary:
+      "bg/primary/default": {light: "#ff5200", note: "Màu cam thương hiệu GHN. [XÁC NHẬN — Williams 13/09-Y, \"đi xác nhận đi\"] Đã xác nhận đây ĐÚNG là token cam thương hiệu CHÍNH, không phải 1 trong nhiều biến cam ngẫu nhiên: (1) có hẳn 1 ramp riêng `Colors/GHN_Primary/{50,200,300,400,600,700,800,900}` trong collection Primitives — không phải 1 alias lẻ loi; (2) 3 vai semantic ĐỘC LẬP đều cùng trỏ về #ff5200 — `bg/primary/default`, `icon/icon-primary`, `text/text-primary` (đọc thật trên node 10014:11448) — 3 nguồn độc lập cùng ra 1 giá trị củng cố độ tin cậy."}
+    grey: {"text-grey": "#6b7280"}
+    success: {"text-success": "#10b981", "bg/success/default": "#10b981", "bg/success/muted": "#ecfdf5", "text-success-hover": "#059669", "icon-success-hover": "#059669"}
+    border_extra: {"border/grey/muted-active": "#d1d5db"}
+    inverse_text_icon: {"text-inverse": "#fafafa", "icon-inverse": "#f3f3f3", note: "Khác 'bg/app/invers' (nền, #18181b) ở § backdrop.conflict_13_09_U — đây là màu CHỮ/ICON đặt trên nền inverse, không phải màu nền."}
+    source: "profile.ghn/ds/foundation-layout-research.md § 5"
   verified_component_bindings:
     marker: "[FIGMA — ĐỌC THẬT qua get_variable_defs trên node THẬT, không phải suy đoán token nào 'nên' dùng]"
     bottomsheet_background: >
@@ -373,6 +403,17 @@ surface:
     note: "Xem thêm profile.ghn/ds/sidebar-research-notes.md cho khảo sát riêng về Sidebar (chưa đăng ký component chính thức, chỉ mới nghiên cứu để dùng sau)."
   not_yet_surveyed: []
   not_yet_surveyed_note: "Rỗng — 3 mục cũ (card/sidebar/modal_overlay background) đã đóng hết ở 13/09-I/J."
+  page_background:
+    status: "[XÁC NHẬN — Williams 13/09-W] Ngưỡng: 2 khối độc lập trở lên = nhiều (dùng nền xám). Xem rules/_foundation.rules.yaml § page_background_role (FND-BG-01/02)."
+    single_block_page:
+      value: "bg/app/baseWhite (#ffffff)"
+      evidence: "[FIGMA — ĐỌC THẬT 13/09-V] node 16525:73666 ('[Giá xăng dầu] Danh sách', 1 khối bảng duy nhất) — canvas bind vào variable id 7205590b6eedf1f8d158bc77332a5eb9ca0d44f4/3123:923, CÙNG variable id đã xác nhận là bg/app/baseWhite cho BottomSheet (13/09-H)."
+    multi_block_page_canvas:
+      value: "bg/app/elevated (#f4f4f5)"
+      evidence: "[FIGMA — ĐỌC THẬT 13/09-V] node 21219:13371 ('[Chi tiết KH] Thông tin chung', nhiều card: Thông tin chung/Giấy phép kinh doanh/Thông tin thanh toán/Lịch sử) — canvas fill RGB (0.957,0.957,0.961) = #f4f4f5, khớp CHÍNH XÁC bg/app/elevated đã có trong color_tokens.resolved_values.background."
+    multi_block_page_card_surface:
+      value: "trắng (#ffffff) — CÙNG giá trị bg/app/baseWhite nhưng KHÔNG bind qua biến ở 2 node đã kiểm (fill solid #ffffff, boundVariables rỗng)"
+      note: "[GIỚI HẠN THẬT] 2 card con đã kiểm (node 21219:13373, 21219:13405) dùng fill trắng CỨNG, không bind token — khác với canvas (có bind). Không suy diễn đây là lỗi cố ý hay vô tình, ghi đúng như đọc được."
   partially_surveyed:
     item: "input field border/background theo state"
     status: "[XÁC NHẬN 1 PHẦN 13/09-H] State=Filled/Destructive=False đã xác nhận thật (border/app/default + bg/app/baseWhite) — xem color_tokens.verified_component_bindings.input_state_filled. Focused/Disabled/Destructive=True CHƯA kiểm."
@@ -391,8 +432,24 @@ typography_ramp:
     H2: {size: 44, line_height: 56, weight: Bold}
     H3: {size: 32, line_height: 40, weight: Bold}
     H4: {size: 26, line_height: 34, weight: Bold}
-    H5: {size: 20, line_height: 30, weight: Bold}
-    H6: {size: 18, line_height: 28, weight: Bold}
+    H5:
+      size: 20
+      line_height: 30
+      weight: Bold
+      naming_value_mismatch: "[PHÁT HIỆN THẬT 13/09-U] Tên biến Figma ghi '(20, 32, 700)' nhưng lineHeight resolve THẬT là 30 (không phải 32) — cùng dạng lỗi tên/giá trị đã gặp ở Spacing/S258 (xem spacing.base_scale_px.naming_value_mismatch). Luôn đọc giá trị resolve thật, không suy từ tên biến."
+      verified_usage_13_09_U: "[ĐỀ XUẤT] Dùng cho component 'Page Heading' — vai page_title DUY NHẤT của 1 trang thật (node 10014:15770, file B2B Portal). Xem foundation-layout-research.md § 2 + rules/_foundation.rules.yaml § typography_role.FND-TYP-01/02."
+    H6:
+      size: 18
+      line_height: 28
+      weight: Bold
+      verified_usage_13_09_U: "[SỬA 13/09-V — xem correction bên dưới] Dùng cho 'Page Sub Heading' VÀ tiêu đề card (vd 'Danh sách đơn hàng') trên trang Sprint 62 (node 10031:43736, 10014:13619). Xem foundation-layout-research.md § 2."
+      correction_13_09_V: >
+        [Williams review] Trang MỚI hơn (Sprint 66 revamp, node 17740:214100
+        + 21219:13371) cho thấy tiêu đề card/section thật hiện tại dùng
+        `title.Title 1` (16px), KHÔNG phải H6 — xem title.Title 1 bên dưới.
+        Cách hiểu hợp lý nhất (KHÔNG chắc chắn 100%): trang Sprint 62 dùng
+        pattern CŨ, Sprint 66 là chuẩn cập nhật — GIỮ LẠI quan sát H6 này để
+        không mất dấu vết lịch sử, nhưng khi build MỚI dùng Title 1.
   heading_regular:
     note: "Tên Figma là 'Regular/Medium' nhưng style thật đọc được KHÁC NHAU theo cấp (H1=Medium, H2-H6=Regular) — ghi đúng như đọc, không tự sửa cho 'nhất quán'."
     H1: {size: 56, line_height: 72, weight: Medium}
@@ -402,7 +459,19 @@ typography_ramp:
     H5: {size: 20, line_height: 30, weight: Regular}
     H6: {size: 18, line_height: 30, weight: Regular}
   title:
-    "Title 1": {size: 16, line_height: 24, weight: Bold}
+    "Title 1":
+      size: 16
+      line_height: 24
+      weight: Bold
+      verified_usage_13_09_V: >
+        [XÁC NHẬN — Williams review 13/09-V] Vai `section_title` thật (tiêu
+        đề card/khối phụ bên trong 1 trang) — xác nhận qua 4 node độc lập
+        CÙNG 1 trang (Sprint 66 revamp trang quản lý KH, file B2B Portal):
+        17740:214102 ("Thông tin chung"), 21219:13375 ("Thông tin chung"),
+        21219:13407 ("Giấy phép kinh doanh"), 21219:13417 ("Thông tin thanh
+        toán") — cả 4 CÙNG dùng Title 1. Đây là style ĐÚNG cho section_title
+        khi build mới — xem rules/_foundation.rules.yaml § typography_role
+        (FND-TYP-01, sửa 13/09-V) + heading_bold.H6.correction_13_09_V.
     "Title 2": {size: 14, line_height: 24, weight: Bold}
     "Title 3": {size: 12, line_height: 20, weight: Bold}
   subtitle:
@@ -498,3 +567,51 @@ spacing:
     grid_units_per_row (khái niệm cấu trúc "N-unit/hàng" nhắc ở schema-v1-draft.md
     — CHƯA rõ đây có map trực tiếp vào base_scale_px ở trên hay là 1 khái niệm
     riêng, chưa hỏi Williams).
+  layout_roles_observed_13_09_U:
+    status: "[XÁC NHẬN qua 3 màn — 13/09-Y, Williams yêu cầu \"mày khảo sát đi\"] Ban đầu chỉ dựa trên 1 màn (trang danh sách đơn hàng có Sidebar) — đã khảo sát thêm 2 màn khác kiểu (form tạo mới, chi tiết nhiều khối), xem cross_check_13_09_Y bên dưới."
+    content_area_margin_from_sidebar_px: 24
+    card_internal_padding_px: 16
+    card_to_card_vertical_gap_px: 16
+    within_card_header_to_body_gap_px: 12
+    stacked_item_list_gap_px: 24
+    two_column_gutter_px: 16
+    note: >
+      4 vai khoảng cách khác nhau (không phải cùng 1 số dùng lẫn cho mọi
+      ngữ cảnh "khoảng cách dọc") — xem foundation-layout-research.md § 3
+      cho toạ độ/node-id cụ thể + rules/_foundation.rules.yaml §
+      spacing_role cho đề xuất tách vai.
+    cross_check_13_09_Y:
+      screens_checked: ["🔵 Tạo mới KH - Sprint 55 (node 13863:34452, màn FORM)", "Sprint 66 - Revamp trang quản lý KH (node 21219:13347, màn CHI TIẾT nhiều khối)"]
+      confirmed_unchanged: ["content_area_margin_from_sidebar_px=24", "card_internal_padding_px=16", "card_to_card_vertical_gap_px=16"]
+      broadened: "within_card_header_to_body_gap_px=12 mở rộng thành nhịp độ nội bộ chung: cũng đúng cho field-to-field trong form và row-to-row label:value trong trang chi tiết, không chỉ header→body."
+      new_discrepancy_not_resolved: >
+        2 card xếp CẠNH NHAU cùng hàng ngang ở trang chi tiết (node
+        21219:13372, "Thông tin chung" 807px + "Giấy phép kinh doanh"
+        561px) đo gutter = 12px — KHÁC với two_column_gutter_px=16 (đo ở
+        cặp nội-dung-chính↔panel-phải của màn order-list). Xem
+        `resolved_13_09_Z` bên dưới cho đề xuất giải quyết.
+    resolved_13_09_Z:
+      status: "[ĐỀ XUẤT — Claude, theo yêu cầu Williams \"đề xuất luật thống nhất dựa trên UX law\", CHƯA duyệt]"
+      model: >
+        Không phải 2 vai ngang mâu thuẫn — 2 card 12px là con của CÙNG 1
+        nhóm accordion "Thông tin chung" (intra_group_gap), còn gutter 16px
+        là giữa 2 VÙNG trang độc lập (nội dung chính vs panel phụ trợ,
+        inter_block_gap). Chi tiết + rule hoá ở
+        `rules/_foundation.rules.yaml § spacing_role.rules.FND-SPC-03`.
+      role_mapping:
+        intra_group_gap_px: 12
+        inter_block_gap_px: 16
+      not_yet_resolved: >
+        [ĐÃ ĐÓNG 14/09-A — Williams: "UI này đã outdate bỏ qua"] Giá trị
+        24px (panel phải màn order-list, 4 khối icon+label+value xếp dọc
+        trong CÙNG 1 nhóm) không khớp mô hình 2 mức này — lẽ ra phải là 12
+        theo FND-SPC-03. Williams xác nhận UI này outdate — LOẠI khỏi bằng
+        chứng, KHÔNG áp dụng cho build mới, KHÔNG tạo vai thứ 3 cho nó.
+  effects:
+    status: "[PHÁT HIỆN MỚI 13/09-U — LOẠI TOKEN CHƯA TỪNG KHẢO SÁT] 13/09-H chỉ khảo sát Primitives/Color Mode/Dimensions/Breakpoints + Text Style — CHƯA khảo sát Effect Style (đổ bóng) của file GHN DS gốc. Đây là gap thật, không phải bỏ sót ghi chép."
+    "Shadows/md":
+      layers:
+        - {type: DROP_SHADOW, color: "#1018281A", offset: [0, 1], blur: 3, spread: 0}
+        - {type: DROP_SHADOW, color: "#0000001A", offset: [0, 1], blur: 2, spread: -1}
+      verified_usage: "Card 'Danh sách đơn hàng' trong trang thật (file B2B Portal) — xem foundation-layout-research.md § 5."
+    not_yet_surveyed: "Toàn bộ danh sách effect style thật của file GHN DS gốc (Shadows/md chỉ là 1 điểm dữ liệu phát sinh tự nhiên, chưa phải khảo sát đầy đủ như Dimensions/Text Style)."

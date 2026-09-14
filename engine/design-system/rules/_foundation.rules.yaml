@@ -1,0 +1,388 @@
+# =============================================================================
+# _foundation.rules.yaml — LUẬT DÙNG NỀN TẢNG TOKEN (typography/color/spacing)
+#
+# [ĐỀ XUẤT — Claude 13/09-U, CHƯA duyệt] File MỚI, do Williams yêu cầu:
+# "Okay mày phải có rule cho foundation token hãy vào portal b2b xem cách tao
+# dựng kiến trúc component rồi đề xuất 1 bộ rule cho foundation token".
+#
+# Đây là bản ĐỀ XUẤT dựa trên khảo sát THẬT trang "🔵 Layout structure" +
+# 1 màn hình thật đã dựng đầy đủ (Sprint 62 — trang danh sách đơn hàng có
+# Sidebar) trong file B2B Portal (s2NE6ikwLnsZSUp97RBfof) — xem
+# profile.ghn/ds/foundation-layout-research.md cho toàn bộ bằng chứng/node-id.
+# CHƯA đăng ký vào manifest.yaml § rule_layers — cần Williams duyệt trước.
+#
+# Cùng nguyên tắc lớp với _core.rules.yaml: file này PORTABLE — không chứa
+# số cụ thể của GHN (px/hex/tên biến GHN). Số thật nằm ở
+# profile.ghn/ds/_shared.binding.yaml § layout_roles/verified_usage (lớp C).
+#
+# version: 0.1-đề xuất
+# =============================================================================
+
+meta:
+  layer: foundation
+  portable: true
+  version: 0.1-đề xuất
+  status: "[ĐỀ XUẤT — Claude 13/09-U] Chưa đăng ký vào manifest.yaml § rule_layers, chờ Williams duyệt."
+  requires: [_core.rules.yaml]
+  evidence_base: >
+    profile.ghn/ds/foundation-layout-research.md — khảo sát thật trang
+    "🔵 Layout structure" (nodeId 1:2) + trang thật "Sprint 62 - Ops sắp xếp
+    & quản lí chuyến đi" (section "Sidebar page", nodeId 10014:11448) trong
+    file B2B Portal.
+
+# -----------------------------------------------------------------------------
+# 1. TYPOGRAPHY — vai trò tham chiếu THEO VỊ TRÍ trong ramp, không theo tên
+#    style cụ thể (đúng AX-ORD-01 ở _core.rules.yaml — ramp GHN có 27 style,
+#    DS khác có thể có số lượng khác).
+# -----------------------------------------------------------------------------
+typography_role:
+  about: >
+    Một "vai chữ" (typography role) là VỊ TRÍ/NHÓM trong ramp có thứ tự —
+    không phải tên style cố định. Bằng chứng thật ĐÃ SỬA 13/09-V (xem research
+    note § 2, review Williams trên node 17740:214100 + 21219:13371):
+    `page_title` (component "Page Heading") dùng nhóm **Heading** (H5,
+    20px) — nhưng `section_title` (tiêu đề card/khối phụ, vd "Thông tin
+    chung", "Giấy phép kinh doanh", "Thông tin thanh toán") xác nhận THẬT
+    dùng nhóm **Title** (Title 1, 16px), KHÔNG phải cùng nhóm Heading lùi 1
+    bậc như bản đề xuất đầu (13/09-U) từng ghi nhầm dựa trên 1 màn hình cũ
+    hơn (Sprint 62). Đã sửa: 2 vai này dùng 2 NHÓM ramp khác nhau
+    (Heading vs Title), không phải "cùng ramp, lệch 1 bậc". Nguyên tắc đúng
+    là: `section_title` PHẢI nhỏ/nhẹ hơn `page_title` — quan hệ THỨ BẬC
+    tương đối, không nhất thiết cùng 1 nhóm kiểu chữ.
+  why_ux_foundation: >
+    [UX FOUNDATION] Đây là ứng dụng của **Visual Hierarchy** (tổ chức thông
+    tin theo tầm quan trọng bằng kích thước/độ đậm chữ) kết hợp
+    **Law of Prägnanz** (não người tự động đơn giản hoá 1 bố cục phức tạp
+    thành các nhóm dễ hiểu nhất) — người dùng phải nhận biết "đây là trang
+    gì" (page_title) và "đây là 1 khối con của trang" (section_title) chỉ
+    bằng cách NHÌN, không cần đọc hết chữ. Cùng 1 độ đậm/kích cỡ cho cả 2 vai
+    sẽ phá vỡ tín hiệu này. Nguồn: lawsofux.com (Law of Prägnanz).
+  profile_must_provide: [ramp, role_to_group_binding]
+  rules:
+    - id: FND-TYP-01
+      status: "[SỬA 13/09-V — Williams review, xem correction ở § about]"
+      rule: >
+        Mỗi màn hình có ĐÚNG 1 vai `page_title`. Container lồng bên trong
+        (card, tab con, section phụ) dùng vai `section_title` — PHẢI nhỏ
+        hơn/nhẹ hơn `page_title` theo thứ bậc của ramp (không nhất thiết
+        cùng nhóm kiểu chữ) — KHÔNG được dùng lại đúng bậc/nhóm ngang bằng
+        page_title.
+      check: "visual_weight(section_title_used_in_screen) < visual_weight(page_title_used_in_screen)"
+      evidence_tier: 2
+      evidence: >
+        [SỬA 13/09-V, bằng chứng thật] page_title xác nhận = nhóm Heading/H5
+        (node 10014:15770). section_title xác nhận = nhóm Title/Title 1,
+        CROSS-CHECK qua 4 node độc lập cùng 1 trang mới (Sprint 66 revamp):
+        17740:214102, 21219:13375, 21219:13407, 21219:13417 — cả 4 đều
+        CÙNG 1 style Title 1. Trang CŨ hơn (Sprint 62, node 10014:13619,
+        10031:43736) từng thấy section_title dùng Heading/H6 — Williams xác
+        nhận Title 1 mới là ĐÚNG hiện tại; cách hiểu hợp lý nhất (KHÔNG suy
+        đoán chắc chắn) là màn Sprint 62 dùng pattern CŨ hơn, chưa cập nhật
+        theo chuẩn mới nhất — ghi lại cả 2 để không mất dấu vết, nhưng
+        Title 1 là quy tắc áp dụng khi build MỚI. [XÁC NHẬN 13/09-Y] Williams
+        xác nhận KHÔNG cần rework lại các màn Sprint 62 đang dùng H6 — giữ
+        nguyên màn cũ, Title 1 chỉ bắt buộc cho màn build MỚI từ nay.
+      why: "Đây là cách người dùng nhận biết cấp bậc thông tin bằng mắt mà không cần đọc breadcrumb — xem § about.why_ux_foundation."
+    - id: FND-TYP-02
+      rule: >
+        KHÔNG có bằng chứng thật nào cho việc dùng các vai Heading cao nhất
+        của ramp (2-3 bậc đầu) cho page_title trong sản phẩm thật — page_title
+        thật đo được nằm Ở GIỮA nhóm Heading, không phải đỉnh. Renderer KHÔNG
+        được tự suy page_title = style "to nhất/đậm nhất" của ramp chỉ vì
+        tên style nghe like "Heading".
+      evidence_tier: 2
+      why: >
+        [PHÁT HIỆN THẬT 13/09-U] Nếu chọn theo cảm giác "heading = to nhất",
+        agent sẽ chọn SAI — bằng chứng thật cho thấy GHN dùng 1 style ở giữa
+        nhóm Heading cho page_title thật, không phải style lớn nhất.
+    - id: FND-TYP-03
+      status: "[GIỚI HẠN THẬT]"
+      rule: >
+        Tên biến style (vd tên có ghi số line-height) KHÔNG đáng tin — PHẢI
+        đọc giá trị resolve thật (font.lineHeight), không suy từ tên biến.
+      evidence_tier: 2
+      evidence: "[PHÁT HIỆN THẬT 13/09-U] 1 style Heading thật có tên ghi line-height khác với giá trị lineHeight resolve thật đọc qua get_variable_defs — cùng dạng lỗi tên/giá trị đã gặp ở Spacing/S258 (xem _shared.binding.yaml § spacing.base_scale_px.naming_value_mismatch). Xem research note § 2 cho tên/giá trị cụ thể."
+
+# -----------------------------------------------------------------------------
+# 2. SPACING — vai trò khoảng cách theo NGỮ CẢNH CẤU TRÚC, không theo số cố
+#    định (số thật nằm ở binding profile).
+# -----------------------------------------------------------------------------
+spacing_role:
+  why_ux_foundation: >
+    [UX FOUNDATION] Đây là ứng dụng của **Chunking** (não người xử lý thông
+    tin tốt hơn khi được chia thành các nhóm nhỏ có ý nghĩa) và
+    **Law of Proximity** (các phần tử gần nhau được hiểu là liên quan tới
+    nhau nhiều hơn phần tử ở xa) — khoảng cách KHÁC NHAU giữa "bên trong 1
+    khối" và "giữa 2 khối" chính là tín hiệu thị giác nói cho người dùng
+    biết đâu là 1 nhóm, đâu là ranh giới giữa 2 nhóm. Dùng lẫn 1 số spacing
+    cho cả 2 vai sẽ xoá mất tín hiệu phân nhóm này, tăng
+    **Cognitive Load** (người dùng phải tự suy luận ranh giới thay vì nhìn
+    ra ngay). [ĐỀ XUẤT 13/09-Z — mở rộng] Điểm mấu chốt: khoảng cách PHẢI
+    tỉ lệ với KHOẢNG CÁCH NGỮ NGHĨA (semantic distance) giữa 2 phần tử —
+    không phải với TRỤC bố trí (ngang/dọc). 2 phần tử thuộc CÙNG 1 nhóm nội
+    dung (dù xếp cạnh nhau hay xếp chồng) phải gần nhau hơn 2 phần tử thuộc
+    2 khối ĐỘC LẬP (dù cũng xếp cạnh nhau hay xếp chồng) — xem FND-SPC-03.
+    Nguồn: lawsofux.com (Chunking, Law of Proximity, Cognitive Load, Law of
+    Common Region).
+  about: >
+    Thang spacing (base_scale_px) đã có số thật (lớp C) — nhưng "dùng bước
+    nào cho ngữ cảnh nào" là câu hỏi RIÊNG, đúng dạng closed_role_set ở
+    _core.rules.yaml: mỗi vai có ý nghĩa cấu trúc cố định, giá trị cụ thể
+    do profile khai.
+  profile_must_provide: [roles, bind]
+  roles_observed_13_09_U: >
+    [ĐỀ XUẤT — dựa trên 1 màn hình thật, CHƯA phải quy luật đã kiểm nhiều
+    màn] Khảo sát 1 màn thật cho thấy ÍT NHẤT 4 vai khoảng cách khác nhau
+    cùng tồn tại trên 1 trang, KHÔNG dùng lẫn cho nhau: (a) lề ngoài của
+    toàn khối nội dung so với thanh điều hướng, (b) padding bên trong 1
+    card/khối nội dung, (c) khoảng cách GIỮA 2 card xếp chồng theo chiều
+    dọc, (d) khoảng cách bên trong 1 nhóm mục xếp dọc kiểu danh sách (khác
+    với padding của card chứa nó). (c) và (d) đo được KHÁC NHAU dù cùng là
+    "khoảng cách dọc" — tức "spacing dọc" không phải 1 vai duy nhất, phải
+    tách theo ngữ cảnh cụ thể. Xem research note § 3 cho số đo thật + node-id.
+  cross_checked_13_09_Y: >
+    [XÁC NHẬN qua 3 màn — Williams yêu cầu "mày khảo sát đi"] Khảo sát thêm
+    2 màn thật khác kiểu (màn FORM tạo mới: "🔵 Tạo mới KH - Sprint 55",
+    node 13863:34452; màn CHI TIẾT nhiều khối: "Sprint 66 - Revamp trang
+    quản lý KH", node 21219:13347), cộng màn order-list gốc (13/09-U) —
+    3 vai (a) lề 24px, (b) padding card 16px, (c) gap card-to-card dọc 16px
+    ĐỀU giữ nguyên trên cả 3 màn. Vai (d) mở rộng thành nhịp độ NỘI BỘ
+    chung = 12px, áp dụng cho cả "header→body" LẪN "field-to-field"/
+    "row-to-row" trong cùng 1 card — không chỉ riêng header→body như ghi
+    nhận ban đầu. PHÁT HIỆN MỚI, xem resolved_13_09_Z bên dưới.
+  resolved_13_09_Z: >
+    [ĐỀ XUẤT — Claude, theo yêu cầu Williams "đề xuất luật thống nhất dựa
+    trên UX law"] Đọc lại kỹ toạ độ thật của đúng 2 điểm dữ liệu gây "xung
+    đột" ở cross_checked_13_09_Y: (1) 2 card "Thông tin chung" (807px) +
+    "Giấy phép kinh doanh" (561px) đo gutter 12px — 2 card này là CON của
+    CÙNG 1 nhóm accordion "Thông tin chung" (cùng 1 section, xem research
+    note § 3 phần recompute). (2) cột nội dung chính ↔ panel phải ở màn
+    order-list đo gutter 16px — đây là 2 VÙNG ĐỘC LẬP của trang (main
+    content area vs 1 panel phụ trợ khác chức năng), KHÔNG phải 2 con của
+    cùng 1 nhóm. Từ đây, KHÔNG PHẢI 2 vai ngang mâu thuẫn nhau — mà là 1
+    quy luật DUY NHẤT áp dụng đúng theo "khoảng cách ngữ nghĩa" thay vì
+    theo trục bố trí: xem FND-SPC-03. Cũng phát hiện thêm 1 giá trị THỨ 3
+    (24px, ở panel phải màn order-list, 4 khối icon+label+value xếp dọc)
+    KHÔNG khớp với mô hình 2 mức này — xem `not_yet_resolved_13_09_Z` bên
+    dưới, KHÔNG tự gộp giá trị này vào 2 vai trên.
+  not_yet_resolved_13_09_Z: >
+    [ĐÃ ĐÓNG 14/09-A — Williams: "UI này đã outdate bỏ qua"] Panel phải màn
+    order-list (node 10014:15233, 4 khối "icon 24×24 + label + value" xếp
+    dọc) đo gap=24px — dù các khối này CŨNG là con của CÙNG 1 nhóm (cùng 1
+    panel), theo FND-SPC-03 lẽ ra phải là intra_group_gap=12px, KHÔNG PHẢI
+    24px. Williams xác nhận UI/component này đã OUTDATE — LOẠI KHỎI bằng
+    chứng cho spacing_role, KHÔNG dùng làm tiền lệ, KHÔNG áp dụng cho build
+    mới. Vì đây là điểm phản chứng DUY NHẤT của FND-SPC-03, sau khi loại bỏ
+    thì mô hình 2 mức (intra_group_gap=12/inter_block_gap=16) KHÔNG còn dữ
+    liệu nào mâu thuẫn.
+  rules:
+    - id: FND-SPC-01
+      rule: >
+        Không được dùng CHUNG 1 giá trị spacing cho "padding bên trong 1
+        khối nội dung" và "khoảng cách GIỮA 2 khối nội dung xếp cạnh nhau"
+        chỉ vì cả hai "nhìn có vẻ giống nhau" — đây là 2 vai khác nhau,
+        PHẢI khai riêng trong binding, dù tình cờ có thể trùng số ở 1 DS
+        cụ thể.
+      evidence_tier: 2
+      why: "Trùng số ở 1 DS là ngẫu nhiên, không phải bằng chứng 2 vai là một — đã có tiền lệ này ở Sidebar (logo_to_module_list_gap_px và module_group_to_logout_gap_px trùng số 24 nhưng là 2 vai riêng, xem sidebar.binding.yaml)."
+    - id: FND-SPC-02
+      rule: >
+        Khoảng cách dọc GIỮA các khối xếp chồng (card-to-card) và khoảng
+        cách dọc BÊN TRONG 1 nhóm mục kiểu danh sách (item-to-item trong
+        cùng 1 khối) là 2 vai riêng — không suy vai này từ vai kia.
+      evidence_tier: 2
+      evidence: "[BẰNG CHỨNG THẬT 13/09-U] xem research note § 3 — 2 số đo thật khác nhau cho 2 ngữ cảnh này trên cùng 1 màn."
+    - id: FND-SPC-03
+      status: "[ĐỀ XUẤT 13/09-Z, phản chứng duy nhất đã loại bỏ 14/09-A — Claude, theo yêu cầu Williams, VẪN CHƯA đăng ký chính thức, chờ Williams gật đầu cuối]"
+      name: "Khoảng cách theo KHOẢNG CÁCH NGỮ NGHĨA, không theo trục bố trí"
+      rule: >
+        Đây là luật THỐNG NHẤT thay thế cách nghĩ "vai spacing theo hướng
+        ngang/dọc" bằng "vai spacing theo QUAN HỆ NGỮ NGHĨA" — đúng dạng
+        closed_role_set, chỉ 2 mức chính:
+          - `intra_group_gap` (12px): khoảng cách giữa 2 phần tử là CON
+            của CÙNG 1 nhóm nội dung/section/accordion — bất kể xếp CẠNH
+            NHAU (2 card con của 1 topic) hay xếp CHỒNG (header→body,
+            field→field, row→row trong cùng 1 card/list).
+          - `inter_block_gap` (16px): khoảng cách giữa 2 khối/section ĐỘC
+            LẬP không cùng nhóm — bất kể xếp CẠNH NHAU (cột nội dung
+            chính ↔ panel phụ trợ khác chức năng) hay xếp CHỒNG (2 card
+            độc lập, 2 accordion section độc lập).
+        TRỤC bố trí (ngang hay dọc) KHÔNG quyết định giá trị — quan hệ
+        NHÓM mới quyết định.
+      check: >
+        gap(a, b) == roles.intra_group_gap
+          if same_immediate_semantic_group(a, b)
+          else roles.inter_block_gap
+      evidence_tier: 2
+      evidence: >
+        [BẰNG CHỨNG THẬT 13/09-Z] Đọc lại toạ độ thật trên trang chi tiết
+        khách hàng (node 21227:13923): 2 card "Thông tin chung" (807px, x=0)
+        + "Giấy phép kinh doanh" (561px, x=819) — gutter=12px — CẢ 2 đều là
+        con TRỰC TIẾP của cùng 1 wrapper accordion "Thông tin chung"
+        (cùng node cha `21219:13372`), CÙNG 1 nhóm → khớp intra_group_gap.
+        Card thứ 3 "Thông tin thanh toán" nằm NGOÀI nhóm 2-card đó (dù vẫn
+        trong cùng accordion cha rộng hơn) đo gap dọc =12px (accordion
+        header→content THẬT SỰ vẫn cùng 1 group cấp accordion) — trong khi
+        chính accordion NÀY với accordion TIẾP THEO ("Thông tin thanh
+        toán/bảng giá", 2 accordion ĐỘC LẬP khác nhau) đo gap=16px (khớp
+        inter_block_gap). Gutter 16px của "nội dung chính ↔ panel phải" ở
+        màn order-list (node 10014:15259) cũng khớp inter_block_gap — đây
+        LÀ 2 vùng độc lập của trang, khác chức năng, không cùng 1 nhóm nội
+        dung. → Mô hình 2 mức giải thích TRỌN VẸN cả 2 điểm dữ liệu
+        "xung đột" ban đầu, không cần 2 vai ngang riêng biệt như từng nghĩ.
+      why: >
+        Đây chính là cách áp dụng Law of Proximity + Law of Common Region:
+        khoảng cách là tín hiệu thị giác cho "mức độ liên quan", nên phải
+        đo bằng QUAN HỆ NHÓM (parent/sibling trong cây nội dung), không
+        phải bằng hướng vẽ ra màn hình. 2 phần tử "xa nhau về ngữ nghĩa"
+        (khác nhóm) mà vô tình được đặt CẠNH NHAU trên màn hình vẫn cần
+        khoảng cách LỚN hơn 2 phần tử "gần nhau về ngữ nghĩa" xếp CHỒNG.
+      caveat: >
+        [ĐÃ ĐÓNG 14/09-A] Trước đây rule này không giải thích được giá trị
+        thứ 3 (24px) đo ở panel phải màn order-list — Williams xác nhận UI
+        đó đã OUTDATE, loại khỏi bằng chứng (xem `not_yet_resolved_13_09_Z`
+        ở trên). Không còn dữ liệu phản chứng nào cho mô hình 2 mức này.
+
+# -----------------------------------------------------------------------------
+# 3. NỀN TRANG (page background) — 1 vs NHIỀU khối nội dung trên 1 trang.
+#    [MỚI 13/09-V — theo yêu cầu Williams] Số thật nằm ở
+#    _shared.binding.yaml § page_background.
+# -----------------------------------------------------------------------------
+page_background_role:
+  about: >
+    Bằng chứng thật (2 trang thật đối chiếu trực tiếp, xem research note § 6):
+    trang CHỈ CÓ 1 khối nội dung duy nhất (vd 1 bảng danh sách chiếm toàn bộ
+    trang) dùng nền TRẮNG cho canvas — không có khối "card" riêng nổi lên vì
+    không cần phân biệt gì. Trang có NHIỀU khối nội dung riêng biệt (vd nhiều
+    card thông tin + bảng + tab trên cùng 1 trang chi tiết khách hàng) dùng
+    nền XÁM NHẠT cho canvas, còn TỪNG khối/card riêng vẫn nền trắng — tạo độ
+    tương phản giữa các khối để mắt phân biệt ranh giới.
+  why_ux_foundation: >
+    [UX FOUNDATION — Gestalt psychology] Đây CHÍNH XÁC là **Law of Common
+    Region**: "các phần tử được nhận là 1 nhóm nếu chúng cùng nằm trong 1
+    vùng có ranh giới rõ ràng — có thể tạo ranh giới bằng viền HOẶC bằng nền
+    màu khác nhau." Khi 1 trang có nhiều khối nội dung khác nhau (khác chủ
+    đề, đọc độc lập), việc đặt TỪNG khối trên nền trắng nổi lên trên 1 nền
+    xám tạo ra "common region" cho mỗi khối, giúp mắt phân tách ngay không
+    cần đọc tiêu đề. Khi chỉ có 1 khối, nó ĐÃ chiếm toàn bộ trang — tạo thêm
+    1 vùng nền xám bao quanh 1 khối trắng duy nhất không tạo thêm thông tin
+    phân nhóm nào, chỉ thừa 1 lớp màu. Nguồn: lawsofux.com (Law of Common
+    Region).
+  profile_must_provide: [single_block_surface, multi_block_canvas, multi_block_surface]
+  rules:
+    - id: FND-BG-01
+      status: "[XÁC NHẬN — Williams 13/09-W] Ngưỡng: đúng 1 khối (không phải 2 trở lên) mới dùng nền trắng thẳng."
+      rule: >
+        Trang chỉ có ĐÚNG 1 khối nội dung độc lập (không có khối thứ 2 nào
+        cần phân biệt) → canvas dùng NGAY màu nền "bề mặt chuẩn" (không có
+        lớp nền xám trung gian).
+      check: "count(screen.independent_content_blocks) == 1 implies canvas.surface == bg.app.baseWhite"
+      evidence_tier: 2
+      evidence: "[BẰNG CHỨNG THẬT 13/09-V] node 16525:73666 (trang danh sách 1 bảng duy nhất) — canvas bind thẳng vào cùng biến màu đã xác nhận dùng cho bề mặt trắng chuẩn (cùng variable id đã xác nhận ở BottomSheet background). Xem research note § 6."
+    - id: FND-BG-02
+      status: "[XÁC NHẬN — Williams 13/09-W] Ngưỡng: 2 khối trở lên là NHIỀU."
+      rule: >
+        Trang có TỪ 2 khối nội dung độc lập trở lên (mỗi khối đọc/dùng riêng
+        được, vd nhiều card thông tin trên 1 trang chi tiết) → canvas dùng
+        màu nền TRUNG TÍNH XÁM (khác bề mặt chuẩn), TỪNG khối bên trong vẫn
+        dùng bề mặt chuẩn (trắng) để nổi lên trên nền xám đó.
+      check: "count(screen.independent_content_blocks) >= 2 implies canvas.surface == bg.app.elevated"
+      evidence_tier: 2
+      evidence: "[BẰNG CHỨNG THẬT 13/09-V] node 21219:13371 (trang chi tiết khách hàng, nhiều card: 'Thông tin chung', 'Giấy phép kinh doanh', 'Thông tin thanh toán'...) — canvas bind vào 1 token xám riêng (KHÁC bề mặt chuẩn trắng), từng card con vẫn nền trắng. Xem research note § 6."
+      threshold_source: "[XÁC NHẬN — Williams 13/09-W] \"2 khối trở lên là nhiều\" — ngưỡng CHÍNH THỨC, không còn là giả định."
+
+# -----------------------------------------------------------------------------
+# 4. MÀU / SURFACE — nguyên tắc chung, không liệt kê token cụ thể (xem
+#    _shared.binding.yaml § color_tokens cho danh sách thật).
+# -----------------------------------------------------------------------------
+color_role:
+  rules:
+    - id: FND-CLR-01
+      rule: >
+        Overlay/backdrop của bất kỳ lớp nổi nào (Dialog/BottomSheet/Popup/
+        Popover) PHẢI đọc từ đúng 1 nguồn: instance THẬT đã render trong sản
+        phẩm (get_variable_defs/opacity thật) — KHÔNG dùng lại số ghi trong
+        tài liệu hướng dẫn nội bộ (annotation/note trên trang DS) nếu 2
+        nguồn lệch nhau, và KHÔNG coi lời xác nhận bằng miệng trước đó là
+        chung cuộc nếu bằng chứng render thật khác đi. Xung đột giữa các
+        nguồn PHẢI báo lại người, KHÔNG tự chọn nguồn "đáng tin hơn".
+      evidence_tier: 2
+      status: "[XÁC NHẬN — Williams 13/09-X] Nguồn chuẩn CHÍNH THỨC: `bg/app/baseBlack` @ 50% opacity. Xem resolved_13_09_X."
+      why: "Đã có tiền lệ thật: annotation nói 30%, Williams xác nhận miệng trước đó là baseBlack@50%, component thật render ra bg/app/inverse@50%. Đây đúng dạng 'nguồn xung đột' mà _core.rules.yaml § discipline chưa có case cụ thể — bổ sung ở đây. Luật (escalate, không tự chọn) VẪN giữ nguyên cho các xung đột TƯƠNG LAI — vụ việc cụ thể này đã được Williams chốt, xem resolved_13_09_X."
+      resolved_13_09_X: >
+        [XÁC NHẬN — Williams 13/09-X] Williams chọn nguồn (2) —
+        `bg/app/baseBlack` @ `Opacity/O5` (50%) — làm nguồn CHUẨN CHÍNH THỨC
+        cho mọi backdrop overlay, KHÔNG phải nguồn (3) (component thật render
+        `bg/app/inverse` #18181b @ 50%) và KHÔNG phải nguồn (1) (annotation
+        "30%"). `rules/kinds/overlay.rules.yaml § OVL-B-01.backdrop_color`
+        đã sẵn khớp giá trị này từ trước, không cần sửa. LƯU Ý CÒN MỞ: component
+        overlay THẬT trong file B2B Portal (node 10016:7629) HIỆN CHƯA khớp
+        quyết định này (đang render `bg/app/inverse`, không phải
+        `bg/app/baseBlack`) — đây là quyết định về QUY TẮC/RULE ENGINE, chưa
+        rõ có cần sửa lại component thật trong Figma cho khớp hay để nguyên
+        (component cũ, không rework) — [cần verify], chưa hỏi Williams.
+    - id: FND-CLR-02
+      rule: >
+        Token effect/shadow (đổ bóng) là 1 loại token RIÊNG, ngang hàng với
+        color/spacing/typography — không phải thuộc tính phụ của màu hay
+        border. Component thật CÓ dùng token effect (không phải tự vẽ
+        shadow bằng số tay) — renderer phải tra effect style/token thật,
+        không tự chế giá trị blur/offset.
+      evidence_tier: 2
+      evidence: "[PHÁT HIỆN THẬT 13/09-U] Component card thật trong trang danh sách đơn hàng dùng 1 effect token thật (2 lớp drop-shadow) — chưa từng khảo sát nhóm token này trước đây (13/09-H chỉ khảo sát Primitives/Color Mode/Dimensions/Text Style, CHƯA khảo sát Effect Style). Xem research note § 5 — cần khảo sát thêm toàn bộ effect style trước khi đưa vào rule cụ thể hơn."
+
+# -----------------------------------------------------------------------------
+# 5. NGUỒN UX FOUNDATION — [MỚI 13/09-V, theo yêu cầu Williams: "Bổ sung
+#    thêm 1 số UX foundation knowledge bằng các nguồn học thuật uy tín...
+#    tao đề xuất lawsofux.com"]. Mục này liệt kê NGUYÊN VĂN định nghĩa các
+#    nguyên lý UX đã trích ở "why_ux_foundation" phía trên, để agent đọc
+#    được lý do NỀN TẢNG đứng sau luật, không chỉ đọc "phải làm vậy".
+#    Nguồn: lawsofux.com (Jon Yablonski) — không phải nghiên cứu riêng của
+#    GHN, đây là kiến thức UX phổ quát, portable, đúng ở mọi công ty.
+# -----------------------------------------------------------------------------
+ux_foundations:
+  source: "lawsofux.com — đọc trực tiếp 13/09-V, trích nguyên văn định nghĩa"
+  used_by: "Các mục why_ux_foundation ở typography_role / spacing_role / page_background_role phía trên."
+  principles:
+    law_of_common_region:
+      definition: "Elements tend to be perceived into groups if they are sharing an area with a clearly defined boundary."
+      origin: "Gestalt psychology — grouping principle."
+      used_for: "page_background_role (FND-BG-01/02)"
+    law_of_proximity:
+      definition: "Objects that are near, or proximate to each other, tend to be grouped together."
+      used_for: "spacing_role"
+    law_of_similarity:
+      definition: "The human eye tends to perceive similar elements as a complete picture, shape, or group, even if those elements are separated."
+      used_for: "[CHƯA gắn vào rule cụ thể nào — ghi lại để dùng sau, vd cho quy tắc icon/màu lặp lại cùng ý nghĩa phải giống nhau]"
+    law_of_uniform_connectedness:
+      definition: "Elements that are visually connected are perceived as more related than elements with no connection."
+      used_for: "[CHƯA gắn vào rule cụ thể nào — liên quan khả năng dùng đường kẻ/viền thay cho nền màu ở page_background_role, cần khảo sát thêm]"
+    chunking:
+      definition: "A process by which individual pieces of an information set are broken down and then grouped together in a meaningful whole."
+      used_for: "spacing_role"
+    cognitive_load:
+      definition: "The amount of mental resources needed to understand and interact with an interface."
+      used_for: "spacing_role (lý do KHÔNG dùng lẫn spacing giữa các vai)"
+    law_of_pragnanz:
+      definition: "People will perceive and interpret ambiguous or complex images as the simplest form possible, because it is the interpretation that requires the least cognitive effort of us."
+      used_for: "typography_role"
+    aesthetic_usability_effect:
+      definition: "Users often perceive aesthetically pleasing design as design that's more usable."
+      used_for: "[CHƯA gắn vào rule cụ thể — ghi lại làm căn cứ tổng quát cho lý do đầu tư vào chi tiết spacing/typography nhất quán, không chỉ vì 'đẹp']"
+    von_restorff_effect:
+      definition: "The one that differs from the rest is most likely to be remembered, when similar objects are present."
+      used_for: "[CHƯA gắn — liên quan trực tiếp tới hệ thống 'emphasis rank' đã có ở _core.rules.yaml/_composition.rules.yaml (CMP-FTR-01: đúng 1 nút mức nhấn cao nhất) — đáng đối chiếu, để dành khi rà lại các luật emphasis cũ, KHÔNG tự sửa luật cũ ở đây."]
+  status: "[ĐỀ XUẤT — CHƯA duyệt] Đây là bản đầu, mới trích 9 nguyên lý liên quan trực tiếp — lawsofux.com có tổng cộng nhiều nguyên lý hơn (vd Fitts's Law đã có tương đương ở _core.rules.yaml § touch_input, Hick's Law, Jakob's Law...), chưa khảo sát hết, thêm dần khi có rule cần."
+
+_pending_confirmation:
+  - item: "Toàn bộ file này là ĐỀ XUẤT — chưa hỏi Williams có đồng ý kiến trúc 'file _foundation.rules.yaml riêng, portable, always-load giống _core/_composition' hay muốn gộp nội dung này vào chỗ khác."
+  - item: "[ĐÃ ĐÓNG 13/09-X] Xung đột overlay/backdrop (FND-CLR-01) — Williams chọn `bg/app/baseBlack` @ 50%. Còn 1 điểm nhỏ mở: component thật (node 10016:7629) hiện chưa khớp quyết định này, chưa hỏi có cần sửa lại component hay để nguyên."
+  - item: "[ĐÃ ĐÓNG 13/09-Y] spacing_role — đã khảo sát thêm 2 màn (form tạo mới, chi tiết) theo yêu cầu Williams, 3/4 vai giữ nguyên qua cả 3 màn."
+  - item: "[ĐỀ XUẤT 13/09-Z, CHƯA đăng ký chính thức] FND-SPC-03 — mô hình thống nhất intra_group_gap(12px)/inter_block_gap(16px) theo khoảng cách ngữ nghĩa (Law of Proximity), giải thích được xung đột 12-vs-16 đã phát hiện ở 13/09-Y. Phản chứng duy nhất (24px) đã loại bỏ ở 14/09-A — còn thiếu đúng 1 bước: Williams gật đầu cuối cùng cho mô hình này."
+  - item: "[ĐÃ ĐÓNG 14/09-A] Giá trị 24px ở panel phải màn order-list — Williams xác nhận UI đó đã outdate, loại khỏi bằng chứng, không áp dụng cho build mới."
+  - item: "Effect/shadow token — mới phát hiện, chưa khảo sát đủ (chỉ mới thấy 1 token 'Shadows/md')."
+  - item: "[ĐÃ ĐÓNG 13/09-W] page_background_role — ngưỡng đã xác nhận: 2 khối trở lên là nhiều. Xem FND-BG-01/02."
+  - item: "[MỚI 13/09-V] ux_foundations mới trích 9 nguyên lý liên quan trực tiếp — 3 nguyên lý (similarity, uniform_connectedness, aesthetic_usability, von_restorff) ghi lại nhưng CHƯA gắn vào rule cụ thể nào, để dành."
+  - item: "[MỚI 13/09-V] Luật breadcrumb (Williams sửa: nên có ở MỌI trang) — Williams nói đề xuất nơi ở của luật này SAU khi xong phần foundation token — chưa đề xuất, xem foundation-layout-research.md § 1."
+  - item: "[ĐÃ ĐÓNG 13/09-Y] `bg/primary/default` (#ff5200) — XÁC NHẬN là màu thương hiệu chính (ramp Primitives riêng + 3 vai bg/icon/text đều cùng trỏ #ff5200)."
+  - item: "[ĐÃ ĐÓNG 13/09-Y] section_title Sprint 62 dùng H6 cũ — Williams xác nhận KHÔNG cần rework màn cũ, Title 1 chỉ áp dụng cho build MỚI."
